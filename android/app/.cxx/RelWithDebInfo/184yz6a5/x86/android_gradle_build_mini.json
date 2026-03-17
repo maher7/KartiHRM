@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/onesttech/Desktop/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/onesttech/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Volumes/External/1845/client_project/Maher_saas_hrm/android/app/.cxx/RelWithDebInfo/184yz6a5/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/onesttech/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Volumes/External/1845/client_project/Maher_saas_hrm/android/app/.cxx/RelWithDebInfo/184yz6a5/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

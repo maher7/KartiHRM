@@ -1,0 +1,2 @@
+/Volumes/External/1845/Flutter Project/onest_hrm/android/app/.cxx/RelWithDebInfo/5i1g6n4u/arm64-v8a/CMakeFiles/edit_cache.dir
+/Volumes/External/1845/Flutter Project/onest_hrm/android/app/.cxx/RelWithDebInfo/5i1g6n4u/arm64-v8a/CMakeFiles/rebuild_cache.dir

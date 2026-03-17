@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "147220618988",
+    "project_id": "onest-hrm-v4",
+    "storage_bucket": "onest-hrm-v4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:147220618988:android:2f853179b09418be414fc9",
+        "android_client_info": {
+          "package_name": "com.onesttech.onesthrm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKbSVEDtb6HkLtbVazSaO05ceJYFDWMEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

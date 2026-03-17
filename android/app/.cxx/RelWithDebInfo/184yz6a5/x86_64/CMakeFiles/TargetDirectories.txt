@@ -1,0 +1,2 @@
+/Volumes/External/1845/client_project/Maher_saas_hrm/android/app/.cxx/RelWithDebInfo/184yz6a5/x86_64/CMakeFiles/edit_cache.dir
+/Volumes/External/1845/client_project/Maher_saas_hrm/android/app/.cxx/RelWithDebInfo/184yz6a5/x86_64/CMakeFiles/rebuild_cache.dir
