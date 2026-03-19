@@ -26,13 +26,15 @@ class _SubmitTravelExpenseScreenState extends State<SubmitTravelExpenseScreen> {
   void initState() {
     super.initState();
     final categories = context.read<TravelExpenseBloc>().state.categories;
-    context.read<TravelExpenseBloc>().add(TravelCategoryNameEvent(categoryName: categories.first.name!, categoryId: categories.first.id!));
+    if (categories.isNotEmpty && categories.first.name != null && categories.first.id != null) {
+      context.read<TravelExpenseBloc>().add(TravelCategoryNameEvent(categoryName: categories.first.name!, categoryId: categories.first.id!));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Travel Expense")),
+      appBar: AppBar(title: Text("travel_expense".tr())),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -40,7 +42,7 @@ class _SubmitTravelExpenseScreenState extends State<SubmitTravelExpenseScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-              Text('From Date *', style: TextStyle(color: Colors.black, fontSize: 12.r, fontWeight: FontWeight.bold)),
+              Text('${'from_date'.tr()} *', style: TextStyle(color: Colors.black, fontSize: 12.r, fontWeight: FontWeight.bold)),
               CustomDatePicker(
                 label: context.watch<TravelExpenseBloc>().state.date ?? 'MM-DD-YYYY',
                 onDatePicked: (DateTime date) {

@@ -83,7 +83,7 @@ class _AttendanceMethodScreenState extends State<AttendanceMethodScreen> with Ti
           key: AttendanceMethodScreen._scaffoldKey,
           extendBody: true,
           appBar: AppBar(
-            title: Text('attendance_method'.tr(),),
+            title: Text('attendance_method'.tr()),
             actions: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -93,13 +93,7 @@ class _AttendanceMethodScreenState extends State<AttendanceMethodScreen> with Ti
                     switch (name) {
                       case 'pluto':
                         Navigator.push(context, PlutoAttendanceReportPage.route(settings: settings!));
-                      case 'earth':
-                        Navigator.push(context, AttendanceReportPage.route(settings: settings!));
-                      case 'neptune':
-                        Navigator.push(context, AttendanceReportPage.route(settings: settings!));
-                      case 'mars':
-                        Navigator.push(context, AttendanceReportPage.route(settings: settings!));
-                    default:
+                      default:
                         Navigator.push(context, AttendanceReportPage.route(settings: settings!));
                     }
                   },
@@ -116,13 +110,19 @@ class _AttendanceMethodScreenState extends State<AttendanceMethodScreen> with Ti
             return Container(
                 height: double.infinity,
                 decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Branding.colors.primaryLight, Branding.colors.primaryLight.withOpacity(0.5)])),
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0.h),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Branding.colors.primaryLight,
+                      Branding.colors.primaryDark,
+                    ],
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
                 child: Column(
                   children: [
+                    SizedBox(height: 8.h),
                     if (settings != null && selectedShift.value != null)
                       ValueListenableBuilder<MultiShift?>(
                         valueListenable: selectedShift,
@@ -132,27 +132,24 @@ class _AttendanceMethodScreenState extends State<AttendanceMethodScreen> with Ti
                             selectedShift: value,
                             onShiftSelected: (shift) {
                               SharedUtil.setIntValue(shiftId, shift?.shiftId);
-                              ///update listener for shift changes
                               updateShift(shifts: settings.data?.shifts ?? []);
                             },
                           );
                         },
                       ),
+                    SizedBox(height: 8.h),
                     if (settings != null && settings.data?.methods != null)
                     Expanded(
                       child: GridView.builder(
                         itemCount: settings.data?.methods.length ?? 0,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          crossAxisSpacing: 5,
-                          mainAxisSpacing: 5,
-                          mainAxisExtent: 270, // here set custom Height You Want
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          mainAxisExtent: 240,
                         ),
                         itemBuilder: (BuildContext context, int index) {
-                          ///List length
                           int length = homeData?.data?.menus?.length ?? 0;
-
-                          ///Animation instance
                           Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
                               parent: animationController,
                               curve: Interval((1 / length) * index, 1.0, curve: Curves.fastOutSlowIn)));
@@ -161,42 +158,58 @@ class _AttendanceMethodScreenState extends State<AttendanceMethodScreen> with Ti
                           final method = settings.data?.methods[index];
 
                           return method != null
-                              ? InkWell(
-                                  onTap: () {
-                                    context.read<AttendanceMethodBloc>().add(AttendanceNavEvent(
-                                        context: context,
-                                        slugName: method.slug,
-                                        shiftId: selectedShift.value?.shiftId));
-                                  },
-                                  child: Card(
+                              ? Material(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(16),
+                                    onTap: () {
+                                      context.read<AttendanceMethodBloc>().add(AttendanceNavEvent(
+                                          context: context,
+                                          slugName: method.slug,
+                                          shiftId: selectedShift.value?.shiftId));
+                                    },
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(3.0),
+                                        ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(16),
+                                            topRight: Radius.circular(16),
+                                          ),
                                           child: CachedNetworkImage(
-                                            height: 150,
+                                            height: 130,
                                             width: double.infinity,
                                             fit: BoxFit.cover,
-                                            imageUrl: settings.data?.methods[index].image ?? "",
-                                            placeholder: (context, url) => Center(child: Image.asset("assets/images/placeholder_image_one.webp"),),
-                                            errorWidget: (context, url, error) => Image.asset("assets/images/placeholder_image_one.webp"),),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Text(
-                                            settings.data?.methods[index].title?.tr() ?? "",
-                                            maxLines: 1,
-                                            style: const TextStyle(
-                                              color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold,),
+                                            imageUrl: (settings.data?.methods[index].image?.isNotEmpty == true) ? settings.data!.methods[index].image! : "https://placehold.co/130",
+                                            placeholder: (context, url) => Center(child: Image.asset("assets/images/placeholder_image_one.webp")),
+                                            errorWidget: (context, url, error) => Image.asset("assets/images/placeholder_image_one.webp"),
                                           ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                                          padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+                                          child: Text(
+                                            settings.data?.methods[index].title?.tr() ?? "",
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: 14.r,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
                                           child: Text(
                                             settings.data?.methods[index].subTitle?.tr() ?? "",
                                             maxLines: 3,
-                                            style: const TextStyle(color: Colors.black45, fontSize: 12,),
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: Colors.black45,
+                                              fontSize: 11.r,
+                                              height: 1.3,
+                                            ),
                                           ),
                                         ),
                                       ],

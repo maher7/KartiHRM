@@ -1,5 +1,3 @@
-import 'package:core/core.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta_club_api/meta_club_api.dart';
@@ -12,65 +10,72 @@ class AbsentContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
+    return Container(
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(12.r),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF5F5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFFCDD2)),
+      ),
       child: Row(
         children: [
-          SizedBox(
-            width: 80.w ,
+          Container(
+            width: 52.w,
+            padding: EdgeInsets.symmetric(vertical: 8.h),
+            decoration: BoxDecoration(
+              color: Colors.red.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Column(
               children: [
                 Text(
                   dailyReport.weekDay ?? "",
-                  style: TextStyle(color: Colors.black54, fontSize: DeviceUtil.isTablet ? 12.sp : 12),
+                  style: TextStyle(
+                    color: Colors.black45,
+                    fontSize: 10.r,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
+                SizedBox(height: 2.h),
                 Text(
                   dailyReport.date ?? "",
-                  style:  TextStyle(color: Colors.black54, fontSize: DeviceUtil.isTablet ? 20.sp : 20),
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontSize: 20.r,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
           ),
+          SizedBox(width: 12.w),
           Expanded(
-            child: Column(
+            child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 25),
-                  color: const Color(0xffF2F8FF),
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.black,
-                            style: BorderStyle.solid,
-                            width: 3.0,
-                          ),
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: DottedBorder(
-                          color: Colors.white,
-                          borderType: BorderType.RRect,
-                          radius: const Radius.circular(5),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 3),
-                          strokeWidth: 1,
-                          child: Text(
-                            dailyReport.status ?? "",
-                            style:  TextStyle(
-                                color: Colors.white,
-                                fontSize: DeviceUtil.isTablet ? 12.sp  :12,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ),
-                    ],
+                  width: 3.w,
+                  height: 32.h,
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade400,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
+                SizedBox(width: 10.w),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade700,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    dailyReport.status ?? "Absent",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.r,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ],
             ),

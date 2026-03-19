@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,12 +20,9 @@ class PlutoDailyLeavePending extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10.h,),
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: Text("pending_leave", style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.bold, color: Branding.colors.textPrimary),).tr(),
-        ),
-        const SizedBox(height: 8,),
+        SizedBox(height: 16.h),
+        Text("pending_leave".tr(), style: TextStyle(fontSize: 15.r, fontWeight: FontWeight.w700, color: Colors.black87)),
+        SizedBox(height: 8.h),
         Row(
           children: [
             Expanded(
@@ -35,7 +31,7 @@ class PlutoDailyLeavePending extends StatelessWidget {
                   NavUtil.navigateScreen(context, BlocProvider.value(value: context.read<DailyLeaveBloc>(), child: PlutoLeaveTypeScreen(appBarName: "early_leave".tr(),
                           leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: dailyLeaveBloc.state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now()), leaveStatus: 'pending', leaveType: "early_leave"),)),);
                 },
-                title: 'early_leave'.tr(), value: pending?.earlyLeave.toString() ?? '', color: Colors.orange,
+                title: 'early_leave'.tr(), value: pending?.earlyLeave.toString() ?? '', color: const Color(0xFFFFA726),
               ),
             ),
             SizedBox(width: 12.w,),
@@ -46,7 +42,7 @@ class PlutoDailyLeavePending extends StatelessWidget {
                       child: PlutoLeaveTypeScreen(appBarName: "late_leave".tr(), leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: dailyLeaveBloc.state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now()), leaveStatus: 'pending', leaveType: "late_arrive"),)),
                   );
                 },
-                title: 'late_leave'.tr(), value: pending?.lateArrive.toString() ?? '', color: Colors.orange,
+                title: 'late_leave'.tr(), value: pending?.lateArrive.toString() ?? '', color: const Color(0xFFFFA726),
               ),
             ),
           ],

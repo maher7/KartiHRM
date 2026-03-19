@@ -66,7 +66,7 @@ class PhoneBookUser extends Equatable {
   final String? avatar;
 
   factory PhoneBookUser.fromJson(Map<String, dynamic> json) => PhoneBookUser(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         name: json["name"],
         phone: json["phone"],
         designation: json["designation"],

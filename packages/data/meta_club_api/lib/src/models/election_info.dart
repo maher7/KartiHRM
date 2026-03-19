@@ -26,7 +26,7 @@ class ElectionInfo {
   List<Election>? elections;
 
   factory ElectionInfo.fromJson(Map<String, dynamic> json) => ElectionInfo(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         title: json["title"],
         date: json["date"],
         day: json["day"],
@@ -57,7 +57,7 @@ class Election {
   List<Candidate>? candidate;
 
   factory Election.fromJson(Map<String, dynamic> json) => Election(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         position: json["position"],
         isVotted: json["is_votted"],
         candidate: List<Candidate>.from(
@@ -84,7 +84,7 @@ class Candidate extends Equatable {
   final String? avatar;
 
   factory Candidate.fromJson(Map<String, dynamic> json) => Candidate(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         name: json["name"],
         avatar: json["avatar"],
       );

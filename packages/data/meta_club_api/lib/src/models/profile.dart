@@ -62,10 +62,10 @@ class Official extends Equatable {
         phone: json['phone'],
         address: json['address'],
         avatar: json['avatar'],
-        departmentId: json['department_id'],
+        departmentId: json['department_id'] != null ? int.tryParse(json['department_id'].toString()) : null,
         department: json['department'],
         designation: json['designation'],
-        designationId: json['designation_id'],
+        designationId: json['designation_id'] != null ? int.tryParse(json['designation_id'].toString()) : null,
         joiningDate: json['joining_date'],
         employeeType: json['employee_type'],
         employeeId: json['employee_id']);

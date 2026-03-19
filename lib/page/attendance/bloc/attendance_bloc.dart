@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:core/core.dart';
@@ -25,6 +26,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
   final EventBus eventBus;
   final SubmitRemarksUseCase _submitRemarksUseCase;
   AttendanceBody body = AttendanceBody();
+  StreamSubscription? _locationSubscription;
 
   AttendanceBloc(
       {required this.submitAttendanceUseCase,
@@ -95,7 +97,8 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         actionStatus: ActionStatus.refresh,
         isCheckedIn: isCheckedIn,
         isCheckedOut: isCheckedOut));
-    locationServiceProvider.placeStream.listen((location) async {
+    await _locationSubscription?.cancel();
+    _locationSubscription = locationServiceProvider.placeStream.listen((location) async {
       body.latitude = '${locationServiceProvider.userLocation.latitude}';
       body.longitude = '${locationServiceProvider.userLocation.longitude}';
       add(OnLocationUpdated(place: location));
@@ -136,14 +139,18 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
       }
     }, (data) {
       body.isOffline = false;
-      final inTime = getDDMMYYYYAsString(
-          date: data?.checkInOut?.checkIn ?? '00:00:00 00:00',
-          inputFormat: 'yyyy-mm-dd hh:mm',
-          outputFormat: 'hh:mm aa');
-      final outTime = getDDMMYYYYAsString(
-          date: data?.checkInOut?.checkOut ?? '00:00:00 00:00',
-          inputFormat: 'yyyy-mm-dd hh:mm',
-          outputFormat: 'hh:mm aa');
+      final inTime = (data?.checkInOut?.checkIn?.isNotEmpty == true)
+          ? getDDMMYYYYAsString(
+              date: data!.checkInOut!.checkIn!,
+              inputFormat: 'yyyy-MM-dd HH:mm:ss',
+              outputFormat: 'hh:mm a')
+          : null;
+      final outTime = (data?.checkInOut?.checkOut?.isNotEmpty == true)
+          ? getDDMMYYYYAsString(
+              date: data!.checkInOut!.checkOut!,
+              inputFormat: 'yyyy-MM-dd HH:mm:ss',
+              outputFormat: 'hh:mm a')
+          : null;
       body.attendanceId = data?.checkInOut?.id;
       body.inTime = inTime;
       body.outTime = outTime;
@@ -216,5 +223,11 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         longitude: body.longitude,
         inStatus: inStatus);
     return checkData;
+  }
+
+  @override
+  Future<void> close() {
+    _locationSubscription?.cancel();
+    return super.close();
   }
 }

@@ -57,7 +57,7 @@ class VisitDetailsResponse extends Equatable {
 
   factory VisitDetailsResponse.fromJson(Map<String, dynamic> json) =>
       VisitDetailsResponse(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         title: json["title"],
         date: json["date"],
         description: json["description"],
@@ -109,8 +109,8 @@ class VisitDetailsImage extends Equatable {
 
   factory VisitDetailsImage.fromJson(Map<String, dynamic> json) =>
       VisitDetailsImage(
-        id: json["id"],
-        fileId: json["file_id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
+        fileId: json["file_id"] != null ? int.tryParse(json["file_id"].toString()) : null,
         filePath: json["file_path"],
         fileUrl: json["file_url"]
       );

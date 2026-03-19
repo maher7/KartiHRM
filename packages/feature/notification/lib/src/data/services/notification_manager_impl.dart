@@ -8,9 +8,9 @@ import 'notification_repository_database.dart';
 
 class NotificationManagerImpl extends NotificationManager {
   final NotificationRepositoryDatabase notificationRepositoryDatabase;
-  final FirebaseMessaging firebaseMessaging;
+  final FirebaseMessaging? firebaseMessaging;
 
-  NotificationManagerImpl({required this.notificationRepositoryDatabase, required this.firebaseMessaging});
+  NotificationManagerImpl({required this.notificationRepositoryDatabase, this.firebaseMessaging});
 
   bool _initialized = false;
 
@@ -43,14 +43,14 @@ class NotificationManagerImpl extends NotificationManager {
   @override
   Future<String?> getApnsToken() async {
     if (Platform.isIOS) {
-      return await firebaseMessaging.getAPNSToken();
+      return await firebaseMessaging?.getAPNSToken();
     }
     return null;
   }
 
   @override
   Future<String?> getFcmToken() {
-    return firebaseMessaging.getToken();
+    return firebaseMessaging?.getToken() ?? Future.value(null);
   }
 
   @override

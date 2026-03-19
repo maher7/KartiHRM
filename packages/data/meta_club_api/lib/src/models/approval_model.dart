@@ -78,12 +78,12 @@ class ApprovalLeaveRequest extends Equatable {
 
   factory ApprovalLeaveRequest.fromJson(Map<String, dynamic> json) =>
       ApprovalLeaveRequest(
-        id: json["id"],
-        userId: json["user_id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
+        userId: json["user_id"] != null ? int.tryParse(json["user_id"].toString()) : null,
         name: json["name"],
         message: json["message"],
         type: json["type"],
-        days: json["days"],
+        days: json["days"] != null ? int.tryParse(json["days"].toString()) : null,
         applyDate: json["apply_date"],
         dateDuration: json["date_duration"],
         status: json["status"],

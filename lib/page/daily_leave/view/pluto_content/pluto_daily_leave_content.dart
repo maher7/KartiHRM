@@ -7,6 +7,7 @@ import 'package:onesthrm/page/authentication/bloc/authentication_bloc.dart';
 import 'package:onesthrm/page/daily_leave/bloc/daily_leave_bloc.dart';
 import 'package:core/core.dart';
 import 'package:onesthrm/page/daily_leave/bloc/daily_leave_event.dart';
+import 'package:onesthrm/page/daily_leave/bloc/daily_leave_state.dart';
 import 'package:onesthrm/page/daily_leave/view/pluto_content/pluto_daily_leave_status_content.dart';
 import 'package:onesthrm/page/daily_leave/view/pluto_daily_create_page.dart';
 import 'package:onesthrm/res/nav_utail.dart';
@@ -22,26 +23,103 @@ class PlutoDailyLeaveContent extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text(tr("daily_leave",), style: TextStyle(fontSize: 16.r,color: Branding.colors.textPrimary,fontWeight: FontWeight.w500),),
+        title: Text(tr("partial_leave"), style: TextStyle(fontSize: 16.r,color: Branding.colors.textPrimary,fontWeight: FontWeight.w500),),
         actions: [
-          InkWell(
-            onTap: (){
-              context.read<DailyLeaveBloc>().add(SelectDatePickerDailyLeave(user!.user!.id!, context));
-            },
-            child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 12.0),
-              child: Image.asset("assets/images/ic_calendar.png", height: 18.h, width: 18.w,),
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () {
+                context.read<DailyLeaveBloc>().add(SelectDatePickerDailyLeave(user!.user!.id!, context));
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Branding.colors.primaryLight.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.calendar_month_rounded, color: Branding.colors.primaryLight, size: 16),
+                    const SizedBox(width: 4),
+                    Text('select_month'.tr(), style: TextStyle(color: Branding.colors.primaryLight, fontSize: 11, fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
       ),
       body: ListView(
         children: [
-          const SizedBox(height: 20),
+          // Explanation banner
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            padding: EdgeInsets.all(12.r),
+            decoration: BoxDecoration(
+              color: Branding.colors.primaryLight.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Branding.colors.primaryLight.withValues(alpha: 0.15)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline_rounded, color: Branding.colors.primaryLight, size: 20.r),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Text(
+                    'daily_leave_subtitle'.tr(),
+                    style: TextStyle(fontSize: 12.r, color: Colors.black54, height: 1.3),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Current month display
+          BlocBuilder<DailyLeaveBloc, DailyLeaveState>(
+            builder: (context, state) {
+              final monthStr = state.currentMonth ?? getDateAsString(format: 'yyyy-MM', dateTime: DateTime.now()) ?? '';
+              String displayDate;
+              try {
+                final parts = monthStr.split('-');
+                final dt = DateTime(int.parse(parts[0]), int.parse(parts[1]));
+                displayDate = getDateAsString(format: 'MMMM yyyy', dateTime: dt) ?? monthStr;
+              } catch (_) {
+                displayDate = monthStr;
+              }
+              return Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.date_range_rounded, color: Branding.colors.primaryLight, size: 18.r),
+                    SizedBox(width: 8.w),
+                    Text(
+                      displayDate,
+                      style: TextStyle(fontSize: 15.r, fontWeight: FontWeight.w600, color: Colors.black87),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
           AnimatedCircularButton(
             onComplete: () {
               NavUtil.navigateScreen(context, BlocProvider.value(value: context.read<DailyLeaveBloc>(), child: const PlutoDailyCreatePage(),));
             },
-            title: "apply_daily_leave".tr(), color: Branding.colors.primaryLight,
+            title: "apply_partial_leave".tr(), color: Branding.colors.primaryLight,
           ),
           const PlutoDailyLeaveStatusContent()
         ],

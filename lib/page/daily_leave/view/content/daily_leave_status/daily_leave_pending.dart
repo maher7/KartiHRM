@@ -23,63 +23,61 @@ class DailyLeavePending extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: 10.h,
+        SizedBox(height: 16.h),
+        Text(
+          "pending_leave".tr(),
+          style: TextStyle(
+              fontSize: 15.r,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: Text(
-            "pending_leave",
-            style: TextStyle(
-                fontSize: 16.r,
-                fontWeight: FontWeight.bold,
-                color: Colors.black),
-          ).tr(),
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        DailyLeaveTile(
-          onTap: () {
-            NavUtil.navigateScreen(
-              context,
-              BlocProvider.value(
-                  value: context.read<DailyLeaveBloc>(),
-                  child: LeaveTypeScreen(
-                    appBarName: "early_leave".tr(),
-                    leaveListData: LeaveListModel(
-                        userId: user!.user!.id!.toString(),
-                        month: dailyLeaveBloc.state.currentMonth ??
-                            DateFormat('y-MM-dd').format(DateTime.now()),
-                        leaveStatus: 'pending',
-                        leaveType: "early_leave"),
-                  )),
-            );
-          },
-          title: 'early_leave'.tr(),
-          value: pending?.earlyLeave.toString() ?? '',
-          color: Colors.yellow,
-        ),
-        DailyLeaveTile(
-          onTap: () {
-            NavUtil.navigateScreen(
-              context,
-              BlocProvider.value(
-                  value: context.read<DailyLeaveBloc>(),
-                  child: LeaveTypeScreen(
-                    appBarName: "late_leave".tr(),
-                    leaveListData: LeaveListModel(
-                        userId: user!.user!.id!.toString(),
-                        month: dailyLeaveBloc.state.currentMonth ??
-                            DateFormat('y-MM-dd').format(DateTime.now()),
-                        leaveStatus: 'pending',
-                        leaveType: "late_arrive"),
-                  )),
-            );
-          },
-          title: 'late_leave'.tr(),
-          value: pending?.lateArrive.toString() ?? '',
-          color: Colors.yellow,
+        SizedBox(height: 8.h),
+        Row(
+          children: [
+            DailyLeaveTile(
+              onTap: () {
+                NavUtil.navigateScreen(
+                  context,
+                  BlocProvider.value(
+                      value: context.read<DailyLeaveBloc>(),
+                      child: LeaveTypeScreen(
+                        appBarName: "early_leave".tr(),
+                        leaveListData: LeaveListModel(
+                            userId: user!.user!.id!.toString(),
+                            month: dailyLeaveBloc.state.currentMonth ??
+                                DateFormat('y-MM-dd').format(DateTime.now()),
+                            leaveStatus: 'pending',
+                            leaveType: "early_leave"),
+                      )),
+                );
+              },
+              title: 'early_leave'.tr(),
+              value: pending?.earlyLeave.toString() ?? '0',
+              color: const Color(0xFFFFA726),
+            ),
+            SizedBox(width: 10.w),
+            DailyLeaveTile(
+              onTap: () {
+                NavUtil.navigateScreen(
+                  context,
+                  BlocProvider.value(
+                      value: context.read<DailyLeaveBloc>(),
+                      child: LeaveTypeScreen(
+                        appBarName: "late_leave".tr(),
+                        leaveListData: LeaveListModel(
+                            userId: user!.user!.id!.toString(),
+                            month: dailyLeaveBloc.state.currentMonth ??
+                                DateFormat('y-MM-dd').format(DateTime.now()),
+                            leaveStatus: 'pending',
+                            leaveType: "late_arrive"),
+                      )),
+                );
+              },
+              title: 'late_leave'.tr(),
+              value: pending?.lateArrive.toString() ?? '0',
+              color: const Color(0xFFFFA726),
+            ),
+          ],
         ),
       ],
     );

@@ -46,11 +46,6 @@ class _AttendanceState extends State<AttendanceView> with TickerProviderStateMix
     final offlineAttendanceBloc = context.watch<OfflineCubit>();
     final offlineState = offlineAttendanceBloc.state;
 
-    if (user?.user != null) {
-      homeBloc().add(
-          OnLocationRefresh(user: context.read<AuthenticationBloc>().state.data?.user, locationProvider: instance()));
-    }
-
     return BlocListener<AttendanceBloc, AttendanceState>(
       listenWhen: (oldState, newState) => oldState != newState,
       listener: (context, state) {

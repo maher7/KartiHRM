@@ -10,18 +10,31 @@ class PlutoDailyLeaveReason extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding:  EdgeInsets.symmetric(horizontal: 16.0.w,vertical: 8),
+    return Padding(padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 8),
       child: TextFormField(
         controller: context.read<DailyLeaveBloc>().reasonTextController,
-        maxLines: 6,
+        maxLines: 5,
         validator: (val) => val!.isEmpty ? "reason_can't_be_empty".tr() : null,
-        style:  TextStyle(fontSize: 14.sp),
-        decoration: InputDecoration(floatingLabelBehavior: FloatingLabelBehavior.always, contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+        style: TextStyle(fontSize: 14.sp),
+        decoration: InputDecoration(
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16),
           hintText: 'write_reason'.tr(),
-          hintStyle:  TextStyle(fontSize: 12.r),
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Branding.colors.primaryLight, width: 2), borderRadius: const BorderRadius.all(Radius.circular(12.0)),),
-          border:  OutlineInputBorder(borderSide: BorderSide(width: 2, color: Branding.colors.textPrimary), borderRadius:  const BorderRadius.all(Radius.circular(12.0)),),
-          enabledBorder:  OutlineInputBorder(borderSide: BorderSide(width: 2, color: Branding.colors.textPrimary), borderRadius: const BorderRadius.all(Radius.circular(12.0)),),
+          hintStyle: TextStyle(fontSize: 12.r, color: Colors.grey.shade400),
+          filled: true,
+          fillColor: Colors.grey.shade50,
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Branding.colors.primaryLight, width: 2),
+            borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(width: 1, color: Colors.grey.shade300),
+            borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(width: 1, color: Colors.grey.shade300),
+            borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+          ),
         ),
       ),
     );

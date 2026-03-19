@@ -7,9 +7,17 @@ import 'package:onesthrm/page/home/view/home_pluto/content/pluto_home_header.dar
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import '../../../../authentication/bloc/authentication_bloc.dart';
 import '../../../bloc/home_bloc.dart';
+import '../../../content/my_stats_card.dart';
 
-class HomePlutoContent extends StatelessWidget {
+class HomePlutoContent extends StatefulWidget {
   const HomePlutoContent({super.key});
+
+  @override
+  State<HomePlutoContent> createState() => _HomePlutoContentState();
+}
+
+class _HomePlutoContentState extends State<HomePlutoContent> {
+  bool _locationInitialized = false;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +25,8 @@ class HomePlutoContent extends StatelessWidget {
       builder: (context, homeState) {
         final user = context.read<AuthenticationBloc>().state.data;
 
-        if (user?.user != null) {
+        if (user?.user != null && !_locationInitialized) {
+          _locationInitialized = true;
           context.read<HomeBloc>().add(OnLocationEnabled(user: user!.user!, locationProvider: instance()));
         }
 
@@ -30,6 +39,9 @@ class HomePlutoContent extends StatelessWidget {
                 ///check-in-out-creak content
                 PlutoCheckBreakContent(
                     settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
+
+                ///my stats
+                MyStatsCard(dashboardModel: homeState.dashboardModel),
 
                 ///bottom-header
                 HomeBottom(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),

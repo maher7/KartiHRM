@@ -71,11 +71,14 @@ class LeaveRequestType extends StatelessWidget {
                               value: availableLeave!,
                               title: Row(
                                 children: [
-                                  Text(
-                                    "${availableLeave.type}",
-                                    style: TextStyle(fontSize: 14.r, color: Colors.black, fontWeight: FontWeight.bold),
-                                  ).tr(),
-                                  const Spacer(),
+                                  Flexible(
+                                    child: Text(
+                                      "${availableLeave.type}",
+                                      style: TextStyle(fontSize: 14.r, color: Colors.black, fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    ).tr(),
+                                  ),
+                                  SizedBox(width: 8.w),
                                   Text(
                                     '${availableLeave.leftDays} ${tr("days_left")}',
                                     style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.w500),

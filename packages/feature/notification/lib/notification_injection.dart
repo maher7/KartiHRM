@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:notification/notification.dart';
 import 'package:notification/src/data/services/local_notification_service.dart';
@@ -14,14 +15,19 @@ import 'package:notification/src/presentation/cubits/notification_list_cubit.dar
 
 class NotificationInjection {
   Future<void> initInjection() async {
-    instance.registerSingleton<FirebaseMessaging>(FirebaseMessaging.instance, signalsReady: true);
+    final firebaseAvailable = Firebase.apps.isNotEmpty;
+    if (firebaseAvailable) {
+      instance.registerSingleton<FirebaseMessaging>(FirebaseMessaging.instance, signalsReady: true);
+    }
     instance.registerSingleton<LocalNotificationService>(LocalNotificationService(), signalsReady: true);
     instance.registerSingleton<NotificationDatabaseFactory>(NotificationDatabaseFactory(), signalsReady: true);
     instance.registerSingleton<NotificationRepositoryDatabase>(
         NotificationRepositoryDatabase(databaseFactory: instance()),
         signalsReady: true);
     instance.registerSingleton<NotificationManager>(
-        NotificationManagerImpl(notificationRepositoryDatabase: instance(), firebaseMessaging: instance()),
+        NotificationManagerImpl(
+            notificationRepositoryDatabase: instance(),
+            firebaseMessaging: firebaseAvailable ? instance<FirebaseMessaging>() : null),
         signalsReady: true);
     instance.registerSingleton<InitializeNotificationUseCase>(
         InitializeNotificationUseCase(notificationManager: instance()),

@@ -8,7 +8,7 @@ class DocumentType {
   DocumentType({this.id, this.name, this.requestTemplate});
 
   factory DocumentType.fromJson(Map<String, dynamic> json) {
-    return DocumentType(id: json['id'], name: json['name'], requestTemplate: json['request_template']);
+    return DocumentType(id: json['id'] != null ? int.tryParse(json['id'].toString()) : null, name: json['name'], requestTemplate: json['request_template']);
   }
 }
 

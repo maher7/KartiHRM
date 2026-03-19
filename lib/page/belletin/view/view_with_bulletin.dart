@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:onesthrm/page/belletin/content/news_bulletin_content.dart';
 
 class ViewWithBulletin extends StatelessWidget {
   final Widget child;
@@ -9,8 +10,9 @@ class ViewWithBulletin extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // NewsBulletinContent(),
-        Expanded(child: child)],
+        const NewsBulletinContent(),
+        Expanded(child: child),
+      ],
     );
   }
 }

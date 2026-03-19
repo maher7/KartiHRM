@@ -15,19 +15,17 @@ class PlutoCheckBreakContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const SizedBox(
-          width: 8.0,
-        ),
-        ///check-in-out card
-        Expanded(child: PlutoCheckInOutCard(settings: settings, user: user, dashboardModel: dashboardModel)),
-        ///breakTime
-        Expanded(child: PlutoBreakCard(settings: settings, user: user, dashboardModel: dashboardModel)),
-        const SizedBox(
-          width: 8.0,
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+      child: Row(
+        children: [
+          ///check-in-out card
+          Expanded(child: PlutoCheckInOutCard(settings: settings, user: user, dashboardModel: dashboardModel)),
+          const SizedBox(width: 8.0),
+          ///breakTime
+          Expanded(child: PlutoBreakCard(settings: settings, user: user, dashboardModel: dashboardModel)),
+        ],
+      ),
     );
   }
 }

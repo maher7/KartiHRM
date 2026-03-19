@@ -1,6 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 
@@ -21,6 +22,16 @@ class NoticeDetailsScreen extends StatelessWidget {
       this.body,
       this.date});
 
+  String _formatDate(String? rawDate) {
+    if (rawDate == null || rawDate.isEmpty) return '';
+    try {
+      final parsed = DateTime.parse(rawDate);
+      return DateFormat('dd MMM yyyy, hh:mm a').format(parsed);
+    } catch (_) {
+      return rawDate;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,72 +39,90 @@ class NoticeDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           tr("notice_details"),
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium
-              ?.copyWith(color: Colors.white, fontSize: 16.r),
+          style: TextStyle(fontSize: 16.r),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // provider.noticeDetails?.data?.file != null
-          //     ?
-
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: CachedNetworkImage(
-                width: double.infinity,
-                height: 240.h,
-                fit: BoxFit.cover,
-                imageUrl: image ?? "assets/images/placeholder_image.png",
-                placeholder: (context, url) => Center(
-                  child: Image.asset("assets/images/placeholder_image.png"),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header section
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20.r),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Branding.colors.primaryLight.withValues(alpha: 0.08),
+                    Colors.white,
+                  ],
                 ),
-                errorWidget: (context, url, error) =>
-                    Image.asset("assets/images/placeholder_image.png"),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title
+                  Text(
+                    title ?? "",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18.r,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  // Date
+                  if (date != null && date!.isNotEmpty)
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time_rounded,
+                          size: 14.r,
+                          color: Colors.black38,
+                        ),
+                        SizedBox(width: 6.w),
+                        Text(
+                          _formatDate(date),
+                          style: TextStyle(
+                            fontSize: 12.r,
+                            color: Colors.black45,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title ??
-                      // provider.noticeDetails?.data?.subject ??
-                      "",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.r),
+
+            Divider(height: 1, color: Colors.grey.shade100),
+
+            // Body content (HTML rendered)
+            if (body != null && body!.isNotEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                child: Html(
+                  data: body,
+                  style: {
+                    "body": Style(
+                      fontSize: FontSize(14.r),
+                      lineHeight: const LineHeight(1.6),
+                      color: Colors.black87,
+                      padding: HtmlPaddings.zero,
+                      margin: Margins.zero,
+                    ),
+                    "span": Style(
+                      fontSize: FontSize(14.r),
+                    ),
+                    "b": Style(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  },
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  date ??
-                      // provider.noticeDetails?.data?.date ??
-                      "",
-                  style: TextStyle(fontSize: 12.r, color: Colors.grey),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  body ??
-                      // provider.noticeDetails?.data?.description ??
-                      "",
-                  style: TextStyle(fontSize: 14.r, height: 1.4),
-                  textAlign: TextAlign.justify,
-                ),
-              ],
-            ),
-          ),
-        ],
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -28,10 +28,10 @@ class DocumentItem {
 
   factory DocumentItem.fromJson(Map<String, dynamic> json) {
     return DocumentItem(
-      id: json['id'],
+      id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
       date: json['date'],
-      userId: json['user_id'],
-      docTypeId: json['user_document_type_id'],
+      userId: json['user_id'] != null ? int.tryParse(json['user_id'].toString()) : null,
+      docTypeId: json['user_document_type_id'] != null ? int.tryParse(json['user_document_type_id'].toString()) : null,
       docTypeName: json['document_type'],
       description: json['request_description'],
       requestFile: json['request_file'],

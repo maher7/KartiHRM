@@ -1,9 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:notification/notification.dart';
 import 'package:onesthrm/page/all_natification/view/notification_screen.dart';
-import 'package:onesthrm/page/all_natification/view/pluto_notification_screen.dart';
 import 'package:onesthrm/page/appointment/appoinment_list/view/appointment_screen.dart';
 import 'package:onesthrm/page/attendance_report/view/pluto_attendance_report_page.dart';
 import 'package:onesthrm/page/daily_leave/view/daily_leave_page.dart';
@@ -54,18 +52,7 @@ Widget chooseMenu() {
 }
 
 Widget chooseNotification() {
-  final name = globalState.get(dashboardStyleId);
-  final notificationScreen = instance<NotificationsScreenFactory>();
-  switch (name) {
-    case 'pluto':
-      return const PlutoNotificationScreen();
-    case 'earth':
-    case 'neptune':
-    case 'mars':
-      return notificationScreen();
-    default:
-      return const NotificationScreen();
-  }
+  return const NotificationScreen();
 }
 
 Widget chooseDailyLeave() {

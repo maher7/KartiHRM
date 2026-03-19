@@ -1,6 +1,6 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:onesthrm/animation/bounce_animation/bounce_animation_builder.dart';
 import 'package:onesthrm/page/authentication/bloc/authentication_bloc.dart';
 import 'package:onesthrm/page/splash/bloc/splash_bloc.dart';
 
@@ -17,7 +17,17 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) setState(() => _visible = true);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = context.read<AuthenticationBloc>().state.data;
@@ -25,26 +35,63 @@ class _SplashScreenState extends State<SplashScreen> {
     return BlocProvider(
       create: (context) => SplashBloc(context: context, data: user),
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: Container(
-            alignment: Alignment.center,
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Branding.colors.primaryDark,
+                Branding.colors.primaryLight,
+              ],
+            ),
+          ),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 500),
+            opacity: _visible ? 1 : 0,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                BounceAnimationBuilder(
-                  builder: (_, __) {
-                    return Center(
-                      child: InteractiveViewer(
-                        scaleEnabled: false,
-                        boundaryMargin: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Image.asset("assets/images/app_icon.png", scale: 3),
-                      ),
-                    );
-                  },
-                )
+              children: [
+                AnimatedScale(
+                  scale: _visible ? 1 : 0.85,
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeOutBack,
+                  child: Image.asset('assets/images/app_icon.png', width: 100),
+                ),
+                const SizedBox(height: 16),
+                AnimatedSlide(
+                  offset: _visible ? Offset.zero : const Offset(0, 0.3),
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOut,
+                  child: const Text(
+                    'Karti HRM',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                AnimatedSlide(
+                  offset: _visible ? Offset.zero : const Offset(0, 0.5),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeOut,
+                  child: Text(
+                    'Smart Workforce Management',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ),
               ],
-            )),
+            ),
+          ),
+        ),
       ),
     );
   }

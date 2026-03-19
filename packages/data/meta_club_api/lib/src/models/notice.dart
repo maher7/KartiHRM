@@ -29,7 +29,7 @@ class Notice {
 
   factory Notice.fromJson(Map<String, dynamic> json) {
     return Notice(
-        id: json['id'],
+        id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
         subject: json['subject'],
         date: json['date'],
         description: json['description'],

@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:notification/src/presentation/cubits/add_notification_cubit.dart';
 import 'package:notification/src/presentation/cubits/notification_list_cubit.dart';
 import 'package:notification/src/presentation/cubits/notification_list_state.dart';
@@ -17,13 +18,41 @@ class NotificationMainContent extends StatelessWidget {
         return BlocBuilder<NotificationListCubit, NotificationListState>(
           builder: (context, state) {
             if (state.status == NetworkStatus.success && state.readNotifications.isEmpty) {
-              return const NoDataFoundWidget();
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.notifications_off_outlined,
+                      size: 64,
+                      color: Colors.grey.shade300,
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'No notifications yet',
+                      style: TextStyle(
+                        fontSize: 16.r,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'You\'ll see your notifications here',
+                      style: TextStyle(
+                        fontSize: 13.r,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
             if (state.status == NetworkStatus.loading) {
               return ListView.builder(
                   shrinkWrap: true,
                   itemBuilder: (content, index) {
-                    return TileShimmer(titleHeight: 55.0,);
+                    return TileShimmer(titleHeight: 55.0);
                   },
                   itemCount: 10);
             }
@@ -45,7 +74,8 @@ class NotificationMainContent extends StatelessWidget {
                   );
                 },
                 separatorBuilder: (_, __) => Divider(
-                      color: Branding.colors.dividerPrimary,
+                      height: 1,
+                      color: Colors.grey.shade200,
                     ),
                 itemCount: state.readNotifications.length);
           },

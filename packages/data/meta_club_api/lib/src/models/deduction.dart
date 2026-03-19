@@ -65,7 +65,7 @@ class Deduction extends Equatable {
 
   factory Deduction.fromJson(Map<String, dynamic> json) {
     return Deduction(
-        id: json['id'],
+        id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
         month: json['month'],
         amount: json['amount'],
         considerAmount: json['consider_amount'],
@@ -122,11 +122,11 @@ class DeductionDetails extends Equatable {
 
   factory DeductionDetails.fromJson(Map<String, dynamic> json) {
     return DeductionDetails(
-      id: json['id'],
+      id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
       deductionType: json['deduction_type'],
       purpose: json['purpose'],
       amount: json['amount'],
-      days: json['days'],
+      days: json['days'] != null ? int.tryParse(json['days'].toString()) : null,
       isApplicable: json['is_applicable'],
       consideredBy: json['considered_by'],
       consideredAt: json['considered_at'],

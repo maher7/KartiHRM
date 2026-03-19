@@ -15,51 +15,71 @@ class PlutoBreakCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      color: Branding.colors.primaryLight,
-      margin: EdgeInsets.symmetric(vertical: 8.0.h, horizontal: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      child: InkWell(
+    final inBreak = globalState.get(isBreak) == true;
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: inBreak
+              ? [const Color(0xFFE65100), const Color(0xFFFF8F00)]
+              : [Branding.colors.primaryLight, Branding.colors.primaryDark],
+        ),
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: Branding.colors.primaryLight.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16.0),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16.0),
           onTap: () {
-            BreakRoute.breakOrQrCompanyRoute(context: context, inBreak: globalState.get(isBreak) == true);
+            BreakRoute.breakOrQrCompanyRoute(context: context, inBreak: inBreak);
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 12.w),
             child: Row(
               children: [
-                const SizedBox(
-                  width: 16.0,
+                Icon(
+                  inBreak ? Icons.coffee_rounded : Icons.free_breakfast_rounded,
+                  color: Colors.white,
+                  size: 20.r,
                 ),
-                Image.asset('assets/images/break.png', scale: 2, color: Colors.white),
-                const SizedBox(
-                  width: 8.0,
-                ),
+                SizedBox(width: 8.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                          globalState.get(isBreak) == true ? "you're_in_break".tr()
-                              : "take_coffee".tr(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.white, fontSize: 14.r)),
-                      // SizedBox(height: 10.h),
+                        inBreak ? "you're_in_break".tr() : "take_coffee".tr(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: 10.r,
+                        ),
+                      ),
                       Text(
-                        globalState.get(isBreak) == true ? dashboardModel?.data?.config?.breakStatus?.breakTime ?? ''
+                        inBreak
+                            ? dashboardModel?.data?.config?.breakStatus?.breakTime ?? ''
                             : 'break'.tr(),
-                        style: TextStyle(color: Colors.white, fontSize: 14.r, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 13.r, fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  width: 8.0,
-                ),
               ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

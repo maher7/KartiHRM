@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:core/core.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -42,15 +43,25 @@ class NotificationAppStartedHandlerService {
     baseInit();
 
     push.Push.instance.addOnMessage((message) {
-      if (message.notification?.title != null || message.notification?.title != 'null') {
-        ///adding notification message to save
-        localNotificationService.showNotification(
-            title: message.notification?.title ?? '', body: message.notification?.body ?? '', payload: '');
-      }
+      if (message.notification?.title != null && message.notification?.title != 'null') {
+        final encodedString = json.encode(message.data);
 
-      final encodedString = json.encode(message.data);
-      localNotificationService.showNotification(
-          title: message.notification?.title ?? '', body: message.notification?.body ?? '', payload: encodedString);
+        // Save to bulletin banner if message is an announcement
+        if (message.data?['type'] == 'announcement') {
+          final String text = (message.notification?.body ?? message.data?['text'] ?? '').toString();
+          if (text.isNotEmpty) {
+            SharedUtil.setValue(bulletinKey, text);
+          }
+        }
+
+        addNotificationUseCase(
+            id: 0,
+            title: message.notification?.title ?? '',
+            description: message.notification?.body ?? '',
+            payload: encodedString);
+        localNotificationService.showNotification(
+            title: message.notification?.title ?? '', body: message.notification?.body ?? '', payload: encodedString);
+      }
     });
   }
 
@@ -61,6 +72,15 @@ class NotificationAppStartedHandlerService {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       final payload = json.encode(message.data);
+
+      // Save to bulletin banner if message is an announcement
+      if (message.data['type'] == 'announcement') {
+        final text = message.notification?.body ?? message.data['text'] ?? '';
+        if (text.isNotEmpty) {
+          SharedUtil.setValue(bulletinKey, text);
+        }
+      }
+
       if (message.notification != null) {
         if (message.notification?.title != null) {
           ///adding notification message to save
@@ -69,15 +89,19 @@ class NotificationAppStartedHandlerService {
               title: message.notification?.title ?? '',
               description: message.notification?.body ?? '',
               payload: payload);
-          if (message.notification?.android?.imageUrl != null) {
-            await localNotificationService.showNotificationWithAttachment(
-                title: message.notification?.title ?? '',
-                body: message.notification?.body ?? '',
-                payload: payload,
-                image: message.notification?.android?.imageUrl);
-          } else {
-            await localNotificationService.showNotification(
-                title: message.notification?.title ?? '', body: message.notification?.body ?? '', payload: payload);
+          try {
+            if (message.notification?.android?.imageUrl != null) {
+              await localNotificationService.showNotificationWithAttachment(
+                  title: message.notification?.title ?? '',
+                  body: message.notification?.body ?? '',
+                  payload: payload,
+                  image: message.notification?.android?.imageUrl);
+            } else {
+              await localNotificationService.showNotification(
+                  title: message.notification?.title ?? '', body: message.notification?.body ?? '', payload: payload);
+            }
+          } catch (e) {
+            debugPrint('showNotification error: $e');
           }
         }
       }

@@ -21,53 +21,71 @@ class PlutoCheckInOutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OfflineCubit, OfflineAttendanceState>(builder: (context, offlineState) {
-      return Card(
-        elevation: 2,
-        color: Branding.colors.primaryLight,
-        margin: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        child: InkWell(
+      final isCheckedIn = offlineState.isCheckedIn;
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isCheckedIn
+                ? [colorDeepRed, colorDeepRed.withValues(alpha: 0.8)]
+                : [Branding.colors.primaryLight, Branding.colors.primaryDark],
+          ),
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [
+            BoxShadow(
+              color: (isCheckedIn ? colorDeepRed : Branding.colors.primaryLight).withValues(alpha: 0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(16.0),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16.0),
             onTap: () {
               context.read<HomeBloc>().add(OnLocationRefresh(
                   user: context.read<AuthenticationBloc>().state.data?.user, locationProvider: instance()));
-
               Navigator.push(context, AttendanceMethodScreen.route(homeBloc: context.read<HomeBloc>()));
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 12.w),
               child: Row(
                 children: [
-                  const SizedBox(
-                    width: 16.0,
+                  Icon(
+                    isCheckedIn ? Icons.logout_rounded : Icons.login_rounded,
+                    color: Colors.white,
+                    size: 20.r,
                   ),
-                  Image.asset('assets/images/check-in.png', scale: 2, color: Colors.white),
-                  const SizedBox(
-                    width: 8.0,
-                  ),
+                  SizedBox(width: 8.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(offlineState.isCheckedIn == false ? "start_time".tr() : "done_for_today".tr(),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: 14.r,
-                              color: Colors.white,
-                            )),
                         Text(
-                          offlineState.isCheckedIn == false ? "check_in".tr() : "check_out".tr(),
-                          style: TextStyle(color: Colors.white, fontSize: 14.r, fontWeight: FontWeight.bold),
+                          isCheckedIn == false ? "start_time".tr() : "done_for_today".tr(),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 10.r,
+                            color: Colors.white.withValues(alpha: 0.8),
+                          ),
+                        ),
+                        Text(
+                          isCheckedIn == false ? "check_in".tr() : "check_out".tr(),
+                          style: TextStyle(color: Colors.white, fontSize: 13.r, fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    width: 8.0,
-                  ),
                 ],
               ),
-            )),
+            ),
+          ),
+        ),
       );
     });
   }

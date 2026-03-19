@@ -12,11 +12,19 @@ import 'package:onesthrm/page/home/view/home_mars/content_mars/current_month_mar
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:onesthrm/page/profile/view/profile_page.dart';
 import 'package:onesthrm/res/nav_utail.dart';
+import '../../../content/my_stats_card.dart';
 import 'home_bottom_mars.dart';
 import 'mars_today_summary_list.dart';
 
-class HomeMarsContent extends StatelessWidget {
+class HomeMarsContent extends StatefulWidget {
   const HomeMarsContent({super.key});
+
+  @override
+  State<HomeMarsContent> createState() => _HomeMarsContentState();
+}
+
+class _HomeMarsContentState extends State<HomeMarsContent> {
+  bool _locationInitialized = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +34,8 @@ class HomeMarsContent extends StatelessWidget {
         final user = context.read<AuthenticationBloc>().state.data;
         final homeData = context.read<HomeBloc>().state.dashboardModel;
 
-        if (user?.user != null) {
+        if (user?.user != null && !_locationInitialized) {
+          _locationInitialized = true;
           context.read<HomeBloc>().add(OnLocationEnabled(user: user!.user!, locationProvider: instance()));
         }
 
@@ -49,6 +58,8 @@ class HomeMarsContent extends StatelessWidget {
                             CheckInOutCardMars(settings: settings, user: user, dashboardModel: homeData),
                             ///breakTime
                             BreakCardMars(settings: settings, user: user, dashboardModel: homeData),
+                            ///my stats
+                            MyStatsCard(dashboardModel: homeData),
                             ///bottom-header
                             HomeBottomMars(settings: settings, user: user, dashboardModel: homeData),
                             /// Current Month

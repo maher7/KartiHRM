@@ -21,51 +21,82 @@ class BreakCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<OfflineCubit, OfflineAttendanceState>(builder: (context, offlineState) {
       return offlineState.isCheckedIn
-          ? Card(
-              elevation: 2,
-              margin: EdgeInsets.symmetric(vertical: 8.0.h, horizontal: 18.0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-              child: InkWell(
+          ? Container(
+              margin: EdgeInsets.symmetric(vertical: 4.0.h, horizontal: 16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(16.0),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16.0),
                   onTap: () {
                     BreakRoute.breakOrQrCompanyRoute(context: context, inBreak: globalState.get(isBreak) == true);
                   },
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5.0.h),
+                    padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.0),
                     child: Row(
                       children: [
-                        Expanded(
+                        Container(
+                          padding: EdgeInsets.all(8.r),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF3E0),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
                           child: Lottie.asset(
                             'assets/images/tea_time.json',
-                            height: 55.0.h,
-                            width: 55.0.w,
+                            height: 32.h,
+                            width: 32.w,
                           ),
                         ),
+                        SizedBox(width: 16.w),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(globalState.get(isBreak) == true ? "you're_in_break".tr() : "take_coffee".tr(),
-                                  style: TextStyle(
-                                      fontSize: 16.r, fontWeight: FontWeight.w500, height: 1.5, letterSpacing: 0.5)),
+                              Text(
+                                globalState.get(isBreak) == true ? "you're_in_break".tr() : "take_coffee".tr(),
+                                style: TextStyle(
+                                  fontSize: 15.r,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              SizedBox(height: 2.h),
                               Text(
                                 globalState.get(isBreak) == true
                                     ? dashboardModel?.data?.config?.breakStatus?.breakTime ?? ''
                                     : 'break'.tr(),
                                 style: TextStyle(
-                                    color: Branding.colors.primaryLight,
-                                    fontSize: 16.r,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.5,
-                                    letterSpacing: 0.5),
+                                  color: const Color(0xFFE65100),
+                                  fontSize: 13.r,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
                         ),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16.r,
+                          color: Colors.black26,
+                        ),
                       ],
                     ),
-                  )),
+                  ),
+                ),
+              ),
             )
-          : SizedBox.shrink();
+          : const SizedBox.shrink();
     });
   }
 }

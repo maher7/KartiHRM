@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,22 +22,21 @@ class AttendanceDailyReportContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final listOfDailyReport =
         bloc.state.attendanceReport?.reportData?.dailyReport;
-    return Padding(
-      padding: EdgeInsets.all(20.r),
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-              child: Text(
+          SizedBox(height: 8.h),
+          Text(
             tr("daily_report"),
             style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 16.r),
-          )),
-          const SizedBox(
-            height: 20,
+              color: Colors.black87,
+              fontWeight: FontWeight.w700,
+              fontSize: 16.r,
+            ),
           ),
+          SizedBox(height: 14.h),
 
           listOfDailyReport != null
               ? ListView.builder(
@@ -67,102 +65,87 @@ class AttendanceDailyReportContent extends StatelessWidget {
                   },
                 ),
 
-          /// Bottom =========================
+          SizedBox(height: 12.h),
 
-          const SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8),
-            child: Row(
-              children: [
-                Container(
-                  width: 16,
-                  height: 16,
-                  decoration: const BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.blueAccent),
-                  child: Center(
-                      child: Text(
-                    tr("h"),
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10.r,
-                        fontWeight: FontWeight.bold),
-                  )),
-                ),
-                SizedBox(
-                  width: 10.w,
-                ),
-                Text(
-                  tr("check_in_check_out_from_home"),
-                  style: TextStyle(fontSize: 10.r, color: Colors.black),
-                ),
-              ],
+          // Legend
+          Container(
+            padding: EdgeInsets.all(12.r),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(10),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 0),
-            child: Row(
+            child: Column(
               children: [
-                Container(
-                  width: 16,
-                  height: 16,
-                  decoration: const BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.blueAccent),
-                  child: Center(
-                      child: Text(
-                    tr("v"),
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10.r,
-                        fontWeight: FontWeight.bold),
-                  )),
+                _buildLegendRow(
+                  color: Branding.colors.primaryLight,
+                  label: tr("h"),
+                  description: tr("check_in_check_out_from_home"),
                 ),
-                SizedBox(
-                  width: 10.w,
+                SizedBox(height: 8.h),
+                _buildLegendRow(
+                  color: deepColorGreen,
+                  label: tr("v"),
+                  description: tr("check_in_check_out_from_office"),
                 ),
-                Text(
-                  tr("check_in_check_out_from_office"),
-                  style: TextStyle(fontSize: 10.r, color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0),
-            child: Row(
-              children: [
-                IconButton(
-                    icon: FaIcon(
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Icon(
                       FontAwesomeIcons.fileLines,
-                      size: 15.r,
-                      color: Colors.blueAccent,
+                      size: 13.r,
+                      color: Branding.colors.primaryLight,
                     ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () {
-                      if (kDebugMode) {
-                        print("Pressed");
-                      }
-                    }),
-                SizedBox(
-                  width: 4.w,
-                ),
-                Text(
-                  tr("reason_for_late_check_in_early_check_out"),
-                  style: TextStyle(fontSize: 10.r, color: Colors.black),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        tr("reason_for_late_check_in_early_check_out"),
+                        style: TextStyle(fontSize: 11.r, color: Colors.black54),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20.h),
         ],
       ),
+    );
+  }
+
+  Widget _buildLegendRow({
+    required Color color,
+    required String label,
+    required String description,
+  }) {
+    return Row(
+      children: [
+        Container(
+          width: 18,
+          height: 18,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10.r,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Expanded(
+          child: Text(
+            description,
+            style: TextStyle(fontSize: 11.r, color: Colors.black54),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -73,18 +73,18 @@ class ApprovalDetailsData extends Equatable {
 
   factory ApprovalDetailsData.fromJson(Map<String, dynamic> json) =>
       ApprovalDetailsData(
-        id: json["id"],
-        userId: json["user_id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
+        userId: json["user_id"] != null ? int.tryParse(json["user_id"].toString()) : null,
         requestedOn: json["requested_on"],
         name: json["name"],
         designation: json["designation"],
         department: json["department"],
         type: json["type"],
         period: json["period"],
-        totalDays: json["total_days"],
+        totalDays: json["total_days"] != null ? int.tryParse(json["total_days"].toString()) : null,
         note: json["note"],
         availableLeave: json["available_leave"],
-        totalUsed: json["total_used"],
+        totalUsed: json["total_used"] != null ? int.tryParse(json["total_used"].toString()) : null,
         approvedBy: json["approved_by"],
         referredBy: json["referred_by"],
         status: json["status"],
@@ -150,7 +150,7 @@ class Substitute extends Equatable {
   final String? avatar;
 
   factory Substitute.fromJson(Map<String, dynamic> json) => Substitute(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         name: json["name"],
         employeeId: json["employee_id"],
         designation: json["designation"],

@@ -22,7 +22,7 @@ class PlutoLeaveTypeViewScreen extends StatelessWidget {
     final bloc = context.read<DailyLeaveBloc>();
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: Text(data?.leaveType ?? tr("daily_leave"),style: const TextStyle(color: Colors.black),),
+      appBar: AppBar(title: Text(data?.leaveType ?? tr("partial_leave"),style: const TextStyle(color: Colors.black),),
         backgroundColor: Colors.white, iconTheme: IconThemeData(color: Branding.colors.textPrimary,),),
       body: BlocBuilder<DailyLeaveBloc, DailyLeaveState>(
         builder: (BuildContext context, state) {

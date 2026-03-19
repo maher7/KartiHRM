@@ -58,10 +58,10 @@ class AvailableLeaveType extends Equatable {
 
   factory AvailableLeaveType.fromJson(Map<String, dynamic> json) =>
       AvailableLeaveType(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         type: json["type"],
-        totalLeave: json["total_leave"],
-        leftDays: json["left_days"],
+        totalLeave: json["total_leave"] != null ? int.tryParse(json["total_leave"].toString()) : null,
+        leftDays: json["left_days"] != null ? int.tryParse(json["left_days"].toString()) : null,
       );
 
   @override

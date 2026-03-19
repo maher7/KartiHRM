@@ -12,14 +12,28 @@ class NoDataFoundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Lottie.asset(assetImage, repeat: false, height: DeviceUtil.isTablet ? 400 : 200),
-          Text(title.tr(), style: TextStyle(color: colorPrimary.withOpacity(0.4), fontSize: DeviceUtil.isTablet ? 36 : 18, fontWeight: FontWeight.w500),).tr(),
-        ],
-      )),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset(assetImage, repeat: false, height: DeviceUtil.isTablet ? 280 : 150),
+            const SizedBox(height: 12),
+            Text(
+              title.tr(),
+              style: TextStyle(
+                color: Colors.black38,
+                fontSize: DeviceUtil.isTablet ? 20 : 15,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

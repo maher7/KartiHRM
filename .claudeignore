@@ -1,0 +1,99 @@
+# Build outputs
+build/
+dist/
+.dart_tool/
+.build/
+.buildlog/
+
+# Platform build files (not app logic)
+android/.gradle/
+android/app/build/
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/build/
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/.last_build_id
+ios/Runner.xcworkspace/
+ios/Runner.xcodeproj/
+macos/Pods/
+macos/.symlinks/
+macos/Flutter/
+macos/Runner.xcworkspace/
+macos/Runner.xcodeproj/
+linux/flutter/
+windows/flutter/
+web/
+
+# Platform native boilerplate (rarely edited)
+linux/
+windows/
+macos/
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+*.gr.dart
+*.config.dart
+lib/generated_plugin_registrant.dart
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+# Pub / dependencies
+.pub-cache/
+.pub/
+pubspec.lock
+
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# CI/CD / DevOps
+codemagic.yaml
+action.sh
+action.yml
+run_scripts.sh
+scripts/
+coverage/
+
+# Keys (sensitive, not logic)
+keys/
+keys.zip
+
+# Assets (binary, not logic)
+assets/images/
+assets/fonts/
+
+# iOS icon assets (binary)
+ios/Runner/Assets.xcassets/
+
+# Misc
+.DS_Store
+*.log
+*.class
+*.pyc
+*.swp
+.atom/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+.fvm/
+devtools_options.yaml
+
+# Docs
+**/doc/api/
+README.md
+
+# Symbolication / obfuscation
+app.*.symbols
+app.*.map.json
+
+# Test (include only when working on tests)
+test/

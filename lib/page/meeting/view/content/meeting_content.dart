@@ -17,19 +17,39 @@ class MeetingContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
+          backgroundColor: Branding.colors.primaryLight,
           onPressed: () {
             NavUtil.navigateScreen(context, BlocProvider.value(value: context.read<MeetingBloc>(), child: const MeetingCreatePage()));
           },
-          child: const Icon(Icons.add),
+          child: const Icon(Icons.add, color: Colors.white),
         ),
         appBar: AppBar(
           title: const Text("meeting_list").tr(),
           actions: [
-            IconButton(
-                onPressed: () {
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () {
                   context.read<MeetingBloc>().add(SelectDatePicker(context));
                 },
-                icon: Icon(Icons.calendar_month_outlined,size: 24.r,))
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 16),
+                      const SizedBox(width: 4),
+                      Text('select_month'.tr(), style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
         body: BlocBuilder<MeetingBloc, MeetingState>(
@@ -46,28 +66,39 @@ class MeetingContent extends StatelessWidget {
                       ? Expanded(
                           child: ListView.builder(
                             shrinkWrap: true,
+                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                             itemCount: state.meetingsListResponse?.data?.items?.length ?? 0,
                             itemBuilder: (BuildContext context, int index) {
                               final data = state.meetingsListResponse?.data?.items?[index];
-                              return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0),
+                              return Container(
+                                margin: EdgeInsets.only(bottom: 6.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey.shade100),
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
                                   child: InkWell(
+                                    borderRadius: BorderRadius.circular(12),
                                     onTap: () {
                                       NavUtil.navigateScreen(context,
                                           MeetingDetailsPage(data: data));
                                     },
-                                    child: EventWidgets(
-                                        isAppointment: true, data: data!),
-                                  ));
+                                    child: Padding(
+                                      padding: EdgeInsets.all(4.r),
+                                      child: EventWidgets(
+                                          isAppointment: true, data: data!),
+                                    ),
+                                  ),
+                                ),
+                              );
                             },
                           ),
                         )
-                      : Expanded(
-                          child: Center(
-                              child: NoDataFoundWidget(
-                            title: 'no_data_found'.tr(),
-                          )),
+                      : const Expanded(
+                          child: NoDataFoundWidget(title: 'no_meeting_found'),
                         )
                 ],
               );
@@ -76,8 +107,8 @@ class MeetingContent extends StatelessWidget {
                 child: Text(
                   "failed_to_load_meeting_list".tr(),
                   style: TextStyle(
-                      color: Branding.colors.primaryLight.withOpacity(0.4),
-                      fontSize: 18,
+                      color: Colors.black38,
+                      fontSize: 14.r,
                       fontWeight: FontWeight.w500),
                 ),
               );

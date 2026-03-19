@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 import 'package:onesthrm/page/all_natification/bloc/notification_bloc.dart';
 import 'package:onesthrm/page/all_natification/content/notification_cart_content.dart';
+import 'package:onesthrm/page/notice_details/view/notice_details_screen.dart';
+import 'package:onesthrm/res/nav_utail.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -72,10 +74,24 @@ class NotificationScreen extends StatelessWidget {
 
                               return InkWell(
                                 onTap: () {
-                                  context.read<NotificationBloc>().add(RouteSlug(
-                                      context: context,
-                                      slugName: state.notificationResponse?.data?.notifications?[index].slag,
-                                      data: state.notificationResponse));
+                                  // Navigate to details if slug is empty, otherwise route by slug
+                                  if (data?.slag == null || data!.slag!.isEmpty) {
+                                    NavUtil.navigateScreen(
+                                      context,
+                                      NoticeDetailsScreen(
+                                        noticeId: data?.id,
+                                        title: data?.title,
+                                        body: data?.body,
+                                        date: data?.date,
+                                        image: data?.image,
+                                      ),
+                                    );
+                                  } else {
+                                    context.read<NotificationBloc>().add(RouteSlug(
+                                        context: context,
+                                        slugName: data?.slag,
+                                        data: state.notificationResponse));
+                                  }
                                 },
                                 child: NotificationCartContent(data: data),
                               );

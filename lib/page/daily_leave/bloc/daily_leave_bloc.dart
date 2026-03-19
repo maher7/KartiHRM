@@ -43,7 +43,7 @@ class DailyLeaveBloc extends Bloc<DailyLeaveEvent, DailyLeaveState> {
       locale: const Locale("en"),
     );
     if(date != null){
-      String? currentMonth = getDateAsString(format: 'y-MM-dd', dateTime: date);
+      String? currentMonth = getDateAsString(format: 'yyyy-MM', dateTime: date);
       add(DailyLeaveSummary(state.selectEmployee?.id ?? event.userId));
       emit(state.copyWith(
           status: NetworkStatus.success, currentMonth: currentMonth));
@@ -55,7 +55,7 @@ class DailyLeaveBloc extends Bloc<DailyLeaveEvent, DailyLeaveState> {
       DailyLeaveSummary event, Emitter<DailyLeaveState> emit) async {
     emit(state.copyWith(
         status: NetworkStatus.loading,
-        currentMonth: state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now())));
+        currentMonth: state.currentMonth ?? DateFormat('yyyy-MM').format(DateTime.now())));
     final dailyLeaveSummaryModel = await _metaClubApiClient.dailyLeaveSummary(event.userId, state.currentMonth);
 
     dailyLeaveSummaryModel.fold((l){emit(state.copyWith(status: NetworkStatus.failure));}, (r){

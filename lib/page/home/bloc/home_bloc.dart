@@ -4,6 +4,7 @@ import 'package:domain/domain.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:event_bus_plus/res/event_bus.dart';
+import 'package:dio/dio.dart' as dio_pkg;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -51,12 +52,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //   _onOfflineDataSync();
     // });
 
-    eventBus.on<OfflineDataSycEvent>().listen((data) {
+    _eventBusSub = eventBus.on<OfflineDataSycEvent>().listen((data) {
       /// we have try store data to server from local cache
       // _onOfflineDataSync();
     });
   }
 
+  StreamSubscription? _eventBusSub;
   bool isCheckedIn = false;
   bool isCheckedOut = false;
 
@@ -97,6 +99,26 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         for (var topic in notifications) {
           await FirebaseMessaging.instance.subscribeToTopic(topic);
           debugPrint("Firebase topics: $topic");
+        }
+      }
+      // Store FCM token on the server for direct push notifications
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        final baseUrl = globalState.get(companyUrl);
+        final bearerToken = globalState.get(authToken);
+        final userId = globalState.get(keyUserId);
+        if (baseUrl != null && bearerToken != null) {
+          try {
+            final dio = dio_pkg.Dio();
+            dio.options.headers['Authorization'] = 'Bearer $bearerToken';
+            await dio.post(
+              '${baseUrl}user/firebase-token',
+              data: {'firebase_token': fcmToken, 'user_id': userId},
+            );
+            debugPrint("FCM token stored on server");
+          } catch (e) {
+            debugPrint("Failed to store FCM token: $e");
+          }
         }
       }
     } catch (_) {
@@ -169,21 +191,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       ///------------------------Refresh data in OfflineAttendanceCubit-------------------------------------
       if (attendanceData?.id != null) {
-        ///we can remove below line of code but before remove, verification needed
+        /// API confirms user is checked in today — sync to local
         final date = DateFormat('yyyy-MM-dd', 'en').format(DateTime.now());
-        final body = AttendanceBody(attendanceId: attendanceData?.id, inTime: attendanceData?.inTime, date: date);
+        final body = AttendanceBody(
+          attendanceId: attendanceData?.id,
+          inTime: attendanceData?.inTime,
+          outTime: attendanceData?.outTime,
+          date: date,
+        );
         eventBus.fire(OnOnlineAttendanceUpdateEvent(body: body));
-        // offlineAttendanceRepo.getCheckDataByDate(date: date).then((data){
-        //   final body = data != null
-        //       ? data.copyWith(attendanceId: attendanceData?.id, inTime: attendanceData?.inTime,outTime: null)
-        //       : AttendanceBody(attendanceId: attendanceData?.id, inTime: attendanceData?.inTime,date: date);
-        //   eventBus.fire(OnOnlineAttendanceUpdateEvent(body: body));
-        // });
       } else {
-        offlineAttendanceRepo.getCheckDataByDate(date: date).then((data) {
-          final body = AttendanceBody();
-          eventBus.fire(OnOnlineAttendanceUpdateEvent(body: body));
-        });
+        /// API has no attendance for today — let OfflineCubit check local DB
+        /// Don't send empty body which would reset valid local check-ins
+        eventBus.fire(OnOnlineAttendanceUpdateEvent(body: AttendanceBody()));
       }
 
       // _onOfflineDataSync();
@@ -263,5 +283,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   @override
   Map<String, dynamic>? toJson(HomeState state) {
     return state.toJson();
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSub?.cancel();
+    return super.close();
   }
 }

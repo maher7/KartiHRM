@@ -1,10 +1,10 @@
-import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:meta_club_api/meta_club_api.dart';
+import 'package:core/core.dart';
 import '../../../../res/common/functions.dart';
 import '../../../../res/common/toast.dart';
 import '../../bloc/attendance_report_bloc.dart';
@@ -18,263 +18,229 @@ class DailyReportTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? remoteModeIn;
-    String? remoteModeOut;
-
-    // remote mode In -> Home or Office
-    remoteModeIn =
+    String remoteModeIn =
         (int.tryParse(dailyReport.remoteModeIn ?? "1") == 0) ? "H" : "V";
-
-// remote mode Out -> Home or Office
-    remoteModeOut =
+    String remoteModeOut =
         (int.tryParse(dailyReport.remoteModeOut ?? "0") == 0) ? "H" : "V";
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
+    final inColor = Color(int.parse(getInOutColor(status: dailyReport.checkInStatus)));
+    final outColor = Color(int.parse(getInOutColor(status: dailyReport.checkOutStatus)));
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(12.r),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade100),
+      ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            width: 80.w,
+          // Date column
+          Container(
+            width: 52.w,
+            padding: EdgeInsets.symmetric(vertical: 8.h),
+            decoration: BoxDecoration(
+              color: Branding.colors.primaryLight.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Column(
               children: [
                 Text(
                   dailyReport.weekDay ?? "",
-                  style: TextStyle(color: Colors.black54, fontSize: 12.r),
+                  style: TextStyle(
+                    color: Colors.black45,
+                    fontSize: 10.r,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
+                SizedBox(height: 2.h),
                 Text(
                   dailyReport.date ?? "",
-                  style: TextStyle(color: Colors.black54, fontSize: 20.r),
+                  style: TextStyle(
+                    color: Branding.colors.primaryLight,
+                    fontSize: 20.r,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
           ),
+          SizedBox(width: 12.w),
+          // In/Out details
           Expanded(
             child: Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 10),
-                  color: const Color(0xffF2F8FF),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0.r),
+                // IN row
+                Row(
+                  children: [
+                    Container(
+                      width: 3.w,
+                      height: 28.h,
+                      decoration: BoxDecoration(
+                        color: inColor,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      "IN".tr(),
+                      style: TextStyle(
+                        fontSize: 10.r,
+                        color: Colors.black38,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    if (dailyReport.checkIn?.isNotEmpty == true) ...[
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: inColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
                         child: Text(
-                          "IN".tr(),
+                          dailyReport.checkIn ?? "",
                           style: TextStyle(
-                            fontSize: 10.sp,
+                            color: Colors.white,
+                            fontSize: 12.r,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      SizedBox(width: 20.0.w),
-                      Visibility(
-                        visible: dailyReport.checkIn?.isNotEmpty == true,
-                        child: Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(int.parse(getInOutColor(
-                                      status: dailyReport.checkInStatus))),
-                                  style: BorderStyle.solid,
-                                  width: 3.0.w,
-                                ),
-                                color: Color(int.parse(getInOutColor(
-                                    status: dailyReport.checkInStatus))),
-                                borderRadius: BorderRadius.circular(8.0.r),
-                              ),
-                              child: DottedBorder(
-                                color: Colors.white,
-                                borderType: BorderType.RRect,
-                                radius: Radius.circular(5.r),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w, vertical: 3.h),
-                                strokeWidth: 1.r,
-                                child: Text(
-                                  dailyReport.checkIn ?? "",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.r,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
+                      SizedBox(width: 8.w),
+                      _buildModeIndicator(remoteModeIn, () {
+                        getReasonIn(dailyReport.checkInLocation);
+                      }),
+                      if (dailyReport.checkInReason?.isNotEmpty == true)
+                        InkWell(
+                          onTap: () => getReasonIn(dailyReport.checkInReason),
+                          child: Padding(
+                            padding: EdgeInsets.all(4.r),
+                            child: Icon(
+                              Icons.info_outline_rounded,
+                              color: Branding.colors.primaryLight,
+                              size: 16.r,
                             ),
-                            const SizedBox(
-                              width: 16,
-                            ),
-                            InkWell(
-                              onTap: () {
-                                // getLocationIn(dailyReport);
-                                getReasonIn(dailyReport.checkInLocation);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: 16.w,
-                                  height: 16.h,
-                                  decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.blueAccent),
-                                  child: Center(
-                                      child: Text(
-                                    remoteModeIn,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10.r,
-                                        fontWeight: FontWeight.bold),
-                                  )),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible:
-                                  dailyReport.checkInReason?.isNotEmpty == true,
-                              child: InkWell(
-                                onTap: () {
-                                  getReasonIn(dailyReport.checkInReason);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(0.0),
-                                  child: Icon(
-                                    Icons.article_outlined,
-                                    color: Colors.blue,
-                                    size: 18.r,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
                     ],
-                  ),
+                  ],
                 ),
-                SizedBox(
-                  height: 8.h,
-                ),
-                Container(
-                  padding: const EdgeInsets.only(left: 10),
-                  color: const Color(0xffFCF6FF),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0.r),
+                SizedBox(height: 6.h),
+                // OUT row
+                Row(
+                  children: [
+                    Container(
+                      width: 3.w,
+                      height: 28.h,
+                      decoration: BoxDecoration(
+                        color: dailyReport.checkOut?.isNotEmpty == true
+                            ? outColor
+                            : Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      "OUT".tr(),
+                      style: TextStyle(
+                        fontSize: 10.r,
+                        color: Colors.black38,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 6.w),
+                    if (dailyReport.checkOut?.isNotEmpty == true) ...[
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: outColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
                         child: Text(
-                          "OUT".tr(),
+                          dailyReport.checkOut ?? "",
                           style: TextStyle(
-                            fontSize: 10.sp,
+                            color: Colors.white,
+                            fontSize: 12.r,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      Visibility(
-                        visible: dailyReport.checkOut?.isNotEmpty == true,
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 10.w,
+                      SizedBox(width: 8.w),
+                      if (dailyReport.remoteModeOut?.isNotEmpty == true)
+                        _buildModeIndicator(remoteModeOut, () {
+                          getReasonIn(dailyReport.checkOutLocation);
+                        }),
+                      if (dailyReport.checkOutReason?.isNotEmpty == true)
+                        InkWell(
+                          onTap: () => getReasonIn(dailyReport.checkOutReason),
+                          child: Padding(
+                            padding: EdgeInsets.all(4.r),
+                            child: Icon(
+                              Icons.info_outline_rounded,
+                              color: Branding.colors.primaryLight,
+                              size: 16.r,
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(int.parse(getInOutColor(
-                                      status: dailyReport.checkOutStatus))),
-                                  style: BorderStyle.solid,
-                                  width: 3.0.w,
-                                ),
-                                color: Color(int.parse(getInOutColor(
-                                    status: dailyReport.checkOutStatus))),
-                                borderRadius: BorderRadius.circular(8.0.r),
-                              ),
-                              child: DottedBorder(
-                                color: Colors.white,
-                                borderType: BorderType.RRect,
-                                radius: Radius.circular(5.r),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w, vertical: 3.h),
-                                strokeWidth: 1.r,
-                                child: Text(
-                                  dailyReport.checkOut ?? "",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.r,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 16,
-                            ),
-                            Visibility(
-                              visible:
-                                  dailyReport.remoteModeOut?.isNotEmpty == true,
-                              child: InkWell(
-                                onTap: () {
-                                  getReasonIn(dailyReport.checkOutLocation);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    width: 16.w,
-                                    height: 16.h,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.blueAccent),
-                                    child: Center(
-                                        child: Text(
-                                      remoteModeOut,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10.sp,
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: dailyReport.checkOutReason?.isNotEmpty ==
-                                  true,
-                              child: InkWell(
-                                onTap: () {
-                                  getReasonIn(dailyReport.checkOutReason);
-                                },
-                                child: Icon(
-                                  Icons.article_outlined,
-                                  color: Colors.blue,
-                                  size: 18.r,
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
+                        ),
+                    ] else
+                      Text(
+                        "--:--",
+                        style: TextStyle(
+                          fontSize: 12.r,
+                          color: Colors.black26,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
-          Visibility(
-            visible: settings.data?.multiCheckIn ?? false,
-            child: Column(
-              children: [
-                InkWell(
-                  onTap: () {
-                    context.read<AttendanceReportBloc>().add(
-                        MultiAttendanceEvent(
-                            date: dailyReport.fullDate!,
-                            context: context,
-                            dailyReport: dailyReport));
-                  },
-                  child: Lottie.asset(
-                    'assets/images/report_one.json',
-                    height: 45.h,
-                    width: 45.w,
-                  ),
-                ),
-              ],
+          // Multi-check-in button
+          if (settings.data?.multiCheckIn ?? false)
+            InkWell(
+              onTap: () {
+                context.read<AttendanceReportBloc>().add(
+                    MultiAttendanceEvent(
+                        date: dailyReport.fullDate!,
+                        context: context,
+                        dailyReport: dailyReport));
+              },
+              child: Lottie.asset(
+                'assets/images/report_one.json',
+                height: 36.h,
+                width: 36.w,
+              ),
             ),
-          )
         ],
+      ),
+    );
+  }
+
+  Widget _buildModeIndicator(String label, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 20.w,
+        height: 20.h,
+        margin: EdgeInsets.only(right: 4.w),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: label == "H" ? Branding.colors.primaryLight : deepColorGreen,
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 9.r,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
     );
   }

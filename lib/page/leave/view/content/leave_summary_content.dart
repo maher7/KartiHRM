@@ -22,29 +22,44 @@ class LeaveSummaryContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.read<AuthenticationBloc>().state.data;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(DeviceUtil.isTablet ? 80.0 : 50),
-        child: AppBar(
-          iconTheme: IconThemeData(size: DeviceUtil.isTablet ? 40 : 30, color: Colors.white),
-          title: Text(
-            "leave_summary".tr(),
-            style: TextStyle(fontSize: DeviceUtil.isTablet ? 16.r : 16),
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  context.read<LeaveBloc>().add(SelectDatePicker(user!.user!.id!, context));
-                },
-                icon: const Icon(Icons.calendar_month_outlined))
-          ],
+      appBar: AppBar(
+        title: Text(
+          "full_day_leave".tr(),
+          style: TextStyle(fontSize: 16.r),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () {
+                context.read<LeaveBloc>().add(SelectDatePicker(user!.user!.id!, context));
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 16),
+                    const SizedBox(width: 4),
+                    Text('select_month'.tr(), style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(
-              height: 30,
+              height: 20,
             ),
             DeviceUtil.isTablet
                 ? TabAnimatedCircularButton(
@@ -70,27 +85,22 @@ class LeaveSummaryContent extends StatelessWidget {
                     },
                     title: "apply_leave".tr(),
                     color: Branding.colors.primaryLight),
-            const SizedBox(
-              height: 8,
-            ),
-            Center(
-                child: Text(
-              "tab_to_apply_for_leave".tr(),
-              style: TextStyle(fontSize: DeviceUtil.isTablet ? 12.r : 12, color: Colors.grey),
-            ).tr()),
-            const SizedBox(
-              height: 25.0,
-            ),
+            SizedBox(height: 16.h),
             const TotalLeaveCount(),
-            Center(
-                child: Text("leave_request".tr(),
-                    style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w500,
-                        fontSize: DeviceUtil.isTablet ? 20.0.r : 20.0))),
-            const SizedBox(
-              height: 25.0,
+            SizedBox(height: 8.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Row(
+                children: [
+                  Text("leave_request".tr(),
+                      style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16.r)),
+                ],
+              ),
             ),
+            SizedBox(height: 12.h),
             LeaveRequestList(userId: user!.user!.id!)
           ],
         ),

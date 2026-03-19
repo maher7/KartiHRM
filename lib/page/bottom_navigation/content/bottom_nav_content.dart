@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:onesthrm/page/home/router/home__menu_router.dart';
 import 'package:onesthrm/page/leave/view/leave_page.dart';
 import 'package:onesthrm/page/onboarding/bloc/onboarding_bloc.dart';
@@ -55,28 +56,39 @@ class BottomNavContent extends StatelessWidget {
                   color: Colors.white,
                   shape: const CircularNotchedRectangle(),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      BottomNavItem(
-                        icon: 'assets/home_icon/home.svg',
-                        isSelected: selectedTab == BottomNavTab.home,
-                        tab: BottomNavTab.home,
+                      Expanded(
+                        child: BottomNavItem(
+                          icon: 'assets/home_icon/home.svg',
+                          label: 'home'.tr(),
+                          isSelected: selectedTab == BottomNavTab.home,
+                          tab: BottomNavTab.home,
+                        ),
                       ),
-                      BottomNavItem(
-                        icon: 'assets/home_icon/attendance.svg',
-                        isSelected: selectedTab == BottomNavTab.attendance,
-                        tab: BottomNavTab.attendance,
+                      Expanded(
+                        child: BottomNavItem(
+                          icon: 'assets/home_icon/leave.svg',
+                          label: 'leave'.tr(),
+                          isSelected: selectedTab == BottomNavTab.leave,
+                          tab: BottomNavTab.leave,
+                        ),
                       ),
-                      const SizedBox(width: 8.0),
-                      BottomNavItem(
-                        icon: 'assets/home_icon/leave.svg',
-                        isSelected: selectedTab == BottomNavTab.leave,
-                        tab: BottomNavTab.leave,
+                      const SizedBox(width: 48),
+                      Expanded(
+                        child: BottomNavItem(
+                          icon: 'assets/home_icon/attendance.svg',
+                          label: 'partial'.tr(),
+                          isSelected: selectedTab == BottomNavTab.attendance,
+                          tab: BottomNavTab.attendance,
+                        ),
                       ),
-                      BottomNavItem(
-                        icon: 'assets/home_icon/notifications.svg',
-                        isSelected: selectedTab == BottomNavTab.notification,
-                        tab: BottomNavTab.notification,
+                      Expanded(
+                        child: BottomNavItem(
+                          icon: 'assets/home_icon/notifications.svg',
+                          label: 'alerts'.tr(),
+                          isSelected: selectedTab == BottomNavTab.notification,
+                          tab: BottomNavTab.notification,
+                        ),
                       ),
                     ],
                   )),

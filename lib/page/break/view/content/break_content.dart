@@ -188,7 +188,7 @@ class BreakContentState extends State<BreakContent> with TickerProviderStateMixi
                               title: globalState.get(isBreak) == true ? 'Back'.tr() : 'Break'.tr(),
                               color: globalState.get(isBreak) == true
                                   ? Branding.colors.primaryDark
-                                  : Branding.colors.primaryLight.withOpacity(0.5),
+                                  : Branding.colors.primaryLight.withValues(alpha: 0.5),
                               onComplete: () {
                                 if (internetStatus == InternetStatus.online) {
                                   context.read<BreakBloc>().add(OnBreakBackEvent());
@@ -199,7 +199,7 @@ class BreakContentState extends State<BreakContent> with TickerProviderStateMixi
                               title: globalState.get(isBreak) == true ? 'Back'.tr() : 'Break'.tr(),
                               color: globalState.get(isBreak) == true
                                   ? Branding.colors.primaryDark
-                                  : Branding.colors.primaryLight.withOpacity(0.5),
+                                  : Branding.colors.primaryLight.withValues(alpha: 0.5),
                               onComplete: () {
                                 if (internetStatus == InternetStatus.online) {
                                   context.read<BreakBloc>().add(OnBreakBackEvent());

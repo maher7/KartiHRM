@@ -107,7 +107,7 @@ class Menu {
   factory Menu.fromJson(Map<String, dynamic> json) => Menu(
         name: json["name"],
         slug: json["slug"],
-        position: json["position"],
+        position: json["position"] != null ? int.tryParse(json["position"].toString()) : null,
         icon: json["icon"],
         imageType: json["image_type"],
       );
@@ -133,7 +133,7 @@ class AttendanceData {
 
   factory AttendanceData.fromJson(Map<String, dynamic> json) {
     return AttendanceData(
-      id: json['id'],
+      id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
       checkIn: json['checkin'],
       checkout: json['checkout'],
       inTime: json['in_time'],
@@ -189,7 +189,7 @@ class Appointment {
   String? appointmentWith;
 
   factory Appointment.fromJson(Map<String, dynamic> json) => Appointment(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         title: json["title"],
         date: json["date"],
         day: json["day"],
@@ -310,7 +310,7 @@ class UpcomingEvent {
   String? image;
 
   factory UpcomingEvent.fromJson(Map<String, dynamic> json) => UpcomingEvent(
-      id: json["id"],
+      id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
       title: json["title"],
       date: json["date"],
       day: json["day"],

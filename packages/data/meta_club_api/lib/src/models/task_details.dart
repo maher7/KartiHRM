@@ -91,7 +91,7 @@ class TaskDetailsMember extends Equatable {
   });
 
   factory TaskDetailsMember.fromJson(Map<String, dynamic> json) => TaskDetailsMember(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         name: json["name"],
         phone: json["phone"],
         email: json["email"],
@@ -126,7 +126,7 @@ class TaskDetailsPriority extends Equatable {
 
   factory TaskDetailsPriority.fromJson(Map<String, dynamic> json) => TaskDetailsPriority(
         title: json["title"],
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -188,7 +188,7 @@ class TaskDetails extends Equatable {
   });
 
   factory TaskDetails.fromJson(Map<String, dynamic> json) => TaskDetails(
-        id: json["id"],
+        id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
         title: json["title"],
         dbStartDate: json["db_start_date"],
         startDate: json["start_date"],
@@ -198,15 +198,15 @@ class TaskDetails extends Equatable {
         endDate: json["end_date"],
         date: json["date"],
         supervisor: json["supervisor"],
-        usersCount: json["users_count"],
-        actualCount: json["actual_count"],
-        discussionsCount: json["discussions_count"],
-        filesCount: json["files_count"],
-        progress: json["progress"],
+        usersCount: json["users_count"] != null ? int.tryParse(json["users_count"].toString()) : null,
+        actualCount: json["actual_count"] != null ? int.tryParse(json["actual_count"].toString()) : null,
+        discussionsCount: json["discussions_count"] != null ? int.tryParse(json["discussions_count"].toString()) : null,
+        filesCount: json["files_count"] != null ? int.tryParse(json["files_count"].toString()) : null,
+        progress: json["progress"] != null ? int.tryParse(json["progress"].toString()) : null,
         isCompleted: json["is_completed"],
-        priorityId: json["priority_id"],
+        priorityId: json["priority_id"] != null ? int.tryParse(json["priority_id"].toString()) : null,
         priority: json["priority"],
-        statusId: json["status_id"],
+        statusId: json["status_id"] != null ? int.tryParse(json["status_id"].toString()) : null,
         status: json["status"],
         color: json["color"],
         description: json["description"],

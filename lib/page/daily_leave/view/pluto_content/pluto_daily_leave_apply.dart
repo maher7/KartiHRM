@@ -18,32 +18,101 @@ class PlutoDailyLeaveApply extends StatelessWidget {
     return Expanded(
       child: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              child: Text(
+                "select_time".tr(),
+                style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.w600, color: Colors.black87),
+              ),
+            ),
             BlocBuilder<DailyLeaveBloc, DailyLeaveState>(
                 builder: (BuildContext context, state) {
                   return Column(
                     children: [
                       ...List.generate(
                         context.read<DailyLeaveBloc>().leave?.length ?? 0,
-                            (index) => Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),border: Border.all(color: Branding.colors.primaryLight,)), margin: EdgeInsets.symmetric(horizontal: 16.r, vertical: 4.r),
-                          child: RadioListTile(contentPadding: EdgeInsets.symmetric(horizontal: 12.w),
-                              title: Text(context.watch<DailyLeaveBloc>().leave?[index].title ?? '', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 14.r,fontWeight: FontWeight.w500,color: Branding.colors.textPrimary,)).tr(),
-                              value: context.watch<DailyLeaveBloc>().leave?[index],
-                              groupValue: state.leaveTypeModel,
-                              controlAffinity: ListTileControlAffinity.trailing,
-                              activeColor:  Branding.colors.primaryLight,
-                              onChanged: (value) {
-                                context.read<DailyLeaveBloc>().add(SelectLeaveType(leaveTypeModel: value!));
-                              }),
-                        ),
+                            (index) {
+                          final leaveType = context.watch<DailyLeaveBloc>().leave?[index];
+                          final isSelected = state.leaveTypeModel == leaveType;
+                          return GestureDetector(
+                            onTap: () {
+                              if (leaveType != null) {
+                                context.read<DailyLeaveBloc>().add(SelectLeaveType(leaveTypeModel: leaveType));
+                              }
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+                              decoration: BoxDecoration(
+                                color: isSelected ? Branding.colors.primaryLight.withValues(alpha: 0.08) : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected ? Branding.colors.primaryLight : Colors.grey.shade300,
+                                  width: isSelected ? 2 : 1,
+                                ),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 20.r,
+                                      height: 20.r,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: isSelected ? Branding.colors.primaryLight : Colors.grey.shade400,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: isSelected
+                                          ? Center(
+                                        child: Container(
+                                          width: 10.r,
+                                          height: 10.r,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Branding.colors.primaryLight,
+                                          ),
+                                        ),
+                                      )
+                                          : null,
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: Text(
+                                        leaveType?.title ?? '',
+                                        style: TextStyle(
+                                          fontSize: 14.r,
+                                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                          color: isSelected ? Branding.colors.primaryLight : Colors.black87,
+                                        ),
+                                      ).tr(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
+                      SizedBox(height: 8.h),
                       /// leave time select
                       const PlutoDailyLeaveSelectTime(),
                     ],
                   );
                 }),
+            SizedBox(height: 8.h),
             /// daily leave reason
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Text(
+                "write_reason".tr(),
+                style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.w600, color: Colors.black87),
+              ),
+            ),
+            SizedBox(height: 4.h),
             const PlutoDailyLeaveReason(),
           ],
         ),

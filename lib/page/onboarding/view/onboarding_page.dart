@@ -51,7 +51,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       if(state.selectedCompany != null){
                         NavUtil.pushAndRemoveUntil(context,  LoginPage(selectedCompany: state.selectedCompany));
                       }else {
-                        Fluttertoast.showToast(msg: "Please select company");
+                        Fluttertoast.showToast(msg: "please_select_company".tr());
                       }
                     },
                   );
@@ -62,9 +62,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
         ),
         body: BlocBuilder<OnboardingBloc, OnboardingState>(
           builder: (context, state) {
-             if (isSAAS == true && state.companyListModel?.companyList?.length == 1 && !mounted) {
-              NavUtil.pushAndRemoveUntil(context,  LoginPage(selectedCompany: state.selectedCompany));
-            }else if (isSAAS == false && !_hasRedirected && state.companyListModel?.companyList?.length == 1 && state.selectedCompany != null) {
+             if (isSAAS == true && state.companyListModel?.companyList?.length == 1 && !_hasRedirected) {
+              _hasRedirected = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                NavUtil.pushAndRemoveUntil(context, LoginPage(selectedCompany: state.selectedCompany));
+              });
+            } else if (isSAAS == false && !_hasRedirected && state.companyListModel?.companyList?.length == 1 && state.selectedCompany != null) {
               _hasRedirected = true;
 
               /// Wait until the frame is rendered before navigating
@@ -84,7 +87,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           child: InteractiveViewer(
                             scaleEnabled: false,
                             boundaryMargin: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Image.asset("assets/images/app_icon.png", scale: 3),
+                            child: Image.asset("assets/images/karti_transparent.png", scale: 3),
                           ),
                         );
                       },
@@ -100,12 +103,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         child:
                             Image.asset('assets/images/company_logo.png', fit: BoxFit.cover, height: 130, width: 130)),
                     Center(
-                        child: Text("Login Your Account".tr(),
+                        child: Text("login_your_account".tr(),
                             style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold))),
                     SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text("Enter Company ID/Name",
+                      child: Text("enter_company_id_name".tr(),
                           style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.normal, color: Colors.black38)),
                     ),
                     SizedBox(height: 10),
@@ -135,8 +138,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       child: state.status == NetworkStatus.loading
                           ? const GeneralListShimmer()
                           : (state.companyListModel?.companyList?.isEmpty ?? true)
-                          ? const Center(
-                        child: NoDataFoundWidget(title: "No Company Found",)
+                          ? Center(
+                        child: NoDataFoundWidget(title: "no_company_found".tr(),)
                       )
                           : ListView.builder(
                         itemCount: state.companyListModel?.companyList?.length ?? 0,

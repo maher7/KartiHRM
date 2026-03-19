@@ -423,7 +423,7 @@ class MetaClubApiClient {
   Future<Either<Failure, DailyLeaveSummaryModel?>> dailyLeaveSummary(int? userId, String? date) async {
     const String api = 'daily-leave/leave-list';
     try {
-      FormData formData = FormData.fromMap({"user_id": userId, "date": date});
+      FormData formData = FormData.fromMap({"user_id": userId, "month": date});
       final response = await httpService.postRequest('${getBaseUrl()}$api', formData);
       return response.fold(
         (l) => Left(l),
@@ -1629,6 +1629,23 @@ class MetaClubApiClient {
     try {
       final response = await httpService.getRequestWithToken('${getBaseUrl()}$api');
       return response.fold((l) => Left(l), (r) => Right(true));
+    } on Exception catch (e) {
+      return Left(ExceptionFailure(exception: e));
+    }
+  }
+
+  /// Get employee's weekly shift schedule
+  Future<Either<Failure, MyScheduleResponse?>> getMySchedule({String? weekStart, int storeId = 1}) async {
+    String api = 'scheduling/my-shifts?store_id=$storeId';
+    if (weekStart != null) {
+      api += '&week_start=$weekStart';
+    }
+    try {
+      final response = await httpService.getRequestWithToken('${getBaseUrl()}$api');
+      return response.fold(
+        (l) => Left(l),
+        (r) => Right(MyScheduleResponse.fromJson(r.data)),
+      );
     } on Exception catch (e) {
       return Left(ExceptionFailure(exception: e));
     }

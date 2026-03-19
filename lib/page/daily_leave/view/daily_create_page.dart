@@ -6,7 +6,6 @@ import 'package:onesthrm/page/authentication/bloc/authentication_bloc.dart';
 import 'package:onesthrm/page/daily_leave/bloc/daily_leave_bloc.dart';
 import 'package:onesthrm/page/daily_leave/bloc/daily_leave_event.dart';
 import 'package:onesthrm/page/daily_leave/view/content/daily_leave_create/daily_leave_apply.dart';
-import 'package:onesthrm/res/widgets/custom_button.dart';
 
 class DailyCreatePage extends StatelessWidget {
   const DailyCreatePage({super.key});
@@ -18,7 +17,7 @@ class DailyCreatePage extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("daily_leave")),
+        title: Text(tr("partial_leave")),
       ),
       body: Form(
         key: formKey,
@@ -29,19 +28,39 @@ class DailyCreatePage extends StatelessWidget {
 
             /// daily leave action button
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(0)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CustomHButton(
-                  title: "apply".tr(),
-                  padding: 16,
-                  isLoading: bloc.state.status == NetworkStatus.loading,
-                  clickButton: () {
-                    if (formKey.currentState!.validate() && bloc.state.status == NetworkStatus.success) {
-                      context.read<DailyLeaveBloc>().add(ApplyLeave(userId: user!.user!.id!, context: context));
-                    }
-                  },
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: bloc.state.status == NetworkStatus.loading
+                        ? null
+                        : () {
+                            if (formKey.currentState!.validate() && bloc.state.status == NetworkStatus.success) {
+                              context.read<DailyLeaveBloc>().add(ApplyLeave(userId: user!.user!.id!, context: context));
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Branding.colors.primaryLight,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    child: bloc.state.status == NetworkStatus.loading
+                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : Text("apply".tr(), style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
+                  ),
                 ),
               ),
             )

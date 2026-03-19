@@ -47,7 +47,7 @@ class BreakItem extends Equatable {
 
   factory BreakItem.fromJson(Map<String, dynamic> json) => BreakItem(
         date: json['break']["date"] != null ? DateTime.parse(json['break']["date"]) : null,
-        breakTypeId: json['break']["break_type_id"],
+        breakTypeId: json['break']["break_type_id"] != null ? int.tryParse(json['break']["break_type_id"].toString()) : null,
         breakTypeName: json['break']["break_type"],
         isRemark: json['break']["is_remark_required"],
         breakTime: json['break']["start_time"],
@@ -56,7 +56,7 @@ class BreakItem extends Equatable {
         breakBackHistory: json["today_history"] != null
             ? List<TodayBreakItem>.from((json['today_history'] as List).map((e) => TodayBreakItem.fromJson(e)))
             : [],
-        id: json['break']["id"],
+        id: json['break']["id"] != null ? int.tryParse(json['break']["id"].toString()) : null,
         duration: json['break']["duration"],
       );
 
@@ -86,7 +86,7 @@ class TodayBreakItem extends Equatable {
 
   factory TodayBreakItem.fromJson(Map<String, dynamic> json) => TodayBreakItem(
         date: json["date"],
-        breakTypeId: json["break_type_id"] ?? json["breakTypeId"],
+        breakTypeId: json["break_type_id"] != null ? int.tryParse(json["break_type_id"].toString()) : (json["breakTypeId"] != null ? int.tryParse(json["breakTypeId"].toString()) : null),
         breakTypeName: json["break_type"] ?? json["breakTypeName"],
         breakTime: json["start_time"] ?? json["breakTime"],
         backTime: json["end_time"] ?? json["backTime"],
@@ -135,7 +135,7 @@ class BreakType extends Equatable {
 
   factory BreakType.fromJson(Map<String, dynamic> json) {
     return BreakType(
-        id: json['id'],
+        id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
         name: json['name'],
         icon: json['icon'],
         willAskForMeal: json['will_ask_next_meal'],

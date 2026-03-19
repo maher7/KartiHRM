@@ -39,17 +39,17 @@ class Event {
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
-      id: json['id'],
+      id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
       title: json['title'],
       date: json['date'],
       day: json['day'],
       startDate: json['start_date'],
       description: json['description'],
       image: json['attachment_file'],
-      going: json['going'],
-      appreciate: json['appreciate'],
-      youGoing: json['you_going'],
-      youAppreciate: json['you_appreciate'],
+      going: json['going'] != null ? int.tryParse(json['going'].toString()) : null,
+      appreciate: json['appreciate'] != null ? int.tryParse(json['appreciate'].toString()) : null,
+      youGoing: json['you_going'] != null ? int.tryParse(json['you_going'].toString()) : null,
+      youAppreciate: json['you_appreciate'] != null ? int.tryParse(json['you_appreciate'].toString()) : null,
     );
   }
 

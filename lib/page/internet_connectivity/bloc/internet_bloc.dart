@@ -16,7 +16,7 @@ class InternetBloc extends Bloc<InternetEvent, InternetState> {
       if (event is ConnectedEvent) {
         emit(state.copyWith(message: "Connected",status: InternetStatus.online));
       } else if (event is NotConnectedEvent) {
-        emit(state.copyWith(message: "Not Connected",status: InternetStatus.offline));
+        emit(state.copyWith(message: "No Internet Connection",status: InternetStatus.offline));
       }
     });
     checkConnectionStatus();
@@ -30,21 +30,35 @@ class InternetBloc extends Bloc<InternetEvent, InternetState> {
   }
 
   void checkStatus(List<ConnectivityResult> result) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isEmpty && result[0].rawAddress.isEmpty) {
-        add(NotConnectedEvent());
-      } else {
-        add(ConnectedEvent());
-      }
-    } on SocketException catch (_) {
+    // If device reports no connectivity at all, mark offline immediately
+    if (result.contains(ConnectivityResult.none)) {
       add(NotConnectedEvent());
+      return;
     }
+
+    // Device has a connection — verify with DNS lookup (try multiple hosts)
+    final hosts = ['google.com', 'cloudflare.com', '1.1.1.1'];
+    for (final host in hosts) {
+      try {
+        final lookupResult = await InternetAddress.lookup(host)
+            .timeout(const Duration(seconds: 5));
+        if (lookupResult.isNotEmpty && lookupResult[0].rawAddress.isNotEmpty) {
+          add(ConnectedEvent());
+          return;
+        }
+      } catch (_) {
+        // Try next host
+      }
+    }
+
+    // All hosts failed — but device says connected, give benefit of the doubt
+    // and mark as online (API calls will handle errors individually)
+    add(ConnectedEvent());
   }
 
   @override
   Future<void> close() {
-    _subscription!.cancel();
+    _subscription?.cancel();
     return super.close();
   }
 }

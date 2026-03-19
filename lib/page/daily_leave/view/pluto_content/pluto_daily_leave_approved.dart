@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,10 +20,9 @@ class PlutoDailyLeaveApproved extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 12.h,),
-        Padding(padding: const EdgeInsets.only(left: 4.0),
-          child: Text("approved_leave", style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.bold, color: Branding.colors.textPrimary),).tr(),),
-        SizedBox(height: 8.h,),
+        SizedBox(height: 16.h),
+        Text("approved_leave".tr(), style: TextStyle(fontSize: 15.r, fontWeight: FontWeight.w700, color: Colors.black87)),
+        SizedBox(height: 8.h),
         Row(
           children: [
             Expanded(
@@ -34,7 +32,7 @@ class PlutoDailyLeaveApproved extends StatelessWidget {
                         child: PlutoLeaveTypeScreen(appBarName: "early_leave",
                           leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: dailyLeaveBloc.state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now()), leaveStatus: 'approved', leaveType: "early_leave"),)),);
                 },
-                title: 'early_leave'.tr(), value: approved?.earlyLeave.toString() ?? '', color: Colors.green,
+                title: 'early_leave'.tr(), value: approved?.earlyLeave.toString() ?? '', color: const Color(0xFF4CAF50),
               ),
             ),
             SizedBox(width: 12.w,),
@@ -45,7 +43,7 @@ class PlutoDailyLeaveApproved extends StatelessWidget {
                         child: PlutoLeaveTypeScreen(appBarName: "late_leave".tr(), leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: dailyLeaveBloc.state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now()), leaveStatus: 'approved', leaveType: "late_arrive"),)),
                   );
                 },
-                title: 'late_leave'.tr(), value: approved?.lateArrive.toString() ?? '', color: Colors.green,
+                title: 'late_leave'.tr(), value: approved?.lateArrive.toString() ?? '', color: const Color(0xFF4CAF50),
               ),
             ),
           ],

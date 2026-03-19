@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter devices:*)",
+      "Bash(timeout 5 flutter attach -d 21051FDF600ELG)",
+      "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/lib/page/attendance -type f -name *.dart)",
+      "Bash(curl -s http://127.0.0.1:62429/f3ADr78MmCA=/getVM)",
+      "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/packages/feature/notification -name *.dart -type f)",
+      "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/lib/page -type d -name *support* -o -type d -name *ticket*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Mz\\Downloads\\KartiOnlineLiveServerStationJ\\app\\Http\\Resources"
+    ]
+  }
+}

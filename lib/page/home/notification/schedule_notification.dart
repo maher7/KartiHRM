@@ -24,7 +24,7 @@ void checkInScheduleNotification(
     await notificationPlugin.scheduleNotification(
       id: inTime.id,
       title: "Check In Alert",
-      body: "Good morning have you checked in office yet from onesttech",
+      body: "Good morning, have you checked in to the office yet? From Karti",
       day: day,
       year: year,
       month: month,
@@ -47,7 +47,7 @@ void checkInScheduleNotification(
     await notificationPlugin.scheduleNotification(
       id: outTime.id,
       title: "Check Out Alert",
-      body: "Good evening, have you checked out office yet from onesttech",
+      body: "Good evening, have you checked out of the office yet? From Karti",
       day: day,
       year: year,
       month: month,

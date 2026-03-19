@@ -31,7 +31,7 @@ class LoginForm extends StatelessWidget {
                   context: context,
                   isSuccess: false,
                   message: state.failure!.isSuccess
-                      ? 'Authentication successful'
+                      ? 'Authentication Successful'.tr()
                       : 'Authentication failed\n${state.failure!.meaningfulMessage}');
             }
             if (state.status.isCanceled) {
@@ -46,51 +46,69 @@ class LoginForm extends StatelessWidget {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: SingleChildScrollView(
               reverse: true,
               child: Column(
                 children: [
-                  selectedCompany?.companyLogo != null ? Image.network(selectedCompany!.companyLogo!,height: 130,width: 130,) :Center(child: Image.asset("assets/images/company_logo.png", height: 130.0, width: 130.0)),
-                  const SizedBox(height: 10),
-                  Visibility(
-                    visible: selectedCompany != null,
-                    child: Container(
-                      height: 45.0,
-                      width: double.infinity,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Branding.colors.primaryLight),
-                          borderRadius: BorderRadius.circular(12.0),
+                  SizedBox(height: 40.h),
+                  selectedCompany?.companyLogo != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(selectedCompany!.companyLogo!, height: 100, width: 100),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset("assets/images/company_logo.png", height: 100.0, width: 100.0),
                         ),
-                        child: Center(child: Text(selectedCompany?.companyName ?? "", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold,color: Branding.colors.primaryLight)))),
+                  SizedBox(height: 16.h),
+                  if (selectedCompany != null)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                      decoration: BoxDecoration(
+                        color: Branding.colors.primaryLight.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12.0),
+                        border: Border.all(color: Branding.colors.primaryLight.withValues(alpha: 0.2)),
+                      ),
+                      child: Text(
+                        selectedCompany?.companyName ?? "",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Branding.colors.primaryLight,
+                        ),
+                      ),
+                    ),
+                  SizedBox(height: 24.h),
+                  Text(
+                    'login_your_account'.tr(),
+                    style: TextStyle(fontSize: 20.r, fontWeight: FontWeight.w700, color: Colors.black87),
                   ),
-                  const SizedBox(height: 24.0),
-                  Text('login_your_account'.tr(), style: const TextStyle(fontSize: 20.0)),
-                  const SizedBox(height: 20.0),
+                  SizedBox(height: 24.h),
                   const _EmailInput(),
-                  const SizedBox(height: 24.0),
+                  SizedBox(height: 16.h),
                   const _PasswordInput(),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 4.h),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
+                    child: TextButton(
+                      onPressed: () {
                         NavUtil.navigateScreen(context, const ForgetPasswordScreen());
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: Text(tr("forgot_password"),
-                                style: TextStyle(color: Branding.colors.primaryLight, fontSize: 10.r, fontWeight: FontWeight.bold))
-                            .tr(),
+                      child: Text(
+                        tr("forgot_password"),
+                        style: TextStyle(
+                          color: Branding.colors.primaryLight,
+                          fontSize: 13.r,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10.0),
+                  SizedBox(height: 16.h),
                   const _LoginButton(),
-                  const SizedBox(height: 16),
-                  Visibility(
-                      visible: isSAAS == true ? true : false,
-                      child: const _SelectCompanyButton()),
+                  SizedBox(height: 16.h),
+                  if (isSAAS == true) const _SelectCompanyButton(),
                 ],
               ),
             ),
@@ -113,17 +131,29 @@ class _EmailInput extends StatelessWidget {
           onChanged: (phone) => context.read<LoginBloc>().add(LoginEmailChange(email: phone)),
           validator: (value) => state.email.validator(value ?? '')?.text(),
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          style: TextStyle(fontSize: 12.r),
+          style: TextStyle(fontSize: 14.r),
           decoration: InputDecoration(
-            labelText: 'Email',
-            labelStyle: TextStyle(fontSize: 12.r),
-            fillColor: Colors.white,
+            labelText: 'email'.tr(),
+            labelStyle: TextStyle(fontSize: 13.r, color: Colors.black45),
+            fillColor: Colors.grey.shade50,
             filled: true,
-            border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(6.0)), borderSide: BorderSide(color: Colors.grey)),
-            prefixIcon: Image.asset('assets/images/email_icon.png', scale: 3, color: Branding.colors.primaryLight),
-            prefixIconColor: mainColor,
-            errorText: state.email.displayError != null ? 'Invalid email' : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.grey.shade200),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.grey.shade200),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Branding.colors.primaryLight, width: 1.5),
+            ),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Icon(Icons.email_outlined, color: Branding.colors.primaryLight, size: 20),
+            ),
+            errorText: state.email.displayError != null ? 'invalid_email'.tr() : null,
           ),
         );
       },
@@ -144,26 +174,39 @@ class _PasswordInput extends StatelessWidget {
           validator: (value) => state.password.validator(value ?? '')?.text(),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           obscureText: state.isObscure,
-          style: TextStyle(fontSize: 12.r),
+          style: TextStyle(fontSize: 14.r),
           decoration: InputDecoration(
-            labelText: 'Password',
-            labelStyle: TextStyle(fontSize: 12.r),
-            fillColor: Colors.white,
+            labelText: 'password'.tr(),
+            labelStyle: TextStyle(fontSize: 13.r, color: Colors.black45),
+            fillColor: Colors.grey.shade50,
             filled: true,
-            border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(6.0)), borderSide: BorderSide(color: Colors.grey)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.grey.shade200),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.grey.shade200),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Branding.colors.primaryLight, width: 1.5),
+            ),
             suffixIcon: IconButton(
               icon: Icon(
-                state.isObscure ? Icons.visibility_off : Icons.visibility,
-                color: Branding.colors.primaryLight,
+                state.isObscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: Colors.black38,
+                size: 20,
               ),
               onPressed: () {
                 context.read<LoginBloc>().add(const OnObscureEvent());
               },
             ),
-            prefixIcon: Image.asset('assets/images/password_lock_icon.png', scale: 3, color: Branding.colors.primaryLight),
-            prefixIconColor: Branding.colors.primaryLight,
-            errorText: state.password.displayError != null ? 'Invalid password' : null,
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Icon(Icons.lock_outlined, color: Branding.colors.primaryLight, size: 20),
+            ),
+            errorText: state.password.displayError != null ? 'invalid_password'.tr() : null,
           ),
         );
       },
@@ -182,17 +225,21 @@ class _LoginButton extends StatelessWidget {
             ? const CircularProgressIndicator()
             : SizedBox(
                 width: double.infinity,
-                height: 40.0.r,
+                height: 48.0.r,
                 child: ElevatedButton(
                   onPressed: () {
                     if (context.read<LoginBloc>().formKey.currentState?.validate() == true) {
                       context.read<LoginBloc>().add(const LoginSubmit());
                     }
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: Branding.colors.primaryLight),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Branding.colors.primaryLight,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
                   child: Text(
-                    'Login',
-                    style: TextStyle(color: Colors.white, fontSize: 14.r),
+                    'login'.tr(),
+                    style: TextStyle(color: Colors.white, fontSize: 15.r, fontWeight: FontWeight.w600),
                   ),
                 ),
               );
@@ -206,13 +253,14 @@ class _SelectCompanyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return TextButton.icon(
       onPressed: () {
         NavUtil.replaceScreen(context, const OnboardingPage());
       },
-      child: Text(
-        'Back',
-        style: TextStyle(fontSize: 14.r),
+      icon: Icon(Icons.arrow_back_rounded, size: 16.r, color: Colors.black45),
+      label: Text(
+        'back'.tr(),
+        style: TextStyle(fontSize: 13.r, color: Colors.black45),
       ),
     );
   }
@@ -222,7 +270,7 @@ extension on PhoneValidationError {
   String text() {
     switch (this) {
       case PhoneValidationError.empty:
-        return 'Please enter on email';
+        return 'Please enter your email';
     }
   }
 }
@@ -231,7 +279,7 @@ extension on PasswordValidationError {
   String text() {
     switch (this) {
       case PasswordValidationError.empty:
-        return 'Please enter on phone';
+        return 'Please enter your password';
     }
   }
 }

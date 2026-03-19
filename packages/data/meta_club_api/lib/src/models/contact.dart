@@ -28,7 +28,7 @@ class Contact{
 
   factory Contact.fromJson(Map<String,dynamic> json){
     return Contact(
-      id: json['id'],
+      id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
       name: json['name'],
       phone: json['phone'],
       avatar: json['avatar'],

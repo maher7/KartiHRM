@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:onesthrm/page/appointment/appoinment_list/bloc/appointment_bloc.dart';
 import 'package:onesthrm/page/appointment/appoinment_list/content/appointment_details_content.dart';
 import 'package:onesthrm/page/appointment/appoinment_list/content/upcoming_event_widgetg.dart';
@@ -31,15 +32,24 @@ class AppointmentContent extends StatelessWidget {
                 ? Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                       itemCount:
                           state.meetingsListData?.data?.items?.length ?? 0,
                       itemBuilder: (BuildContext context, int index) {
                         final data =
                             state.meetingsListData?.data?.items?[index];
-                        return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 6.h),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade100),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
                             child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
                               onTap: () {
                                 NavUtil.navigateScreen(
                                     context,
@@ -47,27 +57,30 @@ class AppointmentContent extends StatelessWidget {
                                       data: data,
                                     ));
                               },
-                              child: EventWidgets(
-                                  isAppointment: true, data: data!),
-                            ));
+                              child: Padding(
+                                padding: EdgeInsets.all(4.r),
+                                child: EventWidgets(
+                                    isAppointment: true, data: data!),
+                              ),
+                            ),
+                          ),
+                        );
                       },
                     ),
                   )
-                : Expanded(
-                    child: Center(
-                        child: Text(
-                      tr("no_appointment_found"),
-                      style: const TextStyle(
-                          color: Color(0x65555555),
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500),
-                    )),
+                : const Expanded(
+                    child: NoDataFoundWidget(title: 'no_appointment_found'),
                   )
           ],
         );
       }
       if (state.status == NetworkStatus.failure) {
-        return Center(child: Text('failed_to_load_appointment_list'.tr()));
+        return Center(
+          child: Text(
+            'failed_to_load_appointment_list'.tr(),
+            style: TextStyle(fontSize: 14.r, color: Colors.black38),
+          ),
+        );
       }
       return const SizedBox();
     });

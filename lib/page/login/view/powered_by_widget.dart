@@ -1,4 +1,6 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PoweredByWidget extends StatelessWidget {
   const PoweredByWidget({super.key});
@@ -12,12 +14,12 @@ class PoweredByWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/ic_logo.png', // Replace with the actual image path
+              'assets/images/karti_transparent.png',
               height: 24,
             ),
             const SizedBox(width: 8),
             const Text(
-              'UHRM Powered by',
+              'Powered by Karti',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -25,13 +27,6 @@ class PoweredByWidget extends StatelessWidget {
               ),
             ),
           ],
-        ),
-        const Text(
-          'One Utilities Cambodia',
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.black54,
-          ),
         ),
         const SizedBox(height: 8),
         const Divider(),
@@ -41,10 +36,10 @@ class PoweredByWidget extends StatelessWidget {
             alignment: WrapAlignment.center,
             spacing: 16,
             children: [
-              _buildTextLink('Contact Details'),
-              _buildTextLink('T&C'),
-              _buildTextLink('Privacy Policy'),
-              _buildTextLink('Support Policy'),
+              _buildTextLink('Contact Details', 'https://karti.online/contact'),
+              _buildTextLink('T&C', 'https://karti.online/terms'),
+              _buildTextLink('Privacy Policy', 'https://karti.online/privacy'),
+              _buildTextLink('Support Policy', 'https://karti.online/support'),
             ],
           ),
         ),
@@ -52,13 +47,26 @@ class PoweredByWidget extends StatelessWidget {
     );
   }
 
-  static Widget _buildTextLink(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 12,
-        color: Colors.blue, // Adjust color if needed
-        decoration: TextDecoration.underline,
+  static Widget _buildTextLink(String text, String url) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(4),
+      onTap: () async {
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            color: Branding.colors.primaryLight,
+            decoration: TextDecoration.underline,
+            decorationColor: Branding.colors.primaryLight,
+          ),
+        ),
       ),
     );
   }

@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location_track/location_track.dart';
-import 'package:lottie/lottie.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 import 'package:onesthrm/page/attendance/attendance.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -21,68 +20,75 @@ class ShowCurrentLocation extends StatelessWidget {
     return Column(
       children: [
         Container(
-          color: const Color(0xffB7E3E8),
-          child: Padding(
-            padding: EdgeInsets.all(8.0.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Lottie.asset('assets/images/map_marker_icon.json', height: 30.h, width: 30.w),
-                Expanded(
-                  child: Text(
-                    context.read<AttendanceBloc>().state.location ?? instance<LocationServiceProvider>().place,
-                    style:
-                        GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 12.r, color: const Color(0xFF404A58)),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+          margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.h),
+          decoration: BoxDecoration(
+            color: Branding.colors.primaryLight.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(12.0),
+            border: Border.all(
+              color: Branding.colors.primaryLight.withValues(alpha: 0.15),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.location_on_rounded,
+                color: Branding.colors.primaryLight,
+                size: 20.r,
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  context.read<AttendanceBloc>().state.location ?? instance<LocationServiceProvider>().place,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12.r,
+                    color: Colors.black87,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(
-                  width: 5.w,
-                ),
-                InkWell(
-                  onTap: () async {
-                    if (context.read<AttendanceBloc>().state.locationLoaded) {
-                      context.read<AttendanceBloc>().add(OnLocationRefreshEvent());
-                    }
-                  },
+              ),
+              SizedBox(width: 8.w),
+              InkWell(
+                onTap: () async {
+                  if (context.read<AttendanceBloc>().state.locationLoaded) {
+                    context.read<AttendanceBloc>().add(OnLocationRefreshEvent());
+                  }
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: Branding.colors.primaryLight,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircleAvatar(
-                        radius: 10.r,
-                        backgroundColor: Branding.colors.primaryLight,
-                        child: Center(
-                          child: context.read<AttendanceBloc>().state.locationLoaded
-                              ? Lottie.asset(
-                                  'assets/images/Refresh.json',
-                                  height: 24.h,
-                                  width: 24.w,
-                                )
-                              : const CircularProgressIndicator(),
-                        ),
+                      Icon(
+                        context.read<AttendanceBloc>().state.locationLoaded
+                            ? Icons.refresh_rounded
+                            : Icons.hourglass_top_rounded,
+                        color: Colors.white,
+                        size: 14.r,
                       ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
+                      SizedBox(width: 4.w),
                       Text(
                         'refresh'.tr(),
-                        style: TextStyle(fontSize: 12.r, color: Branding.colors.primaryLight, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 11.r, color: Colors.white, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
         ),
-        SizedBox(
-          height: 16.h,
-        ),
+        SizedBox(height: 12.h),
         Text("choose_your_remote_mode".tr(),
-            style: GoogleFonts.nunitoSans(fontSize: 13.r, color: Colors.black87, fontWeight: FontWeight.bold)),
-        SizedBox(
-          height: 8.h,
-        ),
+            style: GoogleFonts.nunitoSans(fontSize: 13.r, color: Colors.black54, fontWeight: FontWeight.w600)),
+        SizedBox(height: 8.h),
         FutureBuilder<int?>(
           future: SharedUtil.getRemoteModeType(),
           builder: (context, snapshot) {
@@ -90,10 +96,8 @@ class ShowCurrentLocation extends StatelessWidget {
               height: 40.0.h,
               child: ToggleSwitch(
                 minWidth: 110.0.w,
-                borderColor: [
-                  Branding.colors.primaryLight,
-                ],
-                borderWidth: 3,
+                borderColor: [Branding.colors.primaryLight],
+                borderWidth: 2.5,
                 cornerRadius: 30.0,
                 activeBgColors: const [
                   [Colors.white],
@@ -110,9 +114,6 @@ class ShowCurrentLocation extends StatelessWidget {
                 labels: ['home'.tr(), 'office'.tr()],
                 radiusStyle: true,
                 onToggle: (index) {
-                  /// RemoteModeType
-                  /// 0 ==> Home
-                  /// 1 ==> office
                   context.read<AttendanceBloc>().add(OnRemoteModeChanged(mode: index ?? 0));
                 },
               ),

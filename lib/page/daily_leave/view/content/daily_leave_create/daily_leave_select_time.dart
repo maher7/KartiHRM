@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:onesthrm/page/daily_leave/bloc/daily_leave_bloc.dart';
 import 'package:onesthrm/page/daily_leave/bloc/daily_leave_event.dart';
+import 'package:core/core.dart';
 
 class DailyLeaveSelectTime extends StatelessWidget {
   const DailyLeaveSelectTime({
@@ -12,10 +13,17 @@ class DailyLeaveSelectTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+    final approxTime = context.watch<DailyLeaveBloc>().state.approxTime;
+    return Container(
+      margin: EdgeInsets.only(top: 8.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 12.r, vertical: 4.r),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 2.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onTap: () {
           showTimePicker(context: context, initialTime: TimeOfDay.now())
               .then((value) {
@@ -27,13 +35,30 @@ class DailyLeaveSelectTime extends StatelessWidget {
             }
           });
         },
-        leading: Icon(Icons.access_time_outlined, size: 20.r),
+        leading: Container(
+          padding: EdgeInsets.all(8.r),
+          decoration: BoxDecoration(
+            color: Branding.colors.primaryLight.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.access_time_rounded, size: 20.r, color: Branding.colors.primaryLight),
+        ),
         title: Text(
-            context.watch<DailyLeaveBloc>().state.approxTime ?? 'time'.tr(),
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 12.r)),
+          'approximate_time'.tr(),
+          style: TextStyle(fontSize: 12.r, color: Colors.black45),
+        ),
+        subtitle: Text(
+          approxTime ?? 'select_time'.tr(),
+          style: TextStyle(
+            fontSize: 14.r,
+            fontWeight: approxTime != null ? FontWeight.w600 : FontWeight.w400,
+            color: approxTime != null ? Colors.black87 : Colors.black26,
+          ),
+        ),
         trailing: Icon(
-          Icons.keyboard_arrow_down_sharp,
-          size: 23.r,
+          Icons.keyboard_arrow_down_rounded,
+          size: 22.r,
+          color: Colors.black38,
         ),
       ),
     );

@@ -21,9 +21,9 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
    <application
-        android:label="Onest HRM"
+        android:label="Karti HRM"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher">
 
        <meta-data
            android:name="com.google.firebase.messaging.default_notification_icon"
@@ -71,7 +71,7 @@
             android:value="2" />
 
        <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyAkIZY-QSVxT_UQBZStOMM4havyONaOZIc"/>
+           android:value="AIzaSyCzpM1gug_zE4UG8E2MsUp5TnGNTJYnl_s"/>
 
        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
        <receiver android:name="HomeScreenCheckInOutWidgetProvider"

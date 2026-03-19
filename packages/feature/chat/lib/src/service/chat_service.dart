@@ -3,6 +3,7 @@ import 'package:chat/src/models/friend.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core/core.dart';
 import 'package:domain/domain.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/message.dart';
@@ -11,6 +12,7 @@ import '../models/user_model.dart';
 class ChatService {
   ///create new user
   void createAndUpdateUserInfo(map, uid) {
+    if (Firebase.apps.isEmpty) return;
     FirebaseFirestore.instance.collection('users').doc(uid).set(map).onError((error, stackTrace) {
       if (kDebugMode) {
         print(error.toString());

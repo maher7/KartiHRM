@@ -18,7 +18,7 @@ class Gallery {
 
   factory Gallery.fromJson(Map<String, dynamic> json) {
     return Gallery(
-        id: json['id'],
+        id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
         attachmentFile: json['attachment_file']);
   }
 

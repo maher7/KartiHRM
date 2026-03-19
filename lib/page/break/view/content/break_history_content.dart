@@ -18,75 +18,118 @@ class BreakHistoryContent extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            const SizedBox(
-              height: 16,
-            ),
+            SizedBox(height: 16.h),
             RectangularCardShimmer(height: 30.h, width: 184.w),
             const GeneralListShimmer(),
           ],
         ),
       );
     } else if (state.status == NetworkStatus.success) {
-      return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text("last_breaks", style: TextStyle(fontSize: 18.r, fontWeight: FontWeight.bold, color: Colors.black)).tr(),
-        const SizedBox(
-          height: 20,
+      return Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        padding: EdgeInsets.all(16.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final todayHistory = state.breaks.elementAt(index);
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Text(
-                    todayHistory.duration ?? "Calculating",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14.r),
-                  )),
-                  Container(
-                    height: DeviceUtil.isTablet ? 50 : 40,
-                    width: DeviceUtil.isTablet ? 5 : 3,
-                    color: globalState.get(isBreak) == true ? const Color(0xFFE8356C) : Branding.colors.primaryLight,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "last_breaks".tr(),
+              style: TextStyle(fontSize: 16.r, fontWeight: FontWeight.w700, color: Colors.black87),
+            ),
+            SizedBox(height: 12.h),
+            if (state.breaks.isEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 20.h),
+                child: Center(
+                  child: Text(
+                    'you_have_not_taken_a_break'.tr(),
+                    style: TextStyle(fontSize: 13.r, color: Colors.black38),
                   ),
-                  SizedBox(
-                    width: DeviceUtil.isTablet ? 35.w : 35.0,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: state.breaks.length,
+                separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey.shade100),
+                itemBuilder: (context, index) {
+                  final todayHistory = state.breaks.elementAt(index);
+                  final isInBreak = globalState.get(isBreak) == true && index == 0;
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: Row(
                       children: [
-                        Text(
-                          todayHistory.reason ?? "Break Taken",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14.r),
-                        ).tr(),
-                        const SizedBox(
-                          height: 5,
+                        Container(
+                          width: 4.w,
+                          height: 36.h,
+                          decoration: BoxDecoration(
+                            color: isInBreak ? const Color(0xFFE8356C) : Branding.colors.primaryLight,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                         ),
-                        Text(
-                          "${todayHistory.breakTime ?? ''} - ${todayHistory.backTime ?? ''}",
-                          style: TextStyle(fontSize: DeviceUtil.isTablet ? 12.sp : 14),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                todayHistory.reason ?? "Break Taken".tr(),
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13.r,
+                                ),
+                              ),
+                              SizedBox(height: 2.h),
+                              Text(
+                                "${todayHistory.breakTime ?? ''} - ${todayHistory.backTime ?? '...'}",
+                                style: TextStyle(fontSize: 12.r, color: Colors.black45),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: (isInBreak ? const Color(0xFFE8356C) : Branding.colors.primaryLight)
+                                .withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            todayHistory.duration ?? "...",
+                            style: TextStyle(
+                              fontSize: 12.r,
+                              fontWeight: FontWeight.w600,
+                              color: isInBreak ? const Color(0xFFE8356C) : Branding.colors.primaryLight,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  )
-                ],
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const Divider();
-            },
-            itemCount: state.breaks.length),
-      ]);
+                  );
+                },
+              ),
+          ],
+        ),
+      );
     } else if (state.status == NetworkStatus.failure) {
       return Center(
         child: Text(
           "failed_to_load_break".tr(),
           style: TextStyle(
-              color: Branding.colors.primaryLight.withOpacity(0.4),
-              fontSize: DeviceUtil.isTablet ? 18.sp : 18,
+              color: Colors.black38,
+              fontSize: 14.r,
               fontWeight: FontWeight.w500),
         ),
       );

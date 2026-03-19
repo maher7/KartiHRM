@@ -65,41 +65,53 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
                     children: [
                       /// Header
                       InkWell(
+                        borderRadius: BorderRadius.circular(16.0),
                         onTap: () {
                           Navigator.push(context, ProfileScreen.route(user?.user?.id));
                         },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0.r),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.08),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          elevation: 4,
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 20.h),
+                            padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 16.h),
                             child: Row(
                               children: [
                                 const MenuProfile(),
-                                SizedBox(
-                                  width: 16.w,
-                                ),
+                                SizedBox(width: 14.w),
                                 const MenuHeader(),
-                                IconButton(
-                                    onPressed: () {
-                                      if (MenuScreen._scaffoldKey.currentState!.isEndDrawerOpen) {
-                                        MenuScreen._scaffoldKey.currentState?.openEndDrawer();
-                                      } else {
-                                        MenuScreen._scaffoldKey.currentState?.openEndDrawer();
-                                      }
+                                Container(
+                                  padding: EdgeInsets.all(8.r),
+                                  decoration: BoxDecoration(
+                                    color: Branding.colors.primaryLight.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      MenuScreen._scaffoldKey.currentState?.openEndDrawer();
                                     },
-                                    icon: Icon(
-                                      Icons.menu,
+                                    child: Icon(
+                                      Icons.menu_rounded,
                                       color: Branding.colors.primaryLight,
-                                      size: 25.r,
-                                    ))
+                                      size: 22.r,
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
                           ),
                         ),
                       ),
+
+                      SizedBox(height: 8.h),
 
                       /// Menu List
                       MenuList(

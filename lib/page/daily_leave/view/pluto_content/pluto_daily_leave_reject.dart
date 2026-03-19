@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,9 +20,9 @@ class PlutoDailyLeaveReject extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10.h,),
-        Padding(padding: const EdgeInsets.only(left: 4.0), child: Text("rejected_leave".tr(), style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.bold, color: Branding.colors.textPrimary),),),
-        SizedBox(height: 8.h,),
+        SizedBox(height: 16.h),
+        Text("rejected_leave".tr(), style: TextStyle(fontSize: 15.r, fontWeight: FontWeight.w700, color: Colors.black87)),
+        SizedBox(height: 8.h),
         Row(
           children: [
             Expanded(
@@ -37,7 +36,7 @@ class PlutoDailyLeaveReject extends StatelessWidget {
                   ),
                   );
                 },
-                title: 'early_leave'.tr(), value: rejected?.earlyLeave.toString() ?? '', color: Colors.red,
+                title: 'early_leave'.tr(), value: rejected?.earlyLeave.toString() ?? '', color: const Color(0xFFE53935),
               ),
             ),
             SizedBox(width: 12.w,),
@@ -50,7 +49,7 @@ class PlutoDailyLeaveReject extends StatelessWidget {
                         )),
                   );
                 },
-                title: 'late_leave'.tr(), value: rejected?.lateArrive.toString() ?? '', color: Colors.red,
+                title: 'late_leave'.tr(), value: rejected?.lateArrive.toString() ?? '', color: const Color(0xFFE53935),
               ),
             ),
           ],

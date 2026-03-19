@@ -55,34 +55,52 @@ class _PlutoMenuScreenState extends State<PlutoMenuScreen> with TickerProviderSt
             body: BlocBuilder<LanguageBloc, LanguageState>(builder: (context, state) {
               return Column(
                 children: [
-                  /// Header
+                  /// Header with gradient
                   InkWell(
                     onTap: () {
                       Navigator.push(context, PlutoProfileScreen.route(user?.user?.id));
                     },
                     child: Container(
                       margin: EdgeInsets.zero,
-                      padding: const EdgeInsets.only(top: 30.0),
-                      color: Branding.colors.primaryLight,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 20.h),
-                        child: Row(
-                          children: [
-                            const MenuProfile(),
-                            SizedBox(
-                              width: 16.w,
-                            ),
-                            const PlutoMenuHeader(),
-                            IconButton(
-                                onPressed: () {
-                                  if (PlutoMenuScreen._scaffoldKey.currentState!.isEndDrawerOpen) {
-                                    PlutoMenuScreen._scaffoldKey.currentState?.openEndDrawer();
-                                  } else {
-                                    PlutoMenuScreen._scaffoldKey.currentState?.openEndDrawer();
-                                  }
-                                },
-                                icon: Image.asset('assets/images/bergur_menu.png', height: 20.0.h, width: 20.0.w, fit: BoxFit.cover, color: Colors.white,))
-                          ],
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Branding.colors.primaryDark, Branding.colors.primaryLight],
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: SafeArea(
+                        bottom: false,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 20.h),
+                          child: Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 2),
+                                ),
+                                child: const MenuProfile(),
+                              ),
+                              SizedBox(width: 16.w),
+                              const PlutoMenuHeader(),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: IconButton(
+                                    onPressed: () {
+                                      PlutoMenuScreen._scaffoldKey.currentState?.openEndDrawer();
+                                    },
+                                    icon: Image.asset('assets/images/bergur_menu.png', height: 20.0.h, width: 20.0.w, fit: BoxFit.cover, color: Colors.white)),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -90,7 +108,7 @@ class _PlutoMenuScreenState extends State<PlutoMenuScreen> with TickerProviderSt
                   /// Menu List
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 16.0),
+                      padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 12.h),
                       child: PlutoMenuList(
                         animationController: animationController,
                       ),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_bus_plus/res/event_bus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:offline_attendance/domain/offline_attendance_repository.dart';
 import 'package:onesthrm/main.dart';
@@ -14,10 +15,10 @@ class OfflineCubit extends Cubit<OfflineAttendanceState> {
   final EventBus eventBus;
 
   OfflineCubit({required this.offlineAttendanceRepo, required this.eventBus}) : super(const OfflineAttendanceState()) {
-    onOnlineCheckInOutData();
+    _initializeState();
 
     onlineSubscription = eventBus.on<OnOnlineAttendanceUpdateEvent>().listen((event) {
-      updateAppWidget(isCheckedIn: event.body.inTime != null &&  event.body.outTime == null);
+      updateAppWidget(isCheckedIn: event.body.inTime != null && event.body.outTime == null);
       onOnlineCheckInOutData(body: event.body);
     });
 
@@ -26,29 +27,78 @@ class OfflineCubit extends Cubit<OfflineAttendanceState> {
     });
   }
 
+  /// Initialize state: sync API data with local, handle 24h auto-reset
+  Future<void> _initializeState() async {
+    final today = DateFormat('yyyy-MM-dd', 'en').format(DateTime.now());
+    AttendanceBody? localData = await offlineAttendanceRepo.getCheckDataByDate(date: today);
+
+    if (localData == null) {
+      emit(const OfflineAttendanceState(isCheckedIn: false, isCheckedOut: false));
+    } else {
+      bool isCheckedIn = localData.inTime != null && localData.outTime == null;
+      bool isCheckedOut = localData.inTime != null && localData.outTime != null;
+      if (isCheckedOut) isCheckedIn = false;
+
+      emit(state.copyWith(
+        isCheckedIn: isCheckedIn,
+        isCheckedOut: isCheckedOut,
+        attendanceBody: localData,
+      ));
+    }
+  }
+
   onOnlineCheckInOutData({AttendanceBody? body}) async {
     final date = DateFormat('yyyy-MM-dd', 'en').format(DateTime.now());
-    bool isCheckedIn = body?.inTime != null;
-    bool isCheckedOut = body?.outTime != null;
-    if (body != null) {
-      if (isCheckedOut == true) {
+
+    if (body != null && (body.inTime != null || body.attendanceId != null)) {
+      // API says user has attendance data for today
+      bool isCheckedIn = body.inTime != null;
+      bool isCheckedOut = body.outTime != null;
+
+      if (isCheckedOut) {
         isCheckedIn = false;
         body = body.copyWith(attendanceId: null);
       }
-      offlineAttendanceRepo.checkInOut(checkData: body, isCheckedIn: isCheckedIn, isCheckedOut: isCheckedOut, multipleAttendanceEnabled: true).then((_) async {
-        AttendanceBody? localAttendanceData = await offlineAttendanceRepo.getCheckDataByDate(date: date);
-        if (isCheckedOut && body?.isOffline == true) {
-          ///-----------------------Try to sync attendance data with server when user try to checkout---------------
-          eventBus.fire(const OfflineDataSycEvent());
-        }
-        ///--------------------------------------*********--------------------------------------------------------
-        emit(state.copyWith(isCheckedIn: isCheckedIn, isCheckedOut: isCheckedOut, attendanceBody: localAttendanceData));
-      });
-    } else {
+
+      // Persist to local DB
+      try {
+        await offlineAttendanceRepo.checkInOut(
+          checkData: body,
+          isCheckedIn: isCheckedIn,
+          isCheckedOut: isCheckedOut,
+          multipleAttendanceEnabled: true,
+        );
+      } catch (e) {
+        debugPrint('OfflineCubit: checkInOut failed: $e');
+      }
+
+      // Read back from local DB to confirm
       AttendanceBody? localAttendanceData = await offlineAttendanceRepo.getCheckDataByDate(date: date);
-      isCheckedIn = localAttendanceData?.attendanceId != null;
-      isCheckedOut = localAttendanceData?.attendanceId == null;
-      emit(state.copyWith(isCheckedIn: isCheckedIn, isCheckedOut: isCheckedOut, attendanceBody: localAttendanceData));
+
+      if (isCheckedOut && body.isOffline == true) {
+        eventBus.fire(const OfflineDataSycEvent());
+      }
+
+      // Even if local read fails, emit the API state as truth
+      emit(state.copyWith(
+        isCheckedIn: isCheckedIn,
+        isCheckedOut: isCheckedOut,
+        attendanceBody: localAttendanceData ?? body,
+      ));
+    } else {
+      // API says no attendance for today — check local DB before resetting
+      AttendanceBody? localAttendanceData = await offlineAttendanceRepo.getCheckDataByDate(date: date);
+
+      if (localAttendanceData != null && localAttendanceData.inTime != null) {
+        // Local DB has check-in data for today — keep it (offline check-in)
+        bool isCheckedIn = localAttendanceData.outTime == null;
+        bool isCheckedOut = localAttendanceData.outTime != null;
+        if (isCheckedOut) isCheckedIn = false;
+        emit(state.copyWith(isCheckedIn: isCheckedIn, isCheckedOut: isCheckedOut, attendanceBody: localAttendanceData));
+      } else {
+        // No data anywhere — reset
+        emit(state.copyWith(isCheckedIn: false, isCheckedOut: false, attendanceBody: null));
+      }
     }
   }
 

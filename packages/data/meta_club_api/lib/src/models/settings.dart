@@ -182,9 +182,9 @@ class Time {
   int? sec;
 
   factory Time.fromJson(Map<String, dynamic> json) => Time(
-        hour: json["hour"],
-        min: json["min"],
-        sec: json["sec"],
+        hour: json["hour"] != null ? int.tryParse(json["hour"].toString()) : null,
+        min: json["min"] != null ? int.tryParse(json["min"].toString()) : null,
+        sec: json["sec"] != null ? int.tryParse(json["sec"].toString()) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -204,7 +204,7 @@ class MultiShift extends Equatable {
   final String? shiftName;
 
   factory MultiShift.fromJson(Map<String, dynamic> json) =>
-      MultiShift(shiftId: json["shift_id"], shiftName: json["name"]);
+      MultiShift(shiftId: json["shift_id"] != null ? int.tryParse(json["shift_id"].toString()) : null, shiftName: json["name"]);
 
   Map<String, dynamic> toJson() => {"shift_id": shiftId, "name": shiftName};
 
@@ -307,7 +307,7 @@ class Department extends Equatable {
   const Department({this.id, this.title});
 
   factory Department.fromJson(Map<String, dynamic> json) {
-    return Department(id: json['id'], title: json['title']);
+    return Department(id: json['id'] != null ? int.tryParse(json['id'].toString()) : null, title: json['title']);
   }
 
   Map<String, dynamic> toJson() => {'id': id, 'title': title};

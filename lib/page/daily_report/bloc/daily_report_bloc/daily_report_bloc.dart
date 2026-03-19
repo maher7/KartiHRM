@@ -64,7 +64,13 @@ class DailyReportBloc extends Bloc<DailyReportEvent, DailyReportState> {
       emit(state.copyWith(status: NetworkStatus.failure, errorMsg: l.meaningfulMessage));
     }, (r) {
       emit(state.reset());
-      dispose();
+      callsMadeController.clear();
+      positiveLeadsController.clear();
+      totalSalesController.clear();
+      pendingAndLeadsOtherNoteController.clear();
+      recoveryTodayOtherNoteController.clear();
+      dailyReportSummaryController.clear();
+      complaintsQuestionsController.clear();
       add(DailyReportEventLoad());
       Navigator.pop(event.context);
     });
@@ -133,13 +139,15 @@ class DailyReportBloc extends Bloc<DailyReportEvent, DailyReportState> {
     emit(state.copyWith(workedRecoveryValue: event.recovery));
   }
 
-  void dispose() {
-    callsMadeController.clear();
-    positiveLeadsController.clear();
-    totalSalesController.clear();
-    pendingAndLeadsOtherNoteController.clear();
-    recoveryTodayOtherNoteController.clear();
-    dailyReportSummaryController.clear();
-    complaintsQuestionsController.clear();
+  @override
+  Future<void> close() {
+    callsMadeController.dispose();
+    positiveLeadsController.dispose();
+    totalSalesController.dispose();
+    pendingAndLeadsOtherNoteController.dispose();
+    recoveryTodayOtherNoteController.dispose();
+    dailyReportSummaryController.dispose();
+    complaintsQuestionsController.dispose();
+    return super.close();
   }
 }

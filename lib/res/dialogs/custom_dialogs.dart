@@ -109,35 +109,51 @@ Future<void> showRegistrationSuccessDialog(
   await showDialog(
       context: context,
       builder: (context) {
-        return SimpleDialog(
-          title: Center(
-              child: Text(
-            message,
-            style: const TextStyle(fontSize: 18.0),
-          )),
-          contentPadding: const EdgeInsets.all(8.0),
-          alignment: Alignment.center,
-          children: [
-            CircleAvatar(
-              radius: 30.0,
-              backgroundColor: isSuccess ? Colors.green : Colors.red,
-              child: Icon(
-                isSuccess ? Icons.done : Icons.close,
-                size: 60.0,
-                color: Colors.white,
-              ),
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 28.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 17.0, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 20.0),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: (isSuccess ? Colors.green : Colors.red).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isSuccess ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                    size: 48.0,
+                    color: isSuccess ? Colors.green : Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Text(body, textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 14.0, color: Colors.black54, height: 1.4)),
+                const SizedBox(height: 20.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () => Navigator.pushAndRemoveUntil(context, LoginPage.route(), (_) => false),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Branding.colors.primaryLight,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                    ),
+                    child: const Text('Back', style: TextStyle(fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 16.0,
-            ),
-            Text(
-              body,
-              textAlign: TextAlign.center,
-            ),
-            TextButton(
-                onPressed: () => Navigator.pushAndRemoveUntil(context, LoginPage.route(), (_) => false),
-                child: const Text('Back'))
-          ],
+          ),
         );
       });
 }
@@ -147,26 +163,54 @@ void showLoginDialog(
   showDialog(
       context: context,
       builder: (_) {
-        return SimpleDialog(
-          title: Center(
-              child: Text(
-            message,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18.0),
-          )),
-          contentPadding: const EdgeInsets.all(8.0),
-          alignment: Alignment.center,
-          children: [
-            const SizedBox(height: 16.0),
-            CircleAvatar(
-              radius: 30.0,
-              backgroundColor: isSuccess ? Colors.green : Colors.red,
-              child: Icon(isSuccess ? Icons.done : Icons.close, size: 60.0, color: Colors.white),
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 28.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 17.0, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 20.0),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: (isSuccess ? Colors.green : Colors.red).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isSuccess ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                    size: 48.0,
+                    color: isSuccess ? Colors.green : Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Text(
+                  body.tr(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 14.0, color: Colors.black54, height: 1.4),
+                ),
+                const SizedBox(height: 20.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Branding.colors.primaryLight,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                    ),
+                    child: Text('Back'.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16.0),
-            Text(body.tr(), textAlign: TextAlign.center),
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('Back'.tr()))
-          ],
+          ),
         );
       });
 }

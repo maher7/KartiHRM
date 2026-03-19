@@ -21,8 +21,15 @@ class ProfileContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
       if (state.status == NetworkStatus.loading) {
-        return const Center(
-          child: CircularProgressIndicator(),
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 12),
+              Text('loading'.tr(), style: TextStyle(fontSize: 13.r, color: Colors.black54)),
+            ],
+          ),
         );
       }
       if (state.status == NetworkStatus.success) {
@@ -86,14 +93,22 @@ class ProfileContent extends StatelessWidget {
                       onPressed: () => showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
+                          title: Row(
+                            children: [
+                              const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
+                              const SizedBox(width: 8),
+                              Text('delete_account'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                           content: Text(
                               'Are_you_sure_,_you_want_to_delete_the_account'
                                   .tr()),
                           actions: [
                             TextButton(
                                 onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('No')),
-                            TextButton(
+                                child: Text('cancel'.tr(), style: const TextStyle(fontWeight: FontWeight.w600))),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                                 onPressed: () {
                                   BlocProvider.of<ProfileBloc>(context)
                                       .add(ProfileDeleteRequest());
@@ -101,7 +116,7 @@ class ProfileContent extends StatelessWidget {
                                       .add(AuthenticationLogoutRequest());
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Yes')),
+                                child: Text('delete'.tr(), style: const TextStyle(color: Colors.white))),
                           ],
                         ),
                       ),
@@ -123,7 +138,21 @@ class ProfileContent extends StatelessWidget {
       }
       if (state.status == NetworkStatus.failure) {
         return Center(
-          child: Text('failed_to_load_profile'.tr()),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
+              const SizedBox(height: 12),
+              Text('failed_to_load_profile'.tr(), style: TextStyle(fontSize: 14.r)),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: () => context.read<ProfileBloc>().add(ProfileLoadRequest()),
+                icon: const Icon(Icons.refresh, size: 18),
+                label: Text('retry'.tr()),
+                style: ElevatedButton.styleFrom(backgroundColor: Branding.colors.primaryLight, foregroundColor: Colors.white),
+              ),
+            ],
+          ),
         );
       }
       return const SizedBox();

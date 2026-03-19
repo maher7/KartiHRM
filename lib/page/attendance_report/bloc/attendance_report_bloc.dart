@@ -17,7 +17,7 @@ class AttendanceReportBloc extends Bloc<AttendanceReportEvent, AttendanceReportS
   final MetaClubApiClient metaClubApiClient;
   final LoginData user;
   var dateTime = DateTime.now();
-  bool isDialogOpen = true;
+  bool isDialogOpen = false;
 
   AttendanceReportBloc({required this.metaClubApiClient, required this.user})
       : super(const AttendanceReportState(status: NetworkStatus.initial)) {
@@ -27,36 +27,33 @@ class AttendanceReportBloc extends Bloc<AttendanceReportEvent, AttendanceReportS
   }
 
   FutureOr<void> _onMultiAttendance(MultiAttendanceEvent event, Emitter<AttendanceReportState> emit) async {
+    if (isDialogOpen) return;
+    isDialogOpen = true;
     try {
-      if (isDialogOpen == true) {
-        state.copyWith(isDialogOpen: isDialogOpen = false);
-        await showDialog(
-            barrierDismissible: false,
-            context: event.context!,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(event.dailyReport.multipleAttendance?.date ?? "No Date Found"),
-                content: DialogMultiAttendanceList(dailyReport: event.dailyReport),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.red, fontSize: 12.r),
-                    ),
-                    onPressed: () {
-                      state.copyWith(isDialogOpen: isDialogOpen = true);
-                      Navigator.of(context).pop();
-                    },
+      await showDialog(
+          barrierDismissible: false,
+          context: event.context!,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(event.dailyReport.multipleAttendance?.date ?? "No Date Found"),
+              content: DialogMultiAttendanceList(dailyReport: event.dailyReport),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.red, fontSize: 12.r),
                   ),
-                ],
-              );
-            });
-      } else {
-        state.copyWith(isDialogOpen: isDialogOpen = true);
-      }
-    } on Exception catch (e) {
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    } on Exception {
       emit(const AttendanceReportState(status: NetworkStatus.failure));
-      throw NetworkRequestFailure(e.toString());
+    } finally {
+      isDialogOpen = false;
     }
   }
 
@@ -81,7 +78,8 @@ class AttendanceReportBloc extends Bloc<AttendanceReportEvent, AttendanceReportS
       locale: const Locale("en"),
     );
 
-    dateTime = date!;
+    if (date == null) return;
+    dateTime = date;
     String? currentMonth = getDateAsString(format: 'y-MM', dateTime: date);
     add(GetAttendanceReportData(date: currentMonth));
   }

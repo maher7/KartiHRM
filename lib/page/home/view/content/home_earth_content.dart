@@ -8,9 +8,17 @@ import '../../bloc/home_bloc.dart';
 import '../../content/break_card.dart';
 import '../../content/checkin_out_card.dart';
 import '../../content/home_header.dart';
+import '../../content/my_stats_card.dart';
 
-class HomeEarthContent extends StatelessWidget {
+class HomeEarthContent extends StatefulWidget {
   const HomeEarthContent({super.key});
+
+  @override
+  State<HomeEarthContent> createState() => _HomeEarthContentState();
+}
+
+class _HomeEarthContentState extends State<HomeEarthContent> {
+  bool _locationInitialized = false;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +26,8 @@ class HomeEarthContent extends StatelessWidget {
       builder: (context, homeState) {
         final user = context.read<AuthenticationBloc>().state.data;
 
-        if (user?.user != null) {
+        if (user?.user != null && !_locationInitialized) {
+          _locationInitialized = true;
           context.read<HomeBloc>().add(OnLocationEnabled(user: user!.user!, locationProvider: instance()));
         }
 
@@ -34,6 +43,9 @@ class HomeEarthContent extends StatelessWidget {
 
                 ///breakTime
                 BreakCard(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
+
+                ///my stats
+                MyStatsCard(dashboardModel: homeState.dashboardModel),
 
                 ///bottom-header
                 HomeBottom(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),

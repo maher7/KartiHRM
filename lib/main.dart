@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:onesthrm/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
@@ -19,11 +20,20 @@ void main() async {
   await EasyLocalization.ensureInitialized();
 
   ///initializeFirebaseAtStatingPoint
+  // On cold start the Pigeon channel may not be ready yet — retry with backoff.
   if (Firebase.apps.isEmpty) {
-    try {
-      await Firebase.initializeApp();
-    } catch (_) {
-      // Firebase channel may not be ready on first cold start; non-fatal
+    const delays = [500, 1000, 2000, 3000];
+    for (final ms in delays) {
+      try {
+        await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+        break; // success
+      } catch (_) {
+        if (ms == delays.last) {
+          debugPrint('Firebase init failed after all retries — continuing without Firebase');
+        } else {
+          await Future.delayed(Duration(milliseconds: ms));
+        }
+      }
     }
   }
   ///initializeDependencyInjection

@@ -16,23 +16,70 @@ class DailyLeaveTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        contentPadding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 10.h),
-        onTap: onTap,
-        leading: Container(
-          height: 20.h,
-          width: 20.w,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        title: Text(
-          title,
-          style: TextStyle(color: Colors.black87, fontSize: 14.r),
-        ),
-        trailing: Text(
-          value,
-          style:
-              Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 14.r),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
+              child: Row(
+                children: [
+                  Container(
+                    width: 4.w,
+                    height: 32.h,
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 11.r,
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          value,
+                          style: TextStyle(
+                            color: color,
+                            fontSize: 18.r,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 12.r,
+                    color: Colors.black26,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

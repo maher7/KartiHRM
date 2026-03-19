@@ -78,7 +78,7 @@ class TravelPlanItem extends Equatable{
   });
 
   factory TravelPlanItem.fromJson(Map<String, dynamic> json) => TravelPlanItem(
-    id: json["id"],
+    id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
     employee: json["employee"] == null ? null : Employee.fromJson(json["employee"]),
     fromDate: json["from_date"],
     toDate: json["to_date"],
@@ -138,7 +138,7 @@ class Employee extends Equatable{
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) => Employee(
-    id: json["id"],
+    id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
     name: json["name"],
     department: json["department"],
     designation: json["designation"],
@@ -221,14 +221,14 @@ class Meta extends Equatable{
   });
 
   factory Meta.fromJson(Map<String, dynamic> json) => Meta(
-    currentPage: json["current_page"],
-    from: json["from"],
-    lastPage: json["last_page"],
+    currentPage: json["current_page"] != null ? int.tryParse(json["current_page"].toString()) : null,
+    from: json["from"] != null ? int.tryParse(json["from"].toString()) : null,
+    lastPage: json["last_page"] != null ? int.tryParse(json["last_page"].toString()) : null,
     links: json["links"] == null ? [] : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
     path: json["path"],
-    perPage: json["per_page"],
-    to: json["to"],
-    total: json["total"],
+    perPage: json["per_page"] != null ? int.tryParse(json["per_page"].toString()) : null,
+    to: json["to"] != null ? int.tryParse(json["to"].toString()) : null,
+    total: json["total"] != null ? int.tryParse(json["total"].toString()) : null,
   );
 
   @override

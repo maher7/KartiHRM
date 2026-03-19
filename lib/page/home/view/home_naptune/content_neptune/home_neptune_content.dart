@@ -10,11 +10,19 @@ import 'package:onesthrm/page/home/view/home_naptune/content_neptune/home_bottom
 import 'package:onesthrm/page/home/view/home_naptune/content_neptune/neptune_summary.dart';
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import '../../../bloc/bloc.dart';
+import '../../../content/my_stats_card.dart';
 import '../../home_mars/content_mars/content_mars.dart';
 import 'header_neptune.dart';
 
-class HomeNeptuneContent extends StatelessWidget {
+class HomeNeptuneContent extends StatefulWidget {
   const HomeNeptuneContent({super.key});
+
+  @override
+  State<HomeNeptuneContent> createState() => _HomeNeptuneContentState();
+}
+
+class _HomeNeptuneContentState extends State<HomeNeptuneContent> {
+  bool _locationInitialized = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +31,8 @@ class HomeNeptuneContent extends StatelessWidget {
       final user = context.read<AuthenticationBloc>().state.data;
       final homeData = context.read<HomeBloc>().state.dashboardModel;
 
-      if (user?.user != null) {
+      if (user?.user != null && !_locationInitialized) {
+        _locationInitialized = true;
         context.read<HomeBloc>().add(OnLocationEnabled(user: user!.user!, locationProvider: instance()));
       }
 
@@ -83,6 +92,9 @@ class HomeNeptuneContent extends StatelessWidget {
 
                           ///breakTime
                           BreakCardNeptune(settings: settings, user: user, dashboardModel: homeData),
+
+                          ///my stats
+                          MyStatsCard(dashboardModel: homeData),
 
                           ///bottom-header
                           HomeBottomNeptune(settings: settings, user: user, dashboardModel: homeData),

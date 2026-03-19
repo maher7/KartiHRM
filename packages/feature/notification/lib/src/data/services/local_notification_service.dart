@@ -46,8 +46,8 @@ class LocalNotificationService {
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
-          alert: false,
-          badge: false,
+          alert: true,
+          badge: true,
           sound: true,
         );
   }
@@ -109,7 +109,8 @@ class LocalNotificationService {
 
     final notificationDetails = NotificationDetails(android: androidChannelSpecifies, iOS: iosPlatformSpecifies);
 
-    await flutterLocalNotificationsPlugin.show(5, '$title', '$body', notificationDetails, payload: payload);
+    final notifId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    await flutterLocalNotificationsPlugin.show(notifId, '$title', '$body', notificationDetails, payload: payload);
   }
 
   Future initializeTimeZone() async {

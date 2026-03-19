@@ -46,7 +46,8 @@ class AppointmentCreateBloc extends Bloc<AppointmentCreateEvent, AppointmentCrea
       initialDate: DateTime.now(),
       locale: const Locale("en"),
     );
-    String? currentMonth = getDateAsString(format: 'yyyy-MM-dd', dateTime: date!);
+    if (date == null) return;
+    String? currentMonth = getDateAsString(format: 'yyyy-MM-dd', dateTime: date);
     emit(state.copyWith(status: NetworkStatus.success, currentMonth: currentMonth));
   }
 

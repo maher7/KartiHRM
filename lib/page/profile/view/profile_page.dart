@@ -32,7 +32,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 backgroundColor: Branding.colors.primaryLight,
                 bottom: TabBar(
-                  isScrollable: false,
+                  isScrollable: true,
                   labelColor: Colors.white,
                   indicatorColor: Colors.white,
                   unselectedLabelStyle: TextStyle(color: Branding.colors.textDisabled),

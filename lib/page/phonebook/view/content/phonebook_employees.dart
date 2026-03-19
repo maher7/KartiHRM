@@ -38,11 +38,11 @@ class PhoneBookEmployees extends StatelessWidget {
                         } else if (mode == LoadStatus.loading) {
                           body = const CupertinoActivityIndicator();
                         } else if (mode == LoadStatus.failed) {
-                          body = const Text("Load Failed!Click retry!");
+                          body = const Text("Load Failed! Click retry!");
                         } else if (mode == LoadStatus.canLoading) {
-                          body = const Text("release to load more");
+                          body = const Text("Release to load more");
                         } else {
-                          body = const Text("No more Data");
+                          body = const Text("No more data");
                         }
                         return SizedBox(
                           height: 55.0,
@@ -58,54 +58,100 @@ class PhoneBookEmployees extends StatelessWidget {
                         context.read<PhoneBookBloc>().add(PhoneBookLoadRefresh());
                       },
                       child: ListView.builder(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                         itemCount: state.phoneBookUsers?.length ?? 0,
                         itemBuilder: (BuildContext context, int index) {
-                          return InkWell(
-                            onTap: () async {
-                              Navigator.push(
-                                  context,
-                                  PhoneBookDetailsScreen.route(
-                                      homeBloc: context.read<PhoneBookBloc>(),
-                                      userId: '${state.phoneBookUsers![index].id}'));
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-                              ),
-                              child: ListTile(
-                                contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                                title: Text(
-                                  state.phoneBookUsers?[index].name ?? "",
-                                  style: TextStyle(fontSize: 14.r),
-                                ),
-                                subtitle: Text(state.phoneBookUsers?[index].designation ?? "",
-                                    style: TextStyle(fontSize: 13.r)),
-                                leading: ClipOval(
-                                  child: CachedNetworkImage(
-                                    height: 40.r,
-                                    width: 35.r,
-                                    fit: BoxFit.cover,
-                                    imageUrl: "${state.phoneBookUsers?[index].avatar}",
-                                    placeholder: (context, url) => Center(
-                                      child: Image.asset("assets/images/placeholder_image.png"),
-                                    ),
-                                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                                  ),
-                                ),
-                                trailing: InkWell(
-                                  onTap: () {
-                                    /// Dial
-                                    context
-                                        .read<PhoneBookBloc>()
-                                        .add(DirectPhoneCall(state.phoneBookUsers?[index].phone ?? ''));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.phone,
-                                      size: 20.r,
-                                      color: Colors.grey,
-                                    ),
+                          final employee = state.phoneBookUsers![index];
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 6.h),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey.shade100),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () async {
+                                  Navigator.push(
+                                      context,
+                                      PhoneBookDetailsScreen.route(
+                                          homeBloc: context.read<PhoneBookBloc>(),
+                                          userId: '${employee.id}'));
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.grey.shade200, width: 1.5),
+                                        ),
+                                        child: ClipOval(
+                                          child: CachedNetworkImage(
+                                            height: 44.r,
+                                            width: 44.r,
+                                            fit: BoxFit.cover,
+                                            imageUrl: "${employee.avatar}",
+                                            placeholder: (context, url) => Container(
+                                              color: Colors.grey.shade100,
+                                              child: Icon(Icons.person, color: Colors.grey.shade400, size: 24),
+                                            ),
+                                            errorWidget: (context, url, error) => Container(
+                                              color: Colors.grey.shade100,
+                                              child: Icon(Icons.person, color: Colors.grey.shade400, size: 24),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 12.w),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              employee.name ?? "",
+                                              style: TextStyle(
+                                                fontSize: 14.r,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            SizedBox(height: 2.h),
+                                            Text(
+                                              employee.designation ?? "",
+                                              style: TextStyle(
+                                                fontSize: 12.r,
+                                                color: Colors.black45,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Material(
+                                        color: Branding.colors.primaryLight.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(10),
+                                          onTap: () {
+                                            context
+                                                .read<PhoneBookBloc>()
+                                                .add(DirectPhoneCall(employee.phone ?? ''));
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.all(10.r),
+                                            child: Icon(
+                                              Icons.phone_rounded,
+                                              size: 18.r,
+                                              color: Branding.colors.primaryLight,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

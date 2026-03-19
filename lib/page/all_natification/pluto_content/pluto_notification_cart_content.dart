@@ -12,37 +12,100 @@ class PlutoNotificationCartContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: Branding.colors.primaryLight.withOpacity(0.5))),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              ClipOval(
-                child: CachedNetworkImage(height: 50.h, width: 50.w, fit: BoxFit.cover,
-                  imageUrl: data?.image ?? "assets/images/placeholder_image.png",
-                  placeholder: (context, url) => Center(child: Image.asset("assets/images/placeholder_image.png"),),
-                  errorWidget: (context, url, error) => Image.asset("assets/images/placeholder_image.png"),
-                ),
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: data?.isRead == true ? Colors.white : Branding.colors.primaryLight.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: data?.isRead == true ? Colors.grey.shade100 : Branding.colors.primaryLight.withValues(alpha: 0.15),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(12.r),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade200, width: 1.5),
               ),
-              const SizedBox(width: 10,),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+              child: ClipOval(
+                child: (data?.image != null && data!.image!.isNotEmpty)
+                    ? CachedNetworkImage(
+                        height: 40.h,
+                        width: 40.w,
+                        fit: BoxFit.cover,
+                        imageUrl: data!.image!,
+                        placeholder: (context, url) => Container(
+                          height: 40.h, width: 40.w,
+                          color: Colors.grey.shade100,
+                          child: Icon(Icons.notifications_outlined, color: Colors.grey.shade400, size: 20),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          height: 40.h, width: 40.w,
+                          color: Colors.grey.shade100,
+                          child: Icon(Icons.notifications_outlined, color: Colors.grey.shade400, size: 20),
+                        ),
+                      )
+                    : Container(
+                        height: 40.h, width: 40.w,
+                        color: Colors.grey.shade100,
+                        child: Icon(Icons.notifications_outlined, color: Colors.grey.shade400, size: 20),
+                      ),
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(data?.title ?? '', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.r),),
-                  const SizedBox(height: 5,),
-                  Html(data: data?.body),
-                  const SizedBox(height: 5,),
-                  if(data?.date != null)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          data?.title ?? '',
+                          style: TextStyle(
+                            fontWeight: data?.isRead == true ? FontWeight.w500 : FontWeight.w700,
+                            fontSize: 13.r,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                      if (data?.isRead == false)
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Branding.colors.primaryLight,
+                          ),
+                        ),
+                    ],
+                  ),
+                  Html(
+                    data: data?.body,
+                    style: {
+                      "body": Style(
+                        fontSize: FontSize(12.r),
+                        padding: HtmlPaddings.zero,
+                        margin: Margins.zero,
+                        maxLines: 2,
+                        color: Colors.black54,
+                      ),
+                    },
+                  ),
+                  SizedBox(height: 4.h),
+                  if (data?.date != null)
                     Text(
-                      '${getDDMMYYYYAsString(date: data!.date!,inputFormat: 'yyyy-mm-dd',outputFormat: 'dd-mm-yyyy')}',
-                      style: TextStyle(color: Colors.black54, fontSize: 10.r),
-                    )
+                      data!.date!,
+                      style: TextStyle(color: Colors.black38, fontSize: 10.r),
+                    ),
                 ],
-              )),
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

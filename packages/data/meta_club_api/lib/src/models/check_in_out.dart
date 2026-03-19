@@ -48,8 +48,8 @@ class CheckInOut extends Equatable {
 
   factory CheckInOut.fromJson(Map<String, dynamic> json) {
     return CheckInOut(
-        id: json['id'],
-        remoteMode: json['remote_mode_in'],
+        id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
+        remoteMode: json['remote_mode_in'] != null ? int.tryParse(json['remote_mode_in'].toString()) : null,
         date: json['date'],
         checkIn: json['check_in'],
         checkOut: json['check_out'],

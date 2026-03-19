@@ -55,9 +55,9 @@ class LeaveRequestValue extends Equatable{
   });
 
   factory LeaveRequestValue.fromJson(Map<String, dynamic> json) => LeaveRequestValue(
-    id: json["id"],
+    id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
     type: json["type"],
-    days: json["days"],
+    days: json["days"] != null ? int.tryParse(json["days"].toString()) : null,
     applyDate: json["apply_date"],
     status: json["status"],
     colorCode: json["color_code"],

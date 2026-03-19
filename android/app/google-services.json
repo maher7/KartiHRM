@@ -1,26 +1,37 @@
 {
   "project_info": {
-    "project_number": "147220618988",
-    "project_id": "onest-hrm-v4",
-    "storage_bucket": "onest-hrm-v4.firebasestorage.app"
+    "project_number": "76550645698",
+    "firebase_url": "https://karti-hrm-7788-default-rtdb.firebaseio.com",
+    "project_id": "karti-hrm-7788",
+    "storage_bucket": "karti-hrm-7788.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:147220618988:android:2f853179b09418be414fc9",
+        "mobilesdk_app_id": "1:76550645698:android:3527d635f3000215b1185b",
         "android_client_info": {
-          "package_name": "com.onesttech.onesthrm"
+          "package_name": "online.karti.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "76550645698-f8ssoigqerhc4i3u6ijeacd72s0fds67.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDKbSVEDtb6HkLtbVazSaO05ceJYFDWMEo"
+          "current_key": "AIzaSyBm2gCYNOzy1ixl_aVUKhmN7RgXnsghJq0"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76550645698-f8ssoigqerhc4i3u6ijeacd72s0fds67.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
