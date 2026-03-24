@@ -23,6 +23,9 @@ class LocalNotificationService {
     if (Platform.isIOS) {
       _requestIOSPermission();
     }
+    if (Platform.isAndroid) {
+      _requestAndroidPermission();
+    }
     _initializePlatformSpecifies();
   }
 
@@ -52,9 +55,15 @@ class LocalNotificationService {
         );
   }
 
+  _requestAndroidPermission() {
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+  }
+
   static const AndroidNotificationDetails _androidNotificationDetails = AndroidNotificationDetails(
-    '0',
-    "24Hour",
+    'karti_hrm_notifications',
+    'Karti HRM Notifications',
     channelDescription: "This channel is responsible for all the local notifications",
     playSound: true,
     enableVibration: true,

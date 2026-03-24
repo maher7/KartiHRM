@@ -17,11 +17,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        configurations.all {
-            resolutionStrategy {
-                force "com.google.firebase:firebase-messaging:23.1.2"
-            }
-        }
+        // Let firebase-bom manage messaging version — forced 23.1.2 was
+        // incompatible with firebase_core 3.x Pigeon channels.
     }
 }
 

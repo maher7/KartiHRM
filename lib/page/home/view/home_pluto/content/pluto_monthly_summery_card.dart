@@ -14,53 +14,62 @@ class PlutoMonthlyEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 12.0),
-      child: Card(
-        elevation: 0.0,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6.0),
-            side: BorderSide(color: Branding.colors.primaryLight.withOpacity(0.5))),
-        child: TextButton(
-          onPressed: onPressed,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6.0),
-            child: SizedBox(
-              width: 100.w,
-              child: Column(
-                children: [
-                  Image.network(
-                    '${data?.image}',
-                    height: 20.h,
-                    color: Branding.colors.primaryLight,
-                  ),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.end,
-                    children: [
-                      Text(
-                        '${data?.number}',
-                        style: TextStyle(color: Colors.black,fontSize: 20.r, fontWeight: FontWeight.w500, height: 1.5, letterSpacing: 0.5),
-                      ),
-                      if (days == true)
-                        Text(
-                          'days'.tr(),
-                          style: TextStyle(
-                              color: const Color(0xFF777777),
-                              fontSize: 12.r,
-                              fontWeight: FontWeight.w500,
-                              height: 4,
-                              letterSpacing: 0.5),
+      padding: EdgeInsets.only(left: 12.w),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2)),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: onPressed,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 12.w),
+              child: SizedBox(
+                width: 100.w,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (data?.image != null && data!.image!.isNotEmpty)
+                      Image.network(
+                        '${data?.image}',
+                        height: 20.h,
+                        width: 20.w,
+                        color: Branding.colors.primaryLight,
+                        errorBuilder: (_, __, ___) => Icon(Icons.calendar_today_rounded, size: 20.r, color: Branding.colors.primaryLight),
+                      )
+                    else
+                      Icon(Icons.calendar_today_rounded, size: 20.r, color: Branding.colors.primaryLight),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '${data?.number}',
+                      style: TextStyle(color: Colors.black87, fontSize: 20.r, fontWeight: FontWeight.w700, height: 1.5),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            data?.title ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.grey.shade600, fontSize: 12.r, fontWeight: FontWeight.w500),
+                          ).tr(),
                         ),
-                    ],
-                  ),
-                  Text(
-                    data?.title ?? '',
-                    maxLines: 1,
-                    style: TextStyle(color: Branding.colors.primaryLight,fontSize: 14.r, fontWeight: FontWeight.w500, height: 1.5, letterSpacing: 0.5),
-                  ).tr(),
-                  const SizedBox(
-                    height: 6,
-                  )
-                ],
+                        SizedBox(width: 2.w),
+                        Icon(Icons.arrow_forward_ios_rounded, size: 10.r, color: Colors.grey.shade400),
+                      ],
+                    ),
+                    SizedBox(height: 4.h),
+                  ],
+                ),
               ),
             ),
           ),

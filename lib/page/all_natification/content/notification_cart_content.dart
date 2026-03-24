@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -13,15 +12,64 @@ class NotificationCartContent extends StatelessWidget {
 
   final NotificationModelData? data;
 
+  /// Format raw ISO date to readable format
+  String _formatDate(String? raw) {
+    if (raw == null || raw.isEmpty) return '';
+    try {
+      final parsed = DateTime.parse(raw);
+      final now = DateTime.now();
+      final diff = now.difference(parsed);
+      if (diff.inMinutes < 1) return 'Just now';
+      if (diff.inHours < 1) return '${diff.inMinutes}m ago';
+      if (diff.inHours < 24) return '${diff.inHours}h ago';
+      if (diff.inDays < 7) return '${diff.inDays}d ago';
+      return '${parsed.day.toString().padLeft(2, '0')} ${_monthName(parsed.month)} ${parsed.year}';
+    } catch (_) {
+      return raw;
+    }
+  }
+
+  String _monthName(int m) {
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[m.clamp(1, 12)];
+  }
+
+  /// Pick icon & color based on notification slug/type
+  ({IconData icon, Color color}) _notificationStyle() {
+    final slug = (data?.slag ?? '').toLowerCase();
+    if (slug.contains('leave')) {
+      return (icon: Icons.event_note_rounded, color: const Color(0xFF1976D2));
+    } else if (slug.contains('attendance') || slug.contains('check')) {
+      return (icon: Icons.access_time_rounded, color: const Color(0xFF388E3C));
+    } else if (slug.contains('appointment')) {
+      return (icon: Icons.calendar_month_rounded, color: const Color(0xFF7B1FA2));
+    } else if (slug.contains('task')) {
+      return (icon: Icons.task_alt_rounded, color: const Color(0xFFE65100));
+    } else if (slug.contains('travel') || slug.contains('expense')) {
+      return (icon: Icons.flight_rounded, color: const Color(0xFF00838F));
+    } else if (slug.contains('meeting')) {
+      return (icon: Icons.groups_rounded, color: const Color(0xFF5D4037));
+    } else if (slug.contains('visit')) {
+      return (icon: Icons.place_rounded, color: const Color(0xFFC62828));
+    } else if (slug.contains('support') || slug.contains('ticket')) {
+      return (icon: Icons.support_agent_rounded, color: const Color(0xFF283593));
+    } else {
+      return (icon: Icons.notifications_rounded, color: Branding.colors.primaryLight);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final style = _notificationStyle();
+    final isUnread = data?.isRead == false;
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
       decoration: BoxDecoration(
-        color: data?.isRead == true ? Colors.white : Branding.colors.primaryLight.withValues(alpha: 0.04),
+        color: isUnread ? style.color.withValues(alpha: 0.04) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: data?.isRead == true ? Colors.grey.shade100 : Branding.colors.primaryLight.withValues(alpha: 0.15),
+          color: isUnread ? style.color.withValues(alpha: 0.15) : Colors.grey.shade100,
         ),
       ),
       child: Padding(
@@ -29,35 +77,15 @@ class NotificationCartContent extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Colored icon avatar
             Container(
+              width: 42.r,
+              height: 42.r,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade200, width: 1.5),
+                color: style.color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: ClipOval(
-                child: (data?.image != null && data!.image!.isNotEmpty)
-                    ? CachedNetworkImage(
-                        height: 40.h,
-                        width: 40.w,
-                        fit: BoxFit.cover,
-                        imageUrl: data!.image!,
-                        placeholder: (context, url) => Container(
-                          height: 40.h, width: 40.w,
-                          color: Colors.grey.shade100,
-                          child: Icon(Icons.notifications_outlined, color: Colors.grey.shade400, size: 20),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          height: 40.h, width: 40.w,
-                          color: Colors.grey.shade100,
-                          child: Icon(Icons.notifications_outlined, color: Colors.grey.shade400, size: 20),
-                        ),
-                      )
-                    : Container(
-                        height: 40.h, width: 40.w,
-                        color: Colors.grey.shade100,
-                        child: Icon(Icons.notifications_outlined, color: Colors.grey.shade400, size: 20),
-                      ),
-              ),
+              child: Icon(style.icon, color: style.color, size: 22.r),
             ),
             SizedBox(width: 12.w),
             Expanded(
@@ -70,39 +98,45 @@ class NotificationCartContent extends StatelessWidget {
                         child: Text(
                           data?.title ?? '',
                           style: TextStyle(
-                            fontWeight: data?.isRead == true ? FontWeight.w500 : FontWeight.w700,
+                            fontWeight: isUnread ? FontWeight.w700 : FontWeight.w500,
                             fontSize: 13.r,
                             color: Colors.black87,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (data?.isRead == false)
+                      if (isUnread)
                         Container(
                           width: 8,
                           height: 8,
+                          margin: EdgeInsets.only(left: 8.w),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Branding.colors.primaryLight,
+                            color: style.color,
                           ),
                         ),
                     ],
                   ),
-                  Html(
-                    data: data?.body,
-                    style: {
-                      "body": Style(
-                        fontSize: FontSize(12.r),
-                        padding: HtmlPaddings.zero,
-                        margin: Margins.zero,
-                        maxLines: 2,
-                        color: Colors.black54,
-                      ),
-                    },
-                  ),
+                  if (data?.body != null && data!.body!.trim().isNotEmpty) ...[
+                    SizedBox(height: 2.h),
+                    Html(
+                      data: data?.body,
+                      style: {
+                        "body": Style(
+                          fontSize: FontSize(12.r),
+                          padding: HtmlPaddings.zero,
+                          margin: Margins.zero,
+                          maxLines: 2,
+                          color: Colors.black54,
+                        ),
+                      },
+                    ),
+                  ],
                   SizedBox(height: 4.h),
                   if (data?.date != null)
                     Text(
-                      data!.date!,
+                      _formatDate(data!.date!),
                       style: TextStyle(color: Colors.black38, fontSize: 10.r),
                     ),
                 ],

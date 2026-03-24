@@ -24,6 +24,7 @@ class NotificationListBloc extends Bloc<NoticeListEvent, NoticeListState> {
     emit(const NoticeListState(status: NetworkStatus.loading));
     final noticeListModel = await _metaClubApiClient.getNoticeList();
     noticeListModel.fold((l) {
+      debugPrint('Notice list load failed: $l');
       emit(const NoticeListState(status: NetworkStatus.failure));
     }, (r) {
       emit(state.copy(noticeListModel: r, status: NetworkStatus.success));

@@ -1,8 +1,9 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:onesthrm/page/all_natification/view/notification_screen.dart';
+import 'package:onesthrm/page/all_natification/view/unified_notification_screen.dart';
 import 'package:onesthrm/page/appointment/appoinment_list/view/appointment_screen.dart';
+import 'package:onesthrm/page/my_schedule/view/my_schedule_page.dart';
 import 'package:onesthrm/page/attendance_report/view/pluto_attendance_report_page.dart';
 import 'package:onesthrm/page/daily_leave/view/daily_leave_page.dart';
 import 'package:onesthrm/page/daily_leave/view/pluto_daily_leave_page.dart';
@@ -52,7 +53,7 @@ Widget chooseMenu() {
 }
 
 Widget chooseNotification() {
-  return const NotificationScreen();
+  return const UnifiedNotificationScreen();
 }
 
 Widget chooseDailyLeave() {
@@ -77,6 +78,11 @@ void routeSlug(slugName, context) {
       NavUtil.navigateScreen(context, const AppointmentScreen());
     case 'meeting':
       NavUtil.navigateScreen(context, const MeetingPage());
+    case 'schedule':
+    case 'shift':
+    case 'my_schedule':
+    case 'weekly_schedule':
+      NavUtil.navigateScreen(context, const MySchedulePage());
     default:
       if (kDebugMode) {
         print(slugName);

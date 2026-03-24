@@ -32,20 +32,23 @@ class _HomePlutoContentState extends State<HomePlutoContent> {
 
         return BlocBuilder<LanguageBloc, LanguageState>(
           builder: (context, state) {
-            return ListView(
-              children: [
-                ///top-header
-                PlutoHomeHeader(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
-                ///check-in-out-creak content
-                PlutoCheckBreakContent(
-                    settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
-
-                ///my stats
-                MyStatsCard(dashboardModel: homeState.dashboardModel),
-
-                ///bottom-header
-                HomeBottom(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
-              ],
+            return RefreshIndicator(
+              color: Branding.colors.primaryLight,
+              onRefresh: () async {
+                context.read<HomeBloc>().add(OnHomeRefresh());
+                // Wait briefly for data to reload
+                await Future.delayed(const Duration(milliseconds: 800));
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  PlutoHomeHeader(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
+                  PlutoCheckBreakContent(
+                      settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
+                  MyStatsCard(dashboardModel: homeState.dashboardModel, settings: homeState.settings),
+                  HomeBottom(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
+                ],
+              ),
             );
           },
         );

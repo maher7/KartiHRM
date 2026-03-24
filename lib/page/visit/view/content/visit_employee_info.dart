@@ -46,15 +46,23 @@ class VisitEmployeeInfo extends StatelessWidget {
                     fontSize: 12.r,
                     fontWeight: FontWeight.bold)),
             leading: ClipOval(
-              child: CachedNetworkImage(
-                height: 50.r,
-                width: 50.r,
-                fit: BoxFit.cover,
-                imageUrl: "${user?.user?.avatar}",
-                placeholder: (context, url) => Center(
-                  child: Image.asset("assets/images/placeholder_image.png"),
-                ),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+              child: Builder(
+                builder: (context) {
+                  final avatarUrl = "${user?.user?.avatar}";
+                  final hasValidUrl = avatarUrl.isNotEmpty && Uri.tryParse(avatarUrl)?.hasScheme == true;
+                  return hasValidUrl
+                      ? CachedNetworkImage(
+                          height: 50.r,
+                          width: 50.r,
+                          fit: BoxFit.cover,
+                          imageUrl: avatarUrl,
+                          placeholder: (context, url) => Center(
+                            child: Image.asset("assets/images/placeholder_image.png"),
+                          ),
+                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                        )
+                      : Image.asset("assets/images/placeholder_image.png");
+                },
               ),
             ),
           ),

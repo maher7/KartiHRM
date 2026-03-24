@@ -13,11 +13,18 @@ import 'package:notification/src/domain/usecases/get_notification_token_usecase.
 import 'package:notification/src/domain/usecases/initialize_notification_usecase.dart';
 import 'package:push/push.dart' as push;
 
+/// Callback signature for handling notification taps.
+/// [payload] is the JSON-encoded notification data, [type] is the notification type/slug.
+typedef OnNotificationTapCallback = void Function(String? payload, String? type);
+
 class NotificationAppStartedHandlerService {
   final LocalNotificationService localNotificationService;
   final AddNotificationUseCase addNotificationUseCase;
   final GetNotificationTokenUseCase notificationTokenUseCase;
   final InitializeNotificationUseCase initializeNotificationUseCase;
+
+  /// External callback for deep-linking on notification tap.
+  static OnNotificationTapCallback? onTapCallback;
 
   NotificationAppStartedHandlerService(
       {required this.localNotificationService,
@@ -117,8 +124,24 @@ class NotificationAppStartedHandlerService {
   }
 
   onNotificationClick(payload) {
-    if (payload != null) {
-      debugPrint('Payload $payload');
+    if (payload == null) return;
+    debugPrint('Notification tapped with payload: $payload');
+    try {
+      String? type;
+      if (payload is String && payload.isNotEmpty) {
+        final data = json.decode(payload);
+        if (data is Map) {
+          type = data['type']?.toString() ?? data['slag']?.toString();
+        }
+      }
+      if (onTapCallback != null) {
+        onTapCallback!(payload is String ? payload : json.encode(payload), type);
+      }
+    } catch (e) {
+      debugPrint('Notification click parse error: $e');
+      if (onTapCallback != null) {
+        onTapCallback!(payload?.toString(), null);
+      }
     }
   }
 }

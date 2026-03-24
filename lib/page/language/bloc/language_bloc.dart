@@ -21,9 +21,6 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
         event.context.setLocale(const Locale('en', 'US'));
         break;
       case 1:
-        event.context.setLocale(const Locale('bn', 'BN'));
-        break;
-      case 2:
         event.context.setLocale(const Locale('ar', 'AR'));
         break;
     }

@@ -17,3 +17,10 @@ class RouteSlug extends NotificationEvent {
 }
 
 class ClearNoticeButton extends NotificationEvent {}
+
+class MarkNotificationAsRead extends NotificationEvent {
+  final int notificationId;
+  MarkNotificationAsRead({required this.notificationId});
+  @override
+  List<Object?> get props => [notificationId];
+}

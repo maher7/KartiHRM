@@ -11,9 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   # For push notification
-  firebase_messaging: ^15.1.6
+  firebase_messaging: ^16.0.0
   #Firebase core
-  firebase_core: ^3.9.0
+  firebase_core: ^4.0.0
   # For local notification
   flutter_local_notifications: ^17.2.4
   # For running push notifications in all os

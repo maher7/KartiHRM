@@ -76,6 +76,8 @@ class NotificationScreen extends StatelessWidget {
                                 onTap: () {
                                   // Navigate to details if slug is empty, otherwise route by slug
                                   if (data?.slag == null || data!.slag!.isEmpty) {
+                                    debugPrint('Notification body: "${data?.body}"');
+                                    debugPrint('Notification title: "${data?.title}"');
                                     NavUtil.navigateScreen(
                                       context,
                                       NoticeDetailsScreen(

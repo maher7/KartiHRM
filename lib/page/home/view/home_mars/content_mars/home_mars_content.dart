@@ -76,7 +76,7 @@ class _HomeMarsContentState extends State<HomeMarsContent> {
                         Positioned(right: 20, top: 30,
                             child: InkWell(
                                 onTap: (){
-                                  NavUtil.navigateScreen(context, const NotificationScreen());
+                                  NavUtil.navigateScreen(context, const UnifiedNotificationScreen());
                                 },
                                 child: Image.asset("assets/images/ic_notification.png",height: 40,fit: BoxFit.fitHeight,))),
 
@@ -86,9 +86,17 @@ class _HomeMarsContentState extends State<HomeMarsContent> {
                               onTap: (){
                                 NavUtil.navigateScreen(context, const ProfileScreen());
                               },
-                              child: CachedNetworkImage(height: 45, width: 45, fit: BoxFit.cover, imageUrl: "${user?.user?.avatar}",
-                                  placeholder: (context, url) => Center(child: Image.asset("assets/home_bg/placeholder_image.png")),
-                                  errorWidget: (context, url, error) => const Icon(Icons.error)),
+                              child: Builder(
+                                builder: (context) {
+                                  final avatarUrl = "${user?.user?.avatar}";
+                                  final hasValidUrl = avatarUrl.isNotEmpty && Uri.tryParse(avatarUrl)?.hasScheme == true;
+                                  return hasValidUrl
+                                      ? CachedNetworkImage(height: 45, width: 45, fit: BoxFit.cover, imageUrl: avatarUrl,
+                                          placeholder: (context, url) => Center(child: Image.asset("assets/home_bg/placeholder_image.png")),
+                                          errorWidget: (context, url, error) => const Icon(Icons.error))
+                                      : Image.asset("assets/home_bg/placeholder_image.png");
+                                },
+                              ),
                             ),
                           ),
                         )

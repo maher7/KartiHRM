@@ -38,6 +38,7 @@ class AuthenticationBloc extends HydratedBloc<AuthenticationEvent, Authenticatio
   _onAuthenticationUserChanged(AuthenticationUserChanged event,Emitter<AuthenticationState> emit) async {
     debugPrint('event.data.toJson()${event.data.toJson()}');
     globalState.set(authToken,event.data.user?.token);
+    globalState.set(keyUserId, event.data.user?.id?.toString());
     if(event.data.user != null){
       return emit(AuthenticationState.authenticated(event.data));
     }
@@ -65,6 +66,7 @@ class AuthenticationBloc extends HydratedBloc<AuthenticationEvent, Authenticatio
       final user = LoginData.fromJson(userJson);
       if(user.user != null){
         globalState.set(authToken,user.user!.token);
+        globalState.set(keyUserId, user.user!.id?.toString());
       }
       _authenticationRepository.updateAuthenticationStatus(AuthenticationStatus.authenticated);
       _authenticationRepository.updateUserData(user);

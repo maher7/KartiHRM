@@ -42,6 +42,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     ///-----------------------------------------------------------///
     on<LoadSettings>(_onSettingsLoad);
     on<LoadHomeData>(_onHomeDataLoad);
+    on<OnHomeRefresh>(_onHomeRefresh);
     on<OnSwitchPressed>(_onSwitchPressed);
     on<OnLocationEnabled>(_onLocationEnabled);
     on<OnLocationRefresh>(_onLocationRefresh);
@@ -83,8 +84,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       ///Assign default shift in pref
       if (settings != null) {
-        if (settings.data!.shifts.isNotEmpty) {
-          SharedUtil.setIntValue(shiftId, settings.data?.shifts.first.shiftId);
+        if (settings.data?.shifts.isNotEmpty == true) {
+          SharedUtil.setIntValue(shiftId, settings.data?.shifts.firstOrNull?.shiftId);
         }
       }
       subscribeTopic();
@@ -117,13 +118,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             );
             debugPrint("FCM token stored on server");
           } catch (e) {
-            debugPrint("Failed to store FCM token: $e");
+            if (e is dio_pkg.DioException && e.response != null) {
+              debugPrint("Failed to store FCM token [${e.response?.statusCode}]: ${e.response?.data}");
+            } else {
+              debugPrint("Failed to store FCM token: $e");
+            }
           }
         }
       }
     } catch (_) {
       return;
     }
+  }
+
+  void _onHomeRefresh(OnHomeRefresh event, Emitter<HomeState> emit) async {
+    return _onHomeDataLoad(LoadHomeData(), emit);
   }
 
   void _onHomeDataLoad(LoadHomeData event, Emitter<HomeState> emit) async {
@@ -190,9 +199,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       final bool isLocationEnabled = globalState.get(isLocation);
 
       ///------------------------Refresh data in OfflineAttendanceCubit-------------------------------------
-      if (attendanceData?.id != null) {
-        /// API confirms user is checked in today — sync to local
-        final date = DateFormat('yyyy-MM-dd', 'en').format(DateTime.now());
+      final date = DateFormat('yyyy-MM-dd', 'en').format(DateTime.now());
+      if (attendanceData?.id != null || attendanceData?.checkIn == true || attendanceData?.inTime != null) {
+        /// API confirms user has attendance data today — sync to local
         final body = AttendanceBody(
           attendanceId: attendanceData?.id,
           inTime: attendanceData?.inTime,

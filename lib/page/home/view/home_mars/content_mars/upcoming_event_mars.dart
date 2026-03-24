@@ -48,7 +48,7 @@ class UpcomingEventMars extends StatelessWidget {
                                 height: 133,
                                 width: 208,
                                 fit: BoxFit.cover,
-                                imageUrl: "${data?.image}",
+                                imageUrl: (data?.image != null && data!.image.toString() != 'null' && Uri.tryParse(data.image.toString())?.hasScheme == true) ? data.image.toString() : 'https://placeholder.invalid/empty',
                                 placeholder: (context, url) => Center(
                                   child: Image.asset(
                                       "assets/images/placeholder_image.png"),

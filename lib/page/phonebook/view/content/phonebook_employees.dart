@@ -91,19 +91,30 @@ class PhoneBookEmployees extends StatelessWidget {
                                           border: Border.all(color: Colors.grey.shade200, width: 1.5),
                                         ),
                                         child: ClipOval(
-                                          child: CachedNetworkImage(
-                                            height: 44.r,
-                                            width: 44.r,
-                                            fit: BoxFit.cover,
-                                            imageUrl: "${employee.avatar}",
-                                            placeholder: (context, url) => Container(
-                                              color: Colors.grey.shade100,
-                                              child: Icon(Icons.person, color: Colors.grey.shade400, size: 24),
-                                            ),
-                                            errorWidget: (context, url, error) => Container(
-                                              color: Colors.grey.shade100,
-                                              child: Icon(Icons.person, color: Colors.grey.shade400, size: 24),
-                                            ),
+                                          child: Builder(
+                                            builder: (context) {
+                                              final avatarUrl = "${employee.avatar}";
+                                              final hasValidUrl = avatarUrl.isNotEmpty && Uri.tryParse(avatarUrl)?.hasScheme == true;
+                                              return hasValidUrl
+                                                  ? CachedNetworkImage(
+                                                      height: 44.r,
+                                                      width: 44.r,
+                                                      fit: BoxFit.cover,
+                                                      imageUrl: avatarUrl,
+                                                      placeholder: (context, url) => Container(
+                                                        color: Colors.grey.shade100,
+                                                        child: Icon(Icons.person, color: Colors.grey.shade400, size: 24),
+                                                      ),
+                                                      errorWidget: (context, url, error) => Container(
+                                                        color: Colors.grey.shade100,
+                                                        child: Icon(Icons.person, color: Colors.grey.shade400, size: 24),
+                                                      ),
+                                                    )
+                                                  : Container(
+                                                      color: Colors.grey.shade100,
+                                                      child: Icon(Icons.person, color: Colors.grey.shade400, size: 24),
+                                                    );
+                                            },
                                           ),
                                         ),
                                       ),

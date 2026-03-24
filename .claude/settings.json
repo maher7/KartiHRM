@@ -6,10 +6,40 @@
       "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/lib/page/attendance -type f -name *.dart)",
       "Bash(curl -s http://127.0.0.1:62429/f3ADr78MmCA=/getVM)",
       "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/packages/feature/notification -name *.dart -type f)",
-      "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/lib/page -type d -name *support* -o -type d -name *ticket*)"
+      "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/lib/page -type d -name *support* -o -type d -name *ticket*)",
+      "Bash(where python3:*)",
+      "Bash(where python:*)",
+      "Bash(where py:*)",
+      "Bash(/c/Users/Mz/AppData/Local/Programs/Python/Python312/python.exe -c \"print\\(''ok''\\)\")",
+      "Bash(/c/Python312/python.exe -c \"print\\(''ok''\\)\")",
+      "Bash(cmd.exe /c \"python -c \"\"print\\(''ok''\\)\"\"\")",
+      "Bash(cmd.exe /c \"py -c \"\"print\\(''ok''\\)\"\"\")",
+      "Bash(flutter analyze:*)",
+      "Bash(ls \"c:\\\\Users\\\\Mz\\\\Downloads\\\\KartiOnlineLiveServerStationJ\\\\storage\\\\app\\\\scheduling\\\\agreement_rules-\"*)",
+      "Bash(php artisan tinker --execute=\":*)",
+      "Bash(dart pub:*)",
+      "Bash(flutterfire configure:*)",
+      "Bash(echo $LOCALAPPDATA/Pub/Cache/bin)",
+      "Read(//c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/$LOCALAPPDATA/Pub/Cache/**)",
+      "Bash(\"$LOCALAPPDATA/Pub/Cache/bin/flutterfire.bat\" configure:*)",
+      "Bash(npm install:*)",
+      "Bash(firebase --version)",
+      "Bash(npx firebase:*)",
+      "Bash(find c:UsersMzDownloadsKartiOnlineLiveServerStationJresourcesviewsbackendlayouts -name *.blade.php)",
+      "Bash(flutter pub:*)",
+      "Bash(tasklist)",
+      "Bash(./gradlew --stop)",
+      "Bash(flutter doctor:*)",
+      "Bash(find /c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ -type d -name *otif* -o -type d -name *Push*)",
+      "Bash(keytool -list -v -keystore \"$HOME/.android/debug.keystore\" -alias androiddebugkey -storepass android)",
+      "Bash(grep -E \"\\\\.\\(php|js|blade\\)$\")",
+      "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main -path */packages/* -name *notification* -type f)",
+      "Bash(grep -E \"\\\\.\\(php|js\\)$\")",
+      "Bash(find c:UsersMzDownloadsKartiOnlineLiveServerStationJ -name *.php -path */routes/* -type f)"
     ],
     "additionalDirectories": [
-      "c:\\Users\\Mz\\Downloads\\KartiOnlineLiveServerStationJ\\app\\Http\\Resources"
+      "c:\\Users\\Mz\\Downloads\\KartiOnlineLiveServerStationJ\\app\\Http\\Resources",
+      "C:\\Users\\Mz\\Downloads"
     ]
   }
 }

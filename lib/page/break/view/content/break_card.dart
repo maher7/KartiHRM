@@ -34,10 +34,13 @@ class BreakCardItem extends StatelessWidget {
             const SizedBox(
               height: 8.0,
             ),
-            CachedNetworkImage(
-              imageUrl: icon ?? '',
-              color: isChecked ? Branding.colors.iconInverse : Branding.colors.iconPrimary,
-            ),
+            (icon != null && icon!.isNotEmpty && Uri.tryParse(icon!)?.hasScheme == true)
+                ? CachedNetworkImage(
+                    imageUrl: icon!,
+                    color: isChecked ? Branding.colors.iconInverse : Branding.colors.iconPrimary,
+                    errorWidget: (_, __, ___) => Icon(Icons.coffee_rounded, color: isChecked ? Branding.colors.iconInverse : Branding.colors.iconPrimary),
+                  )
+                : Icon(Icons.coffee_rounded, color: isChecked ? Branding.colors.iconInverse : Branding.colors.iconPrimary),
             const SizedBox(
               height: 8.0,
             ),

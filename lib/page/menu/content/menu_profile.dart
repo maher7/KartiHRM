@@ -11,11 +11,15 @@ class MenuProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.read<AuthenticationBloc>().state.data;
+    final avatar = user?.user?.avatar;
+    final hasAvatar = avatar != null && avatar.isNotEmpty && Uri.tryParse(avatar)?.hasScheme == true;
     return ClipOval(
-      child: CachedNetworkImage(height: 50.r, width: 50.r, fit: BoxFit.cover, imageUrl: "${user?.user?.avatar}",
-        placeholder: (context, url) => Center(child: Image.asset("assets/images/placeholder_image.png",),),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
-      ),
+      child: hasAvatar
+          ? CachedNetworkImage(height: 50.r, width: 50.r, fit: BoxFit.cover, imageUrl: avatar,
+              placeholder: (context, url) => Image.asset("assets/images/placeholder_image.png", height: 50.r, width: 50.r, fit: BoxFit.cover),
+              errorWidget: (context, url, error) => Image.asset("assets/images/placeholder_image.png", height: 50.r, width: 50.r, fit: BoxFit.cover),
+            )
+          : Image.asset("assets/images/placeholder_image.png", height: 50.r, width: 50.r, fit: BoxFit.cover),
     );
   }
 }

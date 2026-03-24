@@ -17,7 +17,7 @@ class SplashBloc extends Cubit<SplashState> {
 
   void initSplash(BuildContext context, LoginData? data) {
     final company = context.read<OnboardingBloc>().state.selectedCompany;
-    Future.delayed(const Duration(seconds: 2), () async {
+    Future.delayed(const Duration(seconds: 3), () async {
       if (data?.user != null) {
         final navigator = instance<GlobalKey<NavigatorState>>().currentState!;
         navigator.pushAndRemoveUntil(BottomNavigationPage.route(), (route) => false);

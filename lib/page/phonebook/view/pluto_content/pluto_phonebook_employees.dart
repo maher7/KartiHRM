@@ -87,11 +87,19 @@ class PlutoPhoneBookEmployees extends StatelessWidget {
                                           border: Border.all(color: Branding.colors.primaryLight.withValues(alpha: 0.3), width: 2),
                                         ),
                                         child: ClipOval(
-                                          child: CachedNetworkImage(
-                                            height: 44.r, width: 44.r, fit: BoxFit.cover,
-                                            imageUrl: "${employee.avatar}",
-                                            placeholder: (context, url) => Center(child: Image.asset("assets/images/placeholder_image.png")),
-                                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                                          child: Builder(
+                                            builder: (context) {
+                                              final avatarUrl = "${employee.avatar}";
+                                              final hasValidUrl = avatarUrl.isNotEmpty && Uri.tryParse(avatarUrl)?.hasScheme == true;
+                                              return hasValidUrl
+                                                  ? CachedNetworkImage(
+                                                      height: 44.r, width: 44.r, fit: BoxFit.cover,
+                                                      imageUrl: avatarUrl,
+                                                      placeholder: (context, url) => Center(child: Image.asset("assets/images/placeholder_image.png")),
+                                                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                                                    )
+                                                  : Image.asset("assets/images/placeholder_image.png");
+                                            },
                                           ),
                                         ),
                                       ),

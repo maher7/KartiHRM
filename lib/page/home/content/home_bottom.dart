@@ -23,7 +23,7 @@ class HomeBottom extends StatelessWidget {
       children: [
         const PlutoUpcomingEvent(),
         SizedBox(
-          height: 8.0.h,
+          height: 16.0.h,
         ),
         if(dashboardModel?.data?.currentMonth?.isNotEmpty == true)...[
           PlutoCurrentMonthSummeryContent(monthsData: dashboardModel!.data!.currentMonth!),

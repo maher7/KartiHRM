@@ -13,20 +13,23 @@ class DynamicImageViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isValid = image.isNotEmpty && (Uri.tryParse(image)?.hasScheme ?? false);
+    if (!isValid) {
+      return Icon(Icons.image_outlined, size: height.h, color: Branding.colors.primaryLight);
+    }
     return image.contains('svg') == true
         ? SvgPicture.network(
             image,
             height: height.h,
             width: width.w,
-            // color: colorPrimary,
             colorFilter: ColorFilter.mode(Branding.colors.primaryLight, BlendMode.srcIn),
-            // color: co2lorPrimary,
           )
         : CachedNetworkImage(
             imageUrl: image,
             height: height.h,
             width: width.w,
             color: Branding.colors.primaryLight,
+            errorWidget: (context, url, error) => Icon(Icons.image_outlined, size: height.h, color: Branding.colors.primaryLight),
           );
   }
 }

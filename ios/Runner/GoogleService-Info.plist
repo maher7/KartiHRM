@@ -2,22 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>76550645698-um0ucpaje6rk9ngr51t08ph2q7vudejr.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.76550645698-um0ucpaje6rk9ngr51t08ph2q7vudejr</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAd3oc8cTT_myFx7BatMhU8bJDPhWIHIFk</string>
+	<string>AIzaSyD1AXpc64ur2EpqDq8xP3U1zyAbQ70RYVQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>76550645698</string>
+	<string>1084442997964</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>online.karti.app</string>
 	<key>PROJECT_ID</key>
-	<string>karti-hrm-7788</string>
+	<string>karti-hrm-dea83</string>
 	<key>STORAGE_BUCKET</key>
-	<string>karti-hrm-7788.firebasestorage.app</string>
+	<string>karti-hrm-dea83.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:76550645698:ios:de33b1c49e7e8362b1185b</string>
-	<key>DATABASE_URL</key>
-	<string>https://karti-hrm-7788-default-rtdb.firebaseio.com</string>
+	<string>1:1084442997964:ios:a1e662cb77fae71dd03e69</string>
 </dict>
 </plist>

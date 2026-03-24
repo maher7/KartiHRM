@@ -93,15 +93,23 @@ class EmployeeList extends StatelessWidget {
                                         style: TextStyle(fontSize: 12.sp),
                                       ),
                                       leading: ClipOval(
-                                        child: CachedNetworkImage(
-                                          height: DeviceUtil.isTablet ? 70 : 40,
-                                          width: DeviceUtil.isTablet ? 70 : 40,
-                                          fit: BoxFit.cover,
-                                          imageUrl: "${state.phoneBookUsers?[index].avatar}",
-                                          placeholder: (context, url) => Center(
-                                            child: Image.asset("assets/images/placeholder_image.png"),
-                                          ),
-                                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                                        child: Builder(
+                                          builder: (context) {
+                                            final avatarUrl = "${state.phoneBookUsers?[index].avatar}";
+                                            final hasValidUrl = avatarUrl.isNotEmpty && Uri.tryParse(avatarUrl)?.hasScheme == true;
+                                            return hasValidUrl
+                                                ? CachedNetworkImage(
+                                                    height: DeviceUtil.isTablet ? 70 : 40,
+                                                    width: DeviceUtil.isTablet ? 70 : 40,
+                                                    fit: BoxFit.cover,
+                                                    imageUrl: avatarUrl,
+                                                    placeholder: (context, url) => Center(
+                                                      child: Image.asset("assets/images/placeholder_image.png"),
+                                                    ),
+                                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                                                  )
+                                                : Image.asset("assets/images/placeholder_image.png");
+                                          },
                                         ),
                                       ),
                                     ),

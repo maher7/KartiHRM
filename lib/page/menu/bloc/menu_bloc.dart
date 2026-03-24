@@ -19,7 +19,7 @@ import 'package:onesthrm/page/home/bloc/home_bloc.dart';
 import 'package:onesthrm/page/appointment/appoinment_list/view/appointment_screen.dart';
 import 'package:onesthrm/page/leave/view/leave_page.dart';
 import 'package:onesthrm/page/meeting/meeting.dart';
-import 'package:onesthrm/page/notice_list/view/notice_list_screen.dart';
+import 'package:onesthrm/page/all_natification/view/unified_notification_screen.dart';
 import 'package:onesthrm/page/payroll/view/view.dart';
 import 'package:onesthrm/page/phonebook/view/phonebook_page.dart';
 import 'package:onesthrm/page/phonebook/view/pluto_phonebook_page.dart';
@@ -73,7 +73,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         Navigator.push(event.context, AttendanceMethodScreen.route(homeBloc: event.context.read<HomeBloc>()));
         break;
       case 'notice':
-        NavUtil.navigateScreen(event.context, const NoticeListScreen());
+        NavUtil.navigateScreen(event.context, const UnifiedNotificationScreen(initialTab: 1));
         break;
       case 'daily-work':
         NavUtil.navigateScreen(event.context, const DailyReportPage());

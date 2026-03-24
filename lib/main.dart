@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:onesthrm/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +13,9 @@ import 'package:notification/notification.dart';
 import 'package:onesthrm/injection/app_injection.dart';
 import 'package:onesthrm/page/app/app.dart';
 import 'package:onesthrm/page/app/app_bloc_observer.dart';
+import 'package:onesthrm/page/home/router/home__menu_router.dart';
+import 'package:onesthrm/page/notice_details/view/notice_details_screen.dart';
+import 'package:onesthrm/res/nav_utail.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
@@ -20,21 +25,27 @@ void main() async {
   await EasyLocalization.ensureInitialized();
 
   ///initializeFirebaseAtStatingPoint
-  // On cold start the Pigeon channel may not be ready yet — retry with backoff.
-  if (Firebase.apps.isEmpty) {
-    const delays = [500, 1000, 2000, 3000];
-    for (final ms in delays) {
-      try {
-        await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-        break; // success
-      } catch (_) {
-        if (ms == delays.last) {
-          debugPrint('Firebase init failed after all retries — continuing without Firebase');
-        } else {
-          await Future.delayed(Duration(milliseconds: ms));
-        }
+  // Native side initializes Firebase in MainApplication.onCreate().
+  // Dart side syncs with a retry to allow Pigeon channels to settle.
+  bool firebaseReady = false;
+  for (int i = 0; i < 5; i++) {
+    try {
+      if (Firebase.apps.isNotEmpty) {
+        firebaseReady = true;
+        debugPrint('Firebase already initialized (attempt $i)');
+        break;
       }
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      firebaseReady = true;
+      debugPrint('Firebase initialized from Dart (attempt $i)');
+      break;
+    } catch (e) {
+      debugPrint('Firebase init attempt $i failed: $e');
+      await Future.delayed(Duration(milliseconds: 500 * (i + 1)));
     }
+  }
+  if (!firebaseReady) {
+    debugPrint('Firebase init failed after all retries — continuing without Firebase');
   }
   ///initializeDependencyInjection
   await initAppModule();
@@ -44,6 +55,41 @@ void main() async {
   final appView = instance<AppFactory>();
   await instance<NotificationAppStartedHandlerService>().onAppStarted();
 
+  // Register notification tap callback for deep linking
+  NotificationAppStartedHandlerService.onTapCallback = (payload, type) {
+    final navKey = instance<GlobalKey<NavigatorState>>();
+    final context = navKey.currentState?.context;
+    if (context == null) return;
+    _handleNotificationTap(context, payload, type);
+  };
+
+  // Handle notification tap that opened the app from killed/background state
+  try {
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      final type = initialMessage.data['type']?.toString();
+      // Delay to let the app fully render before navigating
+      Future.delayed(const Duration(seconds: 4), () {
+        final navKey = instance<GlobalKey<NavigatorState>>();
+        final context = navKey.currentState?.context;
+        if (context != null && type != null) {
+          _handleNotificationTap(context, null, type);
+        }
+      });
+    }
+    // Handle notification tap when app is in background (not killed)
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      final type = message.data['type']?.toString();
+      final navKey = instance<GlobalKey<NavigatorState>>();
+      final context = navKey.currentState?.context;
+      if (context != null && type != null) {
+        _handleNotificationTap(context, null, type);
+      }
+    });
+  } catch (e) {
+    debugPrint('FCM initial message handling error: $e');
+  }
+
   HydratedBloc.storage = await HydratedStorage.build(storageDirectory: await getApplicationDocumentsDirectory());
   Bloc.observer = AppBlocObserver();
 
@@ -52,7 +98,6 @@ void main() async {
   runApp(EasyLocalization(
     supportedLocales: const [
       Locale('en', 'US'),
-      Locale('bn', 'BN'),
       Locale('ar', 'AR'),
     ],
     path: 'assets/translations',
@@ -68,6 +113,44 @@ Future<void> updateAppWidget({required bool isCheckedIn}) async {
       name: 'HomeScreenCheckInOutWidgetProvider',
       iOSName: 'HomeScreenCheckInOutWidgetProvider',
       qualifiedAndroidName: 'com.example.onesthrm.HomeScreenCheckInOutWidgetProvider');
+}
+
+/// Handle notification tap — route to the appropriate screen based on type/slug.
+void _handleNotificationTap(BuildContext context, String? payload, String? type) {
+  debugPrint('Deep link: type=$type, payload=$payload');
+
+  // If we have a known slug/type, route using the existing slug router
+  if (type != null && type.isNotEmpty) {
+    routeSlug(type, context);
+    return;
+  }
+
+  // Otherwise, try to parse the payload and show the notification details
+  if (payload != null && payload.isNotEmpty) {
+    try {
+      final data = json.decode(payload);
+      if (data is Map) {
+        // Check if there's a type in the payload data
+        final slug = data['type']?.toString() ?? data['slag']?.toString() ?? '';
+        if (slug.isNotEmpty) {
+          routeSlug(slug, context);
+          return;
+        }
+        // Fall back to showing notification details
+        NavUtil.navigateScreen(
+          context,
+          NoticeDetailsScreen(
+            title: data['title']?.toString(),
+            body: data['body']?.toString() ?? data['message']?.toString(),
+          ),
+        );
+        return;
+      }
+    } catch (_) {}
+  }
+
+  // Default: open the notifications tab
+  NavUtil.navigateScreen(context, chooseNotification());
 }
 
 class MyHttpOverrides extends HttpOverrides {

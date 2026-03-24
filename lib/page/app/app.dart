@@ -75,7 +75,9 @@ class _AppViewState extends State<AppView> {
                         globalState.set(companyUrl, company?.url);
                         switch (state.status) {
                           case AuthenticationStatus.authenticated:
-                            SharedUtil.getBoolValue(isDisclosure).then((isDisclosure) {
+                            SharedUtil.getBoolValue(isDisclosure).then((isDisclosure) async {
+                              // Wait for splash screen to show before navigating
+                              await Future.delayed(const Duration(seconds: 3));
                               if (isDisclosure) {
                                 _navigator.pushAndRemoveUntil(BottomNavigationPage.route(), (route) => false);
                               } else {

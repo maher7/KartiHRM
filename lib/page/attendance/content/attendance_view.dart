@@ -52,10 +52,14 @@ class _AttendanceState extends State<AttendanceView> with TickerProviderStateMix
         if (state.checkData?.message != null &&
             state.actionStatus == ActionStatus.checkInOut &&
             state.status != NetworkStatus.loading) {
+          final msg = '${state.checkData?.message}';
+          final friendlyMsg = (msg.contains('No Duty Calendar') || msg.contains('No Duty Shift'))
+              ? 'no_shift_assigned'.tr()
+              : msg;
           showLoginDialog(
               context: context,
               message: '${user?.user?.name}',
-              body: '${state.checkData?.message}',
+              body: friendlyMsg,
               isSuccess: state.checkData?.checkInOut != null ? true : false);
         }
         if (state.actionStatus == ActionStatus.checkInOut && state.status == NetworkStatus.success) {

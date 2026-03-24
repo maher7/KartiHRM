@@ -98,18 +98,24 @@ class CreateLeaveRequest extends StatelessWidget {
                             subtitle: Text(state.selectedEmployee?.designation ?? tr("add_a_Designation"),
                                 style: TextStyle(fontSize: 12.r)),
                             leading: ClipOval(
-                              child: CachedNetworkImage(
-                                height: 35.r,
-                                width: 35.r,
-                                fit: BoxFit.cover,
-                                imageUrl: state.selectedEmployee?.avatar ??
-                                    'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
-                                placeholder: (context, url) => Center(
-                                  child: Image.asset(
-                                    "assets/images/app_icon.png",
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) => const Icon(Icons.error),
+                              child: Builder(
+                                builder: (context) {
+                                  final avatarUrl = state.selectedEmployee?.avatar ?? '';
+                                  final fallbackUrl = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png';
+                                  final urlToUse = (avatarUrl.isNotEmpty && Uri.tryParse(avatarUrl)?.hasScheme == true) ? avatarUrl : fallbackUrl;
+                                  return CachedNetworkImage(
+                                    height: 35.r,
+                                    width: 35.r,
+                                    fit: BoxFit.cover,
+                                    imageUrl: urlToUse,
+                                    placeholder: (context, url) => Center(
+                                      child: Image.asset(
+                                        "assets/images/app_icon.png",
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                                  );
+                                },
                               ),
                             ),
                             trailing: Icon(

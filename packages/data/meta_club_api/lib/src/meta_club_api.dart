@@ -879,10 +879,17 @@ class MetaClubApiClient {
       final response = await httpService.postRequest('${getBaseUrl()}$api', '');
 
       return response.fold(
-        (l) => Left(l),
-        (r) => Right(NoticeListModel.fromJson(r.data)),
+        (l) {
+          debugPrint('getNoticeList failure: $l');
+          return Left(l);
+        },
+        (r) {
+          debugPrint('getNoticeList success: ${r.statusCode}');
+          return Right(NoticeListModel.fromJson(r.data));
+        },
       );
     } on Exception catch (e) {
+      debugPrint('getNoticeList exception: $e');
       return Left(ExceptionFailure(exception: e));
     }
   }
@@ -908,6 +915,17 @@ class MetaClubApiClient {
     const String clear = 'user/notification/clear';
     final response = await httpService.getRequestWithToken('${getBaseUrl()}$clear');
     return response.fold((l) => false, (r) => true);
+  }
+
+  /// Mark a single notification as read
+  Future<bool> markNotificationAsRead(int notificationId) async {
+    final String api = 'user/read-notification?id=$notificationId';
+    try {
+      final response = await httpService.getRequestWithToken('${getBaseUrl()}$api');
+      return response.fold((l) => false, (r) => true);
+    } catch (_) {
+      return false;
+    }
   }
 
   ///// All Notification ///////////

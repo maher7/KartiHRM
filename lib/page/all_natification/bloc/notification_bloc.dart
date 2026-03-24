@@ -9,6 +9,9 @@ import 'package:onesthrm/res/nav_utail.dart';
 part 'notification_event.dart';
 part 'notification_state.dart';
 
+/// Global unread notification count — listened by bottom nav badge
+final ValueNotifier<int> unreadNotificationCount = ValueNotifier<int>(0);
+
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final MetaClubApiClient _metaClubApiClient;
 
@@ -20,6 +23,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<LoadNotificationData>(_onNotificationDataLoad);
     on<RouteSlug>(_onRoutSlag);
     on<ClearNoticeButton>(_onClearData);
+    on<MarkNotificationAsRead>(_onMarkAsRead);
   }
 
   void _onNotificationDataLoad(
@@ -29,6 +33,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     notificationResponse.fold((l) {
       emit(const NotificationState(status: NetworkStatus.failure));
     }, (r) {
+      // Update global unread count for badge
+      final unread = r?.data?.notifications?.where((n) => n.isRead == false).length ?? 0;
+      unreadNotificationCount.value = unread;
       emit(state.copy(
           notificationResponse: r,
           status: NetworkStatus.success));
@@ -54,5 +61,12 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   void _onClearData(
       ClearNoticeButton event, Emitter<NotificationState> emit) async {
     await _metaClubApiClient.clearAllNotificationApi();
+  }
+
+  void _onMarkAsRead(
+      MarkNotificationAsRead event, Emitter<NotificationState> emit) async {
+    await _metaClubApiClient.markNotificationAsRead(event.notificationId);
+    // Refresh the list to reflect read status
+    add(LoadNotificationData());
   }
 }

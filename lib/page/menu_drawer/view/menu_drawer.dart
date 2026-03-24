@@ -12,6 +12,19 @@ class MenuDrawer extends StatelessWidget {
   const MenuDrawer({super.key, this.provider});
   final MenuBloc? provider;
 
+  Widget _buildAvatar(String? avatarUrl) {
+    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty && Uri.tryParse(avatarUrl)?.hasScheme == true;
+    if (hasAvatar) {
+      return CachedNetworkImage(
+        height: 80, width: 80, fit: BoxFit.cover,
+        imageUrl: avatarUrl,
+        placeholder: (context, url) => Image.asset("assets/images/placeholder_image.png", height: 80, width: 80, fit: BoxFit.cover),
+        errorWidget: (context, url, error) => Image.asset("assets/images/placeholder_image.png", height: 80, width: 80, fit: BoxFit.cover),
+      );
+    }
+    return Image.asset("assets/images/placeholder_image.png", height: 80, width: 80, fit: BoxFit.cover);
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = context.read<AuthenticationBloc>().state.data;
@@ -51,16 +64,7 @@ class MenuDrawer extends StatelessWidget {
                     border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 2),
                   ),
                   child: ClipOval(
-                    child: CachedNetworkImage(
-                      height: 80,
-                      width: 80,
-                      fit: BoxFit.cover,
-                      imageUrl: "${user?.user?.avatar}",
-                      placeholder: (context, url) => Center(
-                        child: Image.asset("assets/images/placeholder_image.png"),
-                      ),
-                      errorWidget: (context, url, error) => const Icon(Icons.error, color: Colors.white),
-                    ),
+                    child: _buildAvatar(user?.user?.avatar),
                   ),
                 ),
                 SizedBox(height: 12.h),

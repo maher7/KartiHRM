@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:onesthrm/page/all_natification/bloc/notification_bloc.dart';
 import 'package:onesthrm/page/home/router/home__menu_router.dart';
 import 'package:onesthrm/page/leave/view/leave_page.dart';
 import 'package:onesthrm/page/onboarding/bloc/onboarding_bloc.dart';
@@ -83,11 +84,15 @@ class BottomNavContent extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: BottomNavItem(
-                          icon: 'assets/home_icon/notifications.svg',
-                          label: 'alerts'.tr(),
-                          isSelected: selectedTab == BottomNavTab.notification,
-                          tab: BottomNavTab.notification,
+                        child: ValueListenableBuilder<int>(
+                          valueListenable: unreadNotificationCount,
+                          builder: (context, count, _) => BottomNavItem(
+                            icon: 'assets/home_icon/notifications.svg',
+                            label: 'alerts'.tr(),
+                            isSelected: selectedTab == BottomNavTab.notification,
+                            tab: BottomNavTab.notification,
+                            badgeCount: count,
+                          ),
                         ),
                       ),
                     ],
