@@ -165,7 +165,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         NavUtil.navigateScreen(event.context, const MySchedulePage());
         break;
       default:
-        return debugPrint('default');
+        return;
     }
   }
 

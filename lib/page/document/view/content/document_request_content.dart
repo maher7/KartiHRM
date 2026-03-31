@@ -113,7 +113,6 @@ class DocumentRequestContent extends StatelessWidget {
               ),
               UploadDocContent(
                 onFileUpload: (FileUpload? data) {
-                  debugPrint(data?.previewUrl);
                   context.read<DocumentBloc>().add(OnSelectImage(document: data?.previewUrl));
                 },
                 initialAvatar: state.documentPath ??

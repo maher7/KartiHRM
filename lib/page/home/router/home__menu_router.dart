@@ -84,10 +84,7 @@ void routeSlug(slugName, context) {
     case 'weekly_schedule':
       NavUtil.navigateScreen(context, const MySchedulePage());
     default:
-      if (kDebugMode) {
-        print(slugName);
-      }
-      return debugPrint('default');
+      return;
   }
 }
 
@@ -107,10 +104,7 @@ void currentMonthRouteSlug(slugName, context,  settings, ) {
     case 'visits':
       NavUtil.navigateScreen(context, const VisitPage());
     default:
-      if (kDebugMode) {
-        print(slugName);
-      }
-      return debugPrint('default');
+      return;
   }
 }
 

@@ -23,6 +23,7 @@ class DailyLeaveBloc extends Bloc<DailyLeaveEvent, DailyLeaveState> {
     on<SelectApproxTime>(_onSelectTimePicker);
     on<SelectLeaveType>(_onSelectLeaveType);
     on<ApplyLeave>(_onApplyLeave);
+    on<SelectLeaveDate>(_onSelectLeaveDate);
     on<SelectEmployee>(_selectEmployee);
     on<LeaveAction>(_onLeaveAction);
   }
@@ -66,6 +67,10 @@ class DailyLeaveBloc extends Bloc<DailyLeaveEvent, DailyLeaveState> {
     });
   }
 
+  FutureOr<void> _onSelectLeaveDate(SelectLeaveDate event, Emitter<DailyLeaveState> emit) {
+    emit(state.copyWith(selectedDate: event.date));
+  }
+
   FutureOr<void> _onSelectLeaveType(SelectLeaveType event, Emitter<DailyLeaveState> emit) async {
     emit(state.copyWith(leaveTypeModel: event.leaveTypeModel));
   }
@@ -79,19 +84,26 @@ class DailyLeaveBloc extends Bloc<DailyLeaveEvent, DailyLeaveState> {
       ApplyLeave event, Emitter<DailyLeaveState> emit) async {
     if (state.approxTime != null && state.leaveTypeModel != null) {
       emit(state.copyWith(status: NetworkStatus.loading));
+      final leaveDate = state.selectedDate ?? DateTime.now();
       final data = {
         'approx_time': state.approxTime,
         'reason': reasonTextController.text,
-        'leave_type': state.leaveTypeModel!.value
+        'leave_type': state.leaveTypeModel!.value,
+        'date': DateFormat('yyyy-MM-dd', 'en').format(leaveDate),
       };
       _metaClubApiClient.postApplyLeave(data).then((data) {
         data.fold((l){
+          final msg = l.meaningfulMessage.isNotEmpty ? l.meaningfulMessage : 'something_went_wrong'.tr();
+          Fluttertoast.showToast(msg: msg);
           emit(state.copyWith(status: NetworkStatus.failure));
         }, (r){
           if (r['result'] == true) {
-            Fluttertoast.showToast(msg: r['message'.tr()]);
+            Fluttertoast.showToast(msg: r['message'] ?? 'Daily Leave Requested');
             add(DailyLeaveSummary(event.userId));
             Navigator.of(event.context).pop();
+          } else {
+            Fluttertoast.showToast(msg: r['message'] ?? 'something_went_wrong'.tr());
+            emit(state.copyWith(status: NetworkStatus.failure));
           }
         });
       });

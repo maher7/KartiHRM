@@ -37,25 +37,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
         backgroundColor: Colors.white,
         bottomNavigationBar: Visibility(
           visible: isSAAS == false ? false : true,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(0)),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: BlocBuilder<OnboardingBloc, OnboardingState>(
-                builder: (context, state) {
-                  return CustomHButton(
-                    title: "next".tr(),
-                    padding: 16,
-                    clickButton: () {
-                      if(state.selectedCompany != null){
-                        NavUtil.pushAndRemoveUntil(context,  LoginPage(selectedCompany: state.selectedCompany));
-                      }else {
-                        Fluttertoast.showToast(msg: "please_select_company".tr());
-                      }
-                    },
-                  );
-                },
+          child: SafeArea(
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(0)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: BlocBuilder<OnboardingBloc, OnboardingState>(
+                  builder: (context, state) {
+                    return CustomHButton(
+                      title: "next".tr(),
+                      padding: 16,
+                      clickButton: () {
+                        if(state.selectedCompany != null){
+                          NavUtil.navigateScreen(context, LoginPage(selectedCompany: state.selectedCompany));
+                        }else {
+                          Fluttertoast.showToast(msg: "please_select_company".tr());
+                        }
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -152,8 +154,31 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 borderRadius: BorderRadius.circular(12.0),
                                 border: Border.all(color: colorPrimary)),
                             child: RadioListTile<Company?>(
-                                title: Text(company?.companyName ?? '',
-                                    style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold,color: colorPrimary)),
+                                title: Row(
+                                  children: [
+                                    if (company?.companyLogo != null && company!.companyLogo!.isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 10),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(8),
+                                          child: Image.network(company.companyLogo!, height: 36, width: 36, fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) => Icon(Icons.business, size: 36, color: colorPrimary)),
+                                        ),
+                                      ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(company?.companyName ?? '',
+                                              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: colorPrimary)),
+                                          if (company?.id != null)
+                                            Text('ID: ${company!.id}',
+                                                style: TextStyle(fontSize: 11.sp, color: Colors.black45)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 value: company,
                                 groupValue: state.selectedCompany,
                                 onChanged: (Company? value) {

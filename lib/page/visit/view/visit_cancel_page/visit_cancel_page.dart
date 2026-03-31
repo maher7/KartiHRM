@@ -59,9 +59,6 @@ class VisitCancelPage extends StatelessWidget {
             maxLine: 5,
             errorMsg: "give_a_note.Field_cannot_be_empty".tr(),
             onData: (data) {
-              if (kDebugMode) {
-                print(data);
-              }
               bodyVisitCancel.cancelNote = data;
             },
           ),

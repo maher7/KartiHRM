@@ -29,10 +29,8 @@ class HttpServiceImpl implements HttpService {
       throw FormatException(e.message);
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
-        debugPrint('unAuthentication');
         throw UnAuthenticationException();
       } else {
-        debugPrint(e.message);
         throw Exception(e.message);
       }
     }
@@ -88,10 +86,6 @@ class HttpServiceImpl implements HttpService {
           return Left(GeneralFailure.httpStatus(e.response!.statusCode ?? 0, 'post', 'Bad request'));
         } else if (e.response!.statusCode == HttpStatus.unauthorized) {
           return const Left(GeneralFailure.invalidToken());
-        }
-        // Log 500 response body for debugging
-        if (e.response?.statusCode == 500) {
-          debugPrint('Server 500 error on GET ${e.requestOptions.path}: ${e.response?.data}');
         }
       }
       return Left(ExceptionFailure(exception: e, additionalData: additionalData));
@@ -185,10 +179,6 @@ class HttpServiceImpl implements HttpService {
         } else if (e.response!.statusCode == HttpStatus.unauthorized) {
           return const Left(GeneralFailure.invalidToken());
         }
-      }
-      // Log 500 response body for debugging
-      if (e.response?.statusCode == 500) {
-        debugPrint('Server 500 error on ${e.requestOptions.path}: ${e.response?.data}');
       }
       return Left(ExceptionFailure(exception: DioExceptions.fromDioError(e), additionalData: additionalData));
     } on Exception catch (e) {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:onesthrm/page/daily_leave/bloc/daily_leave_bloc.dart';
+import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 
 import 'package:core/core.dart';
 import '../../../../res/nav_utail.dart';
@@ -19,6 +20,8 @@ class DailyLeaveContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.read<AuthenticationBloc>().state.data;
+    return BlocBuilder<LanguageBloc, LanguageState>(
+      builder: (context, _) {
     return Scaffold(
       appBar: AppBar(
         title: Text(tr("partial_leave"), style: TextStyle(fontSize: 16.r),),
@@ -49,8 +52,16 @@ class DailyLeaveContent extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        children: [
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final bloc = context.read<DailyLeaveBloc>();
+          bloc.add(DailyLeaveSummary(user!.user!.id!));
+          // Wait for the bloc to finish loading
+          await bloc.stream.firstWhere((s) => s.status != NetworkStatus.loading);
+        },
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
           // Explanation banner
           Container(
             margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -129,8 +140,11 @@ class DailyLeaveContent extends StatelessWidget {
               title: "apply_partial_leave".tr(),
               color: Branding.colors.primaryLight),
           const DailyLeaveStatusContent()
-        ],
+          ],
+        ),
       ),
+    );
+    },
     );
   }
 }

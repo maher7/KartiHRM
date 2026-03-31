@@ -64,9 +64,6 @@ class CreateVisitPage extends StatelessWidget {
                   hints: tr("give_a_title_to_your_visit"),
                   errorMsg: "field_cannot_be_empty".tr(),
                   onData: (data) {
-                    if (kDebugMode) {
-                      print(data);
-                    }
                     bodyCreateVisit.title = data;
                   },
                 ),
@@ -78,9 +75,6 @@ class CreateVisitPage extends StatelessWidget {
                   hints: "write_a_note".tr(),
                   maxLine: 5,
                   onData: (data) {
-                    if (kDebugMode) {
-                      print(data);
-                    }
                     bodyCreateVisit.description = data;
                   },
                 ),

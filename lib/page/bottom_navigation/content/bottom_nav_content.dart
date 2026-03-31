@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:onesthrm/page/all_natification/bloc/notification_bloc.dart';
 import 'package:onesthrm/page/home/router/home__menu_router.dart';
+import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:onesthrm/page/leave/view/leave_page.dart';
 import 'package:onesthrm/page/onboarding/bloc/onboarding_bloc.dart';
 import '../../home/view/home_page.dart';
@@ -20,7 +21,9 @@ class BottomNavContent extends StatelessWidget {
     DateTime timeBackPressed = DateTime.now();
     final selectedTab = context.select((BottomNavCubit cubit) => cubit.state.tab);
 
-    return BlocBuilder<OnboardingBloc, OnboardingState>(
+    return BlocBuilder<LanguageBloc, LanguageState>(
+      builder: (_, langState) {
+      return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (_, __) {
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           systemNavigationBarColor: Branding.colors.primaryDark, // navigation bar color
@@ -132,6 +135,8 @@ class BottomNavContent extends StatelessWidget {
           ),
         );
       },
+    );
+    },
     );
   }
 }

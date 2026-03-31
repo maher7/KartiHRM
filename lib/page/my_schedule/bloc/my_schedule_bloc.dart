@@ -21,11 +21,21 @@ class MyScheduleBloc extends Bloc<MyScheduleEvent, MyScheduleState> {
       MyScheduleLoadEvent event, Emitter<MyScheduleState> emit) async {
     emit(state.copyWith(status: NetworkStatus.loading));
 
-    // Default to current week (Sunday start)
-    final now = DateTime.now();
-    final sunday = now.subtract(Duration(days: now.weekday % 7));
-    final weekStart =
-        event.weekStart ?? DateFormat('yyyy-MM-dd', 'en').format(sunday);
+    // Default to current week (Sunday start), normalize any date to its Sunday
+    String weekStart;
+    if (event.weekStart != null) {
+      try {
+        final d = DateTime.parse(event.weekStart!);
+        final sun = d.subtract(Duration(days: d.weekday % 7));
+        weekStart = DateFormat('yyyy-MM-dd', 'en').format(sun);
+      } catch (_) {
+        weekStart = event.weekStart!;
+      }
+    } else {
+      final now = DateTime.now();
+      final sunday = now.subtract(Duration(days: now.weekday % 7));
+      weekStart = DateFormat('yyyy-MM-dd', 'en').format(sunday);
+    }
 
     final result = await metaClubApiClient.getMySchedule(weekStart: weekStart);
 

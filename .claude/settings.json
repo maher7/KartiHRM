@@ -35,11 +35,32 @@
       "Bash(grep -E \"\\\\.\\(php|js|blade\\)$\")",
       "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main -path */packages/* -name *notification* -type f)",
       "Bash(grep -E \"\\\\.\\(php|js\\)$\")",
-      "Bash(find c:UsersMzDownloadsKartiOnlineLiveServerStationJ -name *.php -path */routes/* -type f)"
+      "Bash(find c:UsersMzDownloadsKartiOnlineLiveServerStationJ -name *.php -path */routes/* -type f)",
+      "Bash(find /c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main -type f -name *attendance_model* -o -name *attendance_body*)",
+      "Bash(node -e \":*)",
+      "Bash(ls -la \"C:\\\\Users\\\\Mz\\\\Downloads\\\\KartiOnlineLiveServerStationJ\\\\resources\"\" 2>/dev/null || echo \"No resources dir \")",
+      "Bash(wc -l /c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/resources/lang/ar/*.json)",
+      "Bash(grep -E \"\\\\.js$\")",
+      "Bash(find c:UsersMzDownloadsKartiOnlineLiveServerStationJshift-managementsrcappfeatures -name *shift-management* -type f)",
+      "Bash(find c:UsersMzDownloadsKartiOnlineLiveServerStationJshift-managementsrcapp -name *.component.ts -type f)",
+      "Bash(flutter build:*)",
+      "Bash(find c:UsersMzDownloadsKartiOnlineLiveServerStationJHRM-app-Maher-saas-hrm-mainpackagesfeaturenotification -type f -name *.dart -o -name *.yaml)",
+      "Bash(grep -r realm c:UsersMzDownloadsKartiOnlineLiveServerStationJHRM-app-Maher-saas-hrm-main --include=*.dart --include=*.yaml)",
+      "Bash(grep -E \"\\\\.\\(blade\\\\.php|js\\)$\")",
+      "Bash(grep -n \"attendance\\\\|datatable\\\\|attendanceTable\" c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/public/backend/js/*.js)",
+      "Bash(dart format:*)",
+      "Bash(find \"/c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/Modules\" -type d -name \"Notify\\\\|PushNotification\")",
+      "Bash(find /c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/Modules/PushNotification -type f -name *.php)",
+      "Bash(ls -lh /c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/SECURITY*.* /c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/CRITICAL*.*)",
+      "Read(//c/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/HRM-app-Maher-saas-hrm-main/**)",
+      "Bash(ls -lh /c/Users/Mz/Downloads/*.md /c/Users/Mz/Downloads/*.txt)",
+      "Bash(find c:/Users/Mz/Downloads/KartiOnlineLiveServerStationJ/Modules -iname *appointmentrepository* -o -iname *appointment*repository*)",
+      "Bash(./gradlew clean:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Mz\\Downloads\\KartiOnlineLiveServerStationJ\\app\\Http\\Resources",
-      "C:\\Users\\Mz\\Downloads"
+      "C:\\Users\\Mz\\Downloads",
+      "\\tmp"
     ]
   }
 }

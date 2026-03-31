@@ -1,12 +1,21 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notification/src/data/database_entities/notification_db_entity.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:realm/realm.dart' as realm;
 
 class NotificationDatabaseFactory {
-  Future<realm.Realm> generateDatabase() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = '${directory.path}/hrm_notification.realm';
-    final config = realm.Configuration.local([NotificationDbEntity.schema], schemaVersion: 1, path: path);
-    return realm.Realm(config);
+  static const _boxName = 'hrm_notifications';
+  static bool _hiveInitialized = false;
+
+  Future<Box<NotificationDbEntity>> generateDatabase() async {
+    if (!_hiveInitialized) {
+      await Hive.initFlutter();
+      _hiveInitialized = true;
+    }
+    if (!Hive.isAdapterRegistered(0)) {
+      Hive.registerAdapter(NotificationDbEntityAdapter());
+    }
+    if (Hive.isBoxOpen(_boxName)) {
+      return Hive.box<NotificationDbEntity>(_boxName);
+    }
+    return await Hive.openBox<NotificationDbEntity>(_boxName);
   }
 }

@@ -26,5 +26,10 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
     }
     await SharedUtil.setLanguageIntValue(keySelectLanguage, event.selectIndex);
     emit(state.copy(selectedIndex: event.selectIndex));
+
+    // Force full app rebuild by navigating back to root
+    if (event.context.mounted) {
+      Navigator.of(event.context).popUntil((route) => route.isFirst);
+    }
   }
 }

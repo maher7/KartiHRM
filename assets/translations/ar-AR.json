@@ -25,7 +25,7 @@
   "current_month": "الشهر الحالي",
   "days": "الأيام",
   "leave_summary": "ملخص الإجازة",
-  "apply_leave": "تقديم طلب إجازة",
+  "apply_leave": "تقديم",
   "tab_to_apply_for_leave": "اضغط لتقديم طلب الإجازة",
   "total_leaves": "إجمالي الإجازات",
   "leaves_used": "الإجازات المستخدمة",
@@ -580,6 +580,7 @@
   "how_was_your_launch": "كيف كان {؟}؟",
   "create_complain": "إنشاء شكوى",
   "Scan QR Code": "مسح رمز الاستجابة السريعة",
+  "Tea/coffee Break": "استراحة الشاي/القهوة",
   "Tea/Coffee Break": "استراحة الشاي/القهوة",
   "Lunch Break": "استراحة الغداء",
   "Dinner Break": "استراحة العشاء",
@@ -642,8 +643,10 @@
   "daily_leave_subtitle": "طلب تأخر في الحضور أو مغادرة مبكرة",
   "full_day_leave": "إجازة يوم كامل",
   "partial_leave": "إجازة جزئية",
-  "apply_partial_leave": "تقديم إجازة جزئية",
+  "apply_partial_leave": "تقديم",
   "select_time": "اضغط لاختيار الوقت",
   "partial": "جزئي",
-  "alerts": "تنبيهات"
+  "alerts": "تنبيهات",
+  "leave_request_pending": "تم تقديم طلب الإجازة وبانتظار الموافقة",
+  "pending_leave_info": "{} يوم/أيام بانتظار الموافقة — لم يتم خصمها من الرصيد بعد"
 }

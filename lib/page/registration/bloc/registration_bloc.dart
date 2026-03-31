@@ -24,15 +24,10 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   void _onCountryChanged(OnCountryChanged event, Emitter<RegistrationState> emit) async {
     final country = event.selectedCountry;
 
-    if (kDebugMode) {
-      print('_onCountryChanged Country $country');
-    }
-
     emit(state.copyWith(selectedCountry: country));
   }
 
   void _onSubmitButton(SubmitButton event, Emitter<RegistrationState> emit) async {
-    debugPrint("Button Click : ${event.items.toJson()}");
     emit(state.copyWith(status: NetworkStatus.loading));
     final data = await metaClubApiClient.registration(bodyData: event.items.toJson());
     data.fold((l) {

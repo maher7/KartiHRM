@@ -13,9 +13,6 @@ class RadioButton extends StatelessWidget {
         Expanded(
           child: CustomRadioTile(
             onChanged: (genderValue) {
-              if (kDebugMode) {
-                print("Radio $genderValue");
-              }
             },
             title: 'Yes',
             initialData: "Yes",
@@ -24,9 +21,6 @@ class RadioButton extends StatelessWidget {
         Expanded(
           child: CustomRadioTile(
             onChanged: (genderValue) {
-              if (kDebugMode) {
-                print("Radio $genderValue");
-              }
             },
             title: 'No',
             initialData: "",
@@ -35,9 +29,6 @@ class RadioButton extends StatelessWidget {
         Expanded(
           child: CustomRadioTile(
             onChanged: (genderValue) {
-              if (kDebugMode) {
-                print("Radio $genderValue");
-              }
             },
             title: 'Other',
             initialData: "",

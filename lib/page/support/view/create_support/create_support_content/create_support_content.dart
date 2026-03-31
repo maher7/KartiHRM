@@ -46,9 +46,6 @@ class CreateSupportListContent extends StatelessWidget {
                   title: 'Subject'.tr(),
                   hints: "write_subject".tr(),
                   onData: (data) {
-                    if (kDebugMode) {
-                      print(data);
-                    }
                     createSupport.subject = data;
                   },
                 ),
@@ -61,9 +58,6 @@ class CreateSupportListContent extends StatelessWidget {
                   hints: "write_description".tr(),
                   maxLine: 5,
                   onData: (data) {
-                    if (kDebugMode) {
-                      print(data);
-                    }
                     createSupport.description = data;
                   },
                 ),
@@ -75,9 +69,6 @@ class CreateSupportListContent extends StatelessWidget {
                 ),
                 UploadDocContent(
                   onFileUpload: (FileUpload? data) {
-                    if (kDebugMode) {
-                      print(data?.fileId);
-                    }
                     createSupport.previewId = data?.previewUrl;
                   },
                   initialAvatar:

@@ -1,15 +1,37 @@
-import 'package:realm/realm.dart';
+import 'package:hive/hive.dart';
 
-part 'notification_db_entity.realm.dart';
+part 'notification_db_entity.g.dart';
 
-@RealmModel()
-class _NotificationDbEntity {
-  @PrimaryKey()
-  late String key;
-  late String title;
-  late int id;
-  late String description;
-  late String date;
-  late DateTime created;
-  late bool seen;
+@HiveType(typeId: 0)
+class NotificationDbEntity extends HiveObject {
+  @HiveField(0)
+  final String key;
+
+  @HiveField(1)
+  final String title;
+
+  @HiveField(2)
+  final int id;
+
+  @HiveField(3)
+  final String description;
+
+  @HiveField(4)
+  final String date;
+
+  @HiveField(5)
+  final DateTime created;
+
+  @HiveField(6)
+  bool seen;
+
+  NotificationDbEntity(
+    this.key,
+    this.title,
+    this.id,
+    this.description,
+    this.date,
+    this.created,
+    this.seen,
+  );
 }

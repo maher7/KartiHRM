@@ -16,7 +16,6 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
 
   _onSelectFile(SelectFile event, Emitter<UploadFileState> emit) async {
     File? file = await pickFile(event.context);
-    debugPrint('file ${file?.path}');
     if (file != null) {
       add(UploadFile(file: file));
     }

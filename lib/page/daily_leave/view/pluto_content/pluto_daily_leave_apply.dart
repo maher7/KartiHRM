@@ -20,8 +20,67 @@ class PlutoDailyLeaveApply extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Tappable date selector
+            BlocBuilder<DailyLeaveBloc, DailyLeaveState>(
+              builder: (context, state) {
+                final date = state.selectedDate ?? DateTime.now();
+                return GestureDetector(
+                  onTap: () async {
+                    final bloc = context.read<DailyLeaveBloc>();
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: date,
+                      firstDate: DateTime.now().subtract(const Duration(days: 7)),
+                      lastDate: DateTime.now().add(const Duration(days: 30)),
+                    );
+                    if (picked != null) {
+                      bloc.add(SelectLeaveDate(picked));
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8.r),
+                          decoration: BoxDecoration(
+                            color: Branding.colors.primaryLight.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(Icons.calendar_today_rounded, size: 18.r, color: Branding.colors.primaryLight),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'date'.tr(),
+                                style: TextStyle(fontSize: 11.r, color: Colors.grey.shade600),
+                              ),
+                              SizedBox(height: 2.h),
+                              Text(
+                                getDateAsString(format: 'EEEE, dd MMM yyyy', dateTime: date) ?? '',
+                                style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.w500, color: Colors.black87),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded, size: 20.r, color: Colors.grey.shade400),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
               child: Text(
                 "select_time".tr(),
                 style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.w600, color: Colors.black87),

@@ -27,12 +27,14 @@ class LeaveSummaryModel extends Equatable {
 class LeaveSummaryData extends Equatable {
   final int? totalLeave;
   final int? totalUsed;
+  final int? totalPending;
   final int? leaveBalance;
   final List<AvailableLeave>? availableLeave;
 
   const LeaveSummaryData({
     this.totalLeave,
     this.totalUsed,
+    this.totalPending,
     this.leaveBalance,
     this.availableLeave,
   });
@@ -41,6 +43,7 @@ class LeaveSummaryData extends Equatable {
       LeaveSummaryData(
           totalLeave: json["total_leave"],
           totalUsed: json["total_used"],
+          totalPending: json["total_pending"],
           leaveBalance: json["leave_balance"],
           availableLeave: json["available_leave"] == null
               ? []
@@ -50,7 +53,7 @@ class LeaveSummaryData extends Equatable {
 
   @override
   List<Object?> get props =>
-      [totalLeave, totalUsed, leaveBalance, availableLeave];
+      [totalLeave, totalUsed, totalPending, leaveBalance, availableLeave];
 }
 
 class AvailableLeave extends Equatable {
@@ -58,12 +61,14 @@ class AvailableLeave extends Equatable {
   final String? type;
   final int? totalLeave;
   final int? leftDays;
+  final int? pendingDays;
 
   const AvailableLeave({
     this.id,
     this.type,
     this.totalLeave,
     this.leftDays,
+    this.pendingDays,
   });
 
   factory AvailableLeave.fromJson(Map<String, dynamic> json) => AvailableLeave(
@@ -71,8 +76,9 @@ class AvailableLeave extends Equatable {
         type: json["type"],
         totalLeave: json["total_leave"],
         leftDays: json["left_days"],
+        pendingDays: json["pending_days"],
       );
 
   @override
-  List<Object?> get props => [id, type, totalLeave, leftDays];
+  List<Object?> get props => [id, type, totalLeave, leftDays, pendingDays];
 }

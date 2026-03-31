@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:notification/notification.dart';
 import 'package:notification/src/data/database_entities/notification_db_entity.dart';
-import 'package:realm/realm.dart';
 import 'notification_repository_database.dart';
 
 class NotificationManagerImpl extends NotificationManager {
@@ -54,8 +53,13 @@ class NotificationManagerImpl extends NotificationManager {
   }
 
   @override
-  RealmResults<NotificationDbEntity> getNotifications() {
-    return notificationRepositoryDatabase.notificationQuery;
+  List<NotificationDbEntity> getNotifications() {
+    return notificationRepositoryDatabase.notifications;
+  }
+
+  @override
+  Stream<List<NotificationDbEntity>> getNotificationStream() {
+    return notificationRepositoryDatabase.changes;
   }
 
   @override

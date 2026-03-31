@@ -159,10 +159,18 @@ Future<void> showRegistrationSuccessDialog(
 }
 
 void showLoginDialog(
-    {required BuildContext context, bool isSuccess = true, String message = 'Account Login', String body = ''}) {
+    {required BuildContext context, bool isSuccess = true, String message = 'Account Login', String body = '', bool autoDismiss = false}) {
   showDialog(
       context: context,
+      barrierDismissible: !autoDismiss,
       builder: (_) {
+        if (autoDismiss) {
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            if (context.mounted && Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          });
+        }
         return Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
           child: Padding(
@@ -194,20 +202,22 @@ void showLoginDialog(
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 14.0, color: Colors.black54, height: 1.4),
                 ),
-                const SizedBox(height: 20.0),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: TextButton.styleFrom(
-                      backgroundColor: Branding.colors.primaryLight,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                if (!autoDismiss) ...[
+                  const SizedBox(height: 20.0),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Branding.colors.primaryLight,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                      child: Text('ok'.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
                     ),
-                    child: Text('Back'.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -557,7 +567,6 @@ Future<File?> pickFile(BuildContext context) async {
           final ImagePicker picker = ImagePicker();
           final XFile? image = await picker.pickImage(source: ImageSource.camera);
           file = File(image!.path);
-          debugPrint(image.path);
           if (!context.mounted) return;
           Navigator.of(context).pop(file);
         },
@@ -565,7 +574,6 @@ Future<File?> pickFile(BuildContext context) async {
           final ImagePicker pickerGallery = ImagePicker();
           final XFile? imageGallery = await pickerGallery.pickImage(source: ImageSource.gallery);
           file = File(imageGallery!.path);
-          debugPrint(file?.path);
           if (!context.mounted) return;
           Navigator.of(context).pop(file);
         },

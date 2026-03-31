@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:equatable/equatable.dart';
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:flutter/foundation.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -36,7 +35,7 @@ class AuthenticationBloc extends HydratedBloc<AuthenticationEvent, Authenticatio
   }
 
   _onAuthenticationUserChanged(AuthenticationUserChanged event,Emitter<AuthenticationState> emit) async {
-    debugPrint('event.data.toJson()${event.data.toJson()}');
+    // debugPrint('event.data.toJson()${event.data.toJson()}');
     globalState.set(authToken,event.data.user?.token);
     globalState.set(keyUserId, event.data.user?.id?.toString());
     if(event.data.user != null){
@@ -50,10 +49,12 @@ class AuthenticationBloc extends HydratedBloc<AuthenticationEvent, Authenticatio
     emit(const AuthenticationState.unauthenticated());
   }
 
-  Future<void> onClose()async {
+  @override
+  Future<void> close() {
     _authenticationStatusSubscription.cancel();
     _loginDataSubscription.cancel();
     _authenticationRepository.dispose();
+    return super.close();
   }
 
   @override

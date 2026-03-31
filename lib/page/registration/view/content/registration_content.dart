@@ -244,9 +244,6 @@ class RegistrationContent extends StatelessWidget {
                       ).then((date) {
                         if (date != null) {
                           bodyRegistration.dateOfBirth = date.toString();
-                          if (kDebugMode) {
-                            print(date.toLocal().toString().split(' ')[0]);
-                          }
                         }
                       });
                     },

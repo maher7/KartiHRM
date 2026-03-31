@@ -56,16 +56,18 @@ class LeaveBloc extends Bloc<LeaveEvent, LeaveState> {
     emit(state.copyWith(status: NetworkStatus.loading));
     await submitLeaveRequestUseCase(body: event.bodyCreateLeaveModel).then((success) {
       success.fold((l) {
+        final msg = l.meaningfulMessage.isNotEmpty ? l.meaningfulMessage : 'something_went_wrong'.tr();
+        Fluttertoast.showToast(msg: msg);
         emit(state.copyWith(status: NetworkStatus.failure));
       }, (r) {
         if (r) {
-          Fluttertoast.showToast(msg: "leave_request_create_successfully".tr());
+          Fluttertoast.showToast(msg: "leave_request_pending".tr());
           emit(state.copyWith(status: NetworkStatus.success));
           add(LeaveRequest(event.uid));
           Navigator.pop(event.context);
         } else {
           emit(state.copyWith(status: NetworkStatus.failure));
-          Fluttertoast.showToast(msg: "Something went wrong!");
+          Fluttertoast.showToast(msg: "something_went_wrong".tr());
         }
       });
     });

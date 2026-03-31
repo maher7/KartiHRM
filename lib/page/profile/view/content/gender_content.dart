@@ -40,9 +40,6 @@ class GenderRadioContent extends StatelessWidget {
             Expanded(
               child: CustomRadioTile(
                 onChanged: (genderValue) {
-                  if (kDebugMode) {
-                    print("Radio $genderValue");
-                  }
                   personal.gender = genderValue;
                   onPersonalUpdate(personal);
                   bloc.add(OnGenderUpdate(gender: personal.gender!));
@@ -54,9 +51,6 @@ class GenderRadioContent extends StatelessWidget {
             Expanded(
               child: CustomRadioTile(
                 onChanged: (genderValue) {
-                  if (kDebugMode) {
-                    print("Radio $genderValue");
-                  }
                   personal.gender = genderValue;
                   onPersonalUpdate(personal);
                   bloc.add(OnGenderUpdate(gender: personal.gender!));
@@ -68,9 +62,6 @@ class GenderRadioContent extends StatelessWidget {
             Expanded(
               child: CustomRadioTile(
                 onChanged: (genderValue) {
-                  if (kDebugMode) {
-                    print("Radio $genderValue");
-                  }
                   personal.gender = genderValue;
                   onPersonalUpdate(personal);
                   bloc.add(OnGenderUpdate(gender: personal.gender!));

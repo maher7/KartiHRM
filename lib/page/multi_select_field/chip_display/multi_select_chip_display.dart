@@ -106,19 +106,12 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
 
           items![index]!.year = year;
 
-          if (kDebugMode) {
-            print(items![index]!.year);
-          }
-
           updatedItems(items);
         },onInstitutionChanged: (institution){
 
           final index = items!.indexOf(item);
 
           items![index]!.institution = institution;
-          if (kDebugMode) {
-            print(items![index]!.institution);
-          }
           updatedItems(items);
         })).toList() : <Widget>[Container()],
       ),

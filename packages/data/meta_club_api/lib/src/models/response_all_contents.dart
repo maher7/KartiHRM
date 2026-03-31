@@ -89,10 +89,12 @@ class ContentDatum extends Equatable {
     this.branchId,
   });
 
+  static int? _toInt(dynamic v) => v == null ? null : (v is int ? v : int.tryParse(v.toString()));
+
   factory ContentDatum.fromJson(Map<String, dynamic> json) => ContentDatum(
-        id: json["id"],
-        companyId: json["company_id"],
-        userId: json["user_id"],
+        id: _toInt(json["id"]),
+        companyId: _toInt(json["company_id"]),
+        userId: _toInt(json["user_id"]),
         type: json["type"],
         title: json["title"],
         slug: json["slug"],
@@ -101,16 +103,16 @@ class ContentDatum extends Equatable {
         metaDescription: json["meta_description"],
         keywords: json["keywords"],
         metaImage: json["meta_image"],
-        createdBy: json["created_by"],
-        updatedBy: json["updated_by"],
-        statusId: json["status_id"],
+        createdBy: _toInt(json["created_by"]),
+        updatedBy: _toInt(json["updated_by"]),
+        statusId: _toInt(json["status_id"]),
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
         updatedAt: json["updated_at"] == null
             ? null
             : DateTime.parse(json["updated_at"]),
-        branchId: json["branch_id"],
+        branchId: _toInt(json["branch_id"]),
       );
 
   Map<String, dynamic> toJson() => {

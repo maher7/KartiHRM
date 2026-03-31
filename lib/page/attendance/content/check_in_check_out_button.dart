@@ -25,9 +25,6 @@ class _CheckInCheckOutButtonState extends State<CheckInCheckOutButton>
         animationBehavior: AnimationBehavior.preserve);
 
     controller.addStatusListener((AnimationStatus status) {
-      if (kDebugMode) {
-        print('AnimationStatus ${status.name}');
-      }
       setState(() {});
     });
     super.initState();

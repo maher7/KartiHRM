@@ -69,9 +69,6 @@ class BreakContentState extends State<BreakContent> with TickerProviderStateMixi
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
-        if (kDebugMode) {
-          print("resumed");
-        }
         if (globalState.get(isBreak) == true) {
           controllerBreakTimer.start();
         } else {
@@ -79,24 +76,12 @@ class BreakContentState extends State<BreakContent> with TickerProviderStateMixi
         }
         break;
       case AppLifecycleState.inactive:
-        if (kDebugMode) {
-          print("inactive");
-        }
         break;
       case AppLifecycleState.paused:
-        if (kDebugMode) {
-          print("paused");
-        }
         break;
       case AppLifecycleState.detached:
-        if (kDebugMode) {
-          print("detached");
-        }
         break;
       case AppLifecycleState.hidden:
-        if (kDebugMode) {
-          print("hidden");
-        }
         break;
     }
   }

@@ -38,7 +38,6 @@ class PayrollBloc extends Bloc<PayrollEvent, PayrollState> {
   getPaySlip(String link) async {
     launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication).onError(
       (error, stackTrace) {
-        debugPrint("Url is not valid!");
         return false;
       },
     );

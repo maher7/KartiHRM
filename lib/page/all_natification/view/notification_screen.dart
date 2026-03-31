@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 import 'package:onesthrm/page/all_natification/bloc/notification_bloc.dart';
 import 'package:onesthrm/page/all_natification/content/notification_cart_content.dart';
+import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:onesthrm/page/notice_details/view/notice_details_screen.dart';
 import 'package:onesthrm/res/nav_utail.dart';
 
@@ -15,95 +16,119 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => NotificationBloc(metaClubApiClient: MetaClubApiClient(httpService: instance()))
+        create: (context) => NotificationBloc(
+            metaClubApiClient: MetaClubApiClient(httpService: instance()))
           ..add(LoadNotificationData()),
-        child: BlocBuilder<NotificationBloc, NotificationState>(builder: (context, state) {
+        child: BlocBuilder<NotificationBloc, NotificationState>(
+            builder: (context, state) {
           if (state.status == NetworkStatus.loading) {
             return Scaffold(
               body: ListView.builder(
                   shrinkWrap: true,
                   itemBuilder: (content, index) {
-                    return TileShimmer(titleHeight: 55.0,);
+                    return TileShimmer(
+                      titleHeight: 55.0,
+                    );
                   },
                   itemCount: 10),
             );
           }
 
-          return Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  tr("notifications"),
-                  style: TextStyle(fontSize: 16.r),
-                ),
-                actions: [
-                  Visibility(
-                    visible: state.notificationResponse?.data?.notifications?.isNotEmpty ?? false,
-                    // visible: true,
-                    child: InkWell(
-                      onTap: () {
-                        context.read<NotificationBloc>().add(ClearNoticeButton());
-                        context.read<NotificationBloc>().add(LoadNotificationData());
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              tr("clear_all"),
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10.r),
+          return BlocBuilder<LanguageBloc, LanguageState>(
+            builder: (context, _) {
+              return Scaffold(
+                  appBar: AppBar(
+                    title: Text(
+                      tr("notifications"),
+                      style: TextStyle(fontSize: 16.r),
+                    ),
+                    actions: [
+                      Visibility(
+                        visible: state.notificationResponse?.data?.notifications
+                                ?.isNotEmpty ??
+                            false,
+                        // visible: true,
+                        child: InkWell(
+                          onTap: () {
+                            context
+                                .read<NotificationBloc>()
+                                .add(ClearNoticeButton());
+                            context
+                                .read<NotificationBloc>()
+                                .add(LoadNotificationData());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  tr("clear_all"),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10.r),
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                              ],
                             ),
-                            const SizedBox(
-                              width: 16,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              body: Column(
-                children: [
-                  state.notificationResponse?.data?.notifications?.isNotEmpty == true
-                      ? Expanded(
-                          child: ListView.builder(
-                            itemCount: state.notificationResponse?.data?.notifications?.length ?? 0,
-                            itemBuilder: (BuildContext context, int index) {
-                              final data = state.notificationResponse?.data?.notifications?[index];
+                  body: Column(
+                    children: [
+                      state.notificationResponse?.data?.notifications
+                                  ?.isNotEmpty ==
+                              true
+                          ? Expanded(
+                              child: ListView.builder(
+                                itemCount: state.notificationResponse?.data
+                                        ?.notifications?.length ??
+                                    0,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final data = state.notificationResponse?.data
+                                      ?.notifications?[index];
 
-                              return InkWell(
-                                onTap: () {
-                                  // Navigate to details if slug is empty, otherwise route by slug
-                                  if (data?.slag == null || data!.slag!.isEmpty) {
-                                    debugPrint('Notification body: "${data?.body}"');
-                                    debugPrint('Notification title: "${data?.title}"');
-                                    NavUtil.navigateScreen(
-                                      context,
-                                      NoticeDetailsScreen(
-                                        noticeId: data?.id,
-                                        title: data?.title,
-                                        body: data?.body,
-                                        date: data?.date,
-                                        image: data?.image,
-                                      ),
-                                    );
-                                  } else {
-                                    context.read<NotificationBloc>().add(RouteSlug(
-                                        context: context,
-                                        slugName: data?.slag,
-                                        data: state.notificationResponse));
-                                  }
+                                  return InkWell(
+                                    onTap: () {
+                                      // Navigate to details if slug is empty, otherwise route by slug
+                                      if (data?.slag == null ||
+                                          data!.slag!.isEmpty) {
+                                        // Navigate to notification details
+                                        NavUtil.navigateScreen(
+                                          context,
+                                          NoticeDetailsScreen(
+                                            noticeId: data?.id,
+                                            title: data?.title,
+                                            body: data?.body,
+                                            date: data?.date,
+                                            image: data?.image,
+                                          ),
+                                        );
+                                      } else {
+                                        context.read<NotificationBloc>().add(
+                                            RouteSlug(
+                                                context: context,
+                                                slugName: data?.slag,
+                                                data: state
+                                                    .notificationResponse));
+                                      }
+                                    },
+                                    child: NotificationCartContent(data: data),
+                                  );
                                 },
-                                child: NotificationCartContent(data: data),
-                              );
-                            },
-                          ),
-                        )
-                      : const Expanded(child: NoDataFoundWidget())
-                  // : const SizedBox(),
-                ],
-              ));
+                              ),
+                            )
+                          : const Expanded(child: NoDataFoundWidget())
+                      // : const SizedBox(),
+                    ],
+                  ));
+            },
+          );
         }));
   }
 }

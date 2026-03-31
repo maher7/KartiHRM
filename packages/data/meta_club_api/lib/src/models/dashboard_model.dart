@@ -128,8 +128,9 @@ class AttendanceData {
   final String? inTime;
   final String? outTime;
   final String? stayTime;
+  final String? checkInAt;
 
-  AttendanceData({this.id, this.checkIn, this.checkout, this.inTime, this.outTime, this.stayTime});
+  AttendanceData({this.id, this.checkIn, this.checkout, this.inTime, this.outTime, this.stayTime, this.checkInAt});
 
   factory AttendanceData.fromJson(Map<String, dynamic> json) {
     return AttendanceData(
@@ -139,26 +140,29 @@ class AttendanceData {
       inTime: json['in_time'],
       outTime: json['out_time'],
       stayTime: json['stay_time'],
+      checkInAt: json['check_in_at'],
     );
   }
 
-  AttendanceData copyWith({int? id, bool? checkIn, bool? checkout, String? inTime, String? outTime, String? stayTime}) {
+  AttendanceData copyWith({int? id, bool? checkIn, bool? checkout, String? inTime, String? outTime, String? stayTime, String? checkInAt}) {
     return AttendanceData(
         id: id ?? this.id,
         checkIn: checkIn ?? this.checkIn,
         checkout: checkout ?? this.checkout,
         inTime: inTime ?? this.inTime,
         outTime: outTime ?? this.outTime,
-        stayTime: stayTime ?? this.stayTime);
+        stayTime: stayTime ?? this.stayTime,
+        checkInAt: checkInAt ?? this.checkInAt);
   }
 
   Map<String, dynamic> toJson() => {
-        "id'": id,
+        "id": id,
         "checkin": checkIn,
         "checkout": checkout,
         "in_time": inTime,
         "out_time": outTime,
         "stay_time": stayTime,
+        "check_in_at": checkInAt,
       };
 }
 

@@ -27,14 +27,18 @@ class OfflineCubit extends Cubit<OfflineAttendanceState> {
     });
   }
 
-  /// Initialize state: sync API data with local, handle 24h auto-reset
+  /// Initialize state: server is the source of truth, local DB is fallback for offline
   Future<void> _initializeState() async {
+    // Don't emit anything yet — wait for the server data via OnOnlineAttendanceUpdateEvent
+    // which is fired by HomeBloc._onHomeDataLoad after the dashboard API responds.
+    // The event listener (line 20) will call onOnlineCheckInOutData and emit the correct state.
+    //
+    // Only use local DB as an immediate fallback so the UI isn't blank while waiting:
     final today = DateFormat('yyyy-MM-dd', 'en').format(DateTime.now());
     AttendanceBody? localData = await offlineAttendanceRepo.getCheckDataByDate(date: today);
+    if (isClosed) return;
 
-    if (localData == null) {
-      emit(const OfflineAttendanceState(isCheckedIn: false, isCheckedOut: false));
-    } else {
+    if (localData != null) {
       bool isCheckedIn = localData.inTime != null && localData.outTime == null;
       bool isCheckedOut = localData.inTime != null && localData.outTime != null;
       if (isCheckedOut) isCheckedIn = false;
@@ -45,6 +49,9 @@ class OfflineCubit extends Cubit<OfflineAttendanceState> {
         attendanceBody: localData,
       ));
     }
+    // If localData is null, do NOT emit isCheckedIn=false yet.
+    // Wait for server response which will arrive via the event bus.
+    // If server also has no data, onOnlineCheckInOutData will emit false.
   }
 
   onOnlineCheckInOutData({AttendanceBody? body}) async {
@@ -71,9 +78,11 @@ class OfflineCubit extends Cubit<OfflineAttendanceState> {
       } catch (e) {
         debugPrint('OfflineCubit: checkInOut failed: $e');
       }
+      if (isClosed) return;
 
       // Read back from local DB to confirm
       AttendanceBody? localAttendanceData = await offlineAttendanceRepo.getCheckDataByDate(date: date);
+      if (isClosed) return;
 
       if (isCheckedOut && body.isOffline == true) {
         eventBus.fire(const OfflineDataSycEvent());
@@ -88,6 +97,7 @@ class OfflineCubit extends Cubit<OfflineAttendanceState> {
     } else {
       // API says no attendance for today — check local DB before resetting
       AttendanceBody? localAttendanceData = await offlineAttendanceRepo.getCheckDataByDate(date: date);
+      if (isClosed) return;
 
       if (localAttendanceData != null && localAttendanceData.inTime != null) {
         // Local DB has check-in data for today — keep it (offline check-in)
@@ -121,9 +131,11 @@ class OfflineCubit extends Cubit<OfflineAttendanceState> {
       offlineAttendanceRepo
           .offlineCheckInOut(checkData: body, isCheckedIn: isCheckedIn, isCheckedOut: isCheckedOut, multipleAttendanceEnabled: true)
           .then((_) async {
+        if (isClosed) return;
         isCheckedIn = await offlineAttendanceRepo.isAlreadyInCheckedIn(date: date);
         isCheckedOut = await offlineAttendanceRepo.isAlreadyInCheckedOut(date: date);
         localAttendanceData = await offlineAttendanceRepo.getCheckDataByDate(date: date);
+        if (isClosed) return;
         if (localAttendanceData?.inTime != null) {
           isCheckedIn = true;
         }

@@ -42,9 +42,6 @@ class ForgotPasswordBloc extends Bloc<ForgotPasswordEvent, ForgotPasswordState> 
               ),
             ));
         emit(state.copyWith(status: NetworkStatus.success));
-        if (kDebugMode) {
-          print('success');
-        }
       } else {
         Fluttertoast.showToast(msg: r.message.toString());
         emit(state.copyWith(status: NetworkStatus.failure));

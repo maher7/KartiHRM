@@ -27,6 +27,7 @@ class _BreakQrScannerPageState extends State<BreakQrScannerPage> with WidgetsBin
   );
   StreamSubscription<Object?>? _subscription;
   bool qrFound = true;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _BreakQrScannerPageState extends State<BreakQrScannerPage> with WidgetsBin
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // If the controller is not ready, do not try to start or stop it.
     // Permission dialogs can trigger lifecycle changes before the controller is ready.
-    if (!controller.value.hasCameraPermission) {
+    if (_disposed || !controller.value.hasCameraPermission) {
       return;
     }
 
@@ -58,11 +59,7 @@ class _BreakQrScannerPageState extends State<BreakQrScannerPage> with WidgetsBin
       case AppLifecycleState.paused:
         return;
       case AppLifecycleState.resumed:
-        // Restart the scanner when the app is resumed.
-        // Don't forget to resume listening to the barcode events.
-        // _subscription = controller.barcodes.listen(_handleBarcode);
-
-        unawaited(controller.start());
+        if (!_disposed) unawaited(controller.start());
       case AppLifecycleState.inactive:
         // Stop the scanner when the app is paused.
         // Also stop the barcode events subscription.
@@ -130,6 +127,9 @@ class _BreakQrScannerPageState extends State<BreakQrScannerPage> with WidgetsBin
 
   @override
   void dispose() {
+    _disposed = true;
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_subscription?.cancel());
     controller.dispose();
     super.dispose();
   }
@@ -138,7 +138,6 @@ class _BreakQrScannerPageState extends State<BreakQrScannerPage> with WidgetsBin
     if (event.barcodes.isNotEmpty) {
       final barcode = event.barcodes.first;
       if (barcode.rawValue != null && mounted) {
-        debugPrint("QR Code: ${barcode.rawValue}");
         context.read<BreakBloc>().add(BreakVerifyQREvent(code: barcode.rawValue!));
         unawaited(controller.stop());
         if (qrFound) {

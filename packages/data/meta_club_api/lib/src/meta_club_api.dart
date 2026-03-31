@@ -72,7 +72,6 @@ class MetaClubApiClient {
   }
 
   Future<Either<Failure, CompanyListModel?>> getCompanyList({String? search}) async {
-    print("searchText: $search");
     String api = '$rootUrl/api/V11/company-list?company_uid=$search';
     try {
       final response = await httpService.getRequestWithToken(api);
@@ -269,9 +268,6 @@ class MetaClubApiClient {
 
   Future<Either<Failure, bool>> submitLeaveRequestApi({BodyCreateLeaveModel? bodyCreateLeaveModel}) async {
     const String api = 'user/leave/request';
-    if (kDebugMode) {
-      print(bodyCreateLeaveModel?.toJson());
-    }
     try {
       final formData = FormData.fromMap(bodyCreateLeaveModel!.toJson());
       final response = await httpService.postRequest('${getBaseUrl()}$api', bodyCreateLeaveModel.toJson());
@@ -287,9 +283,6 @@ class MetaClubApiClient {
 
   Future<Either<Failure, bool>> cancelVisitApi({BodyVisitCancel? bodyVisitCancel}) async {
     const String api = 'visit/change-status';
-    if (kDebugMode) {
-      print(bodyVisitCancel?.toJson());
-    }
     try {
       final formData = FormData.fromMap(bodyVisitCancel!.toJson());
       final response = await httpService.postRequest('${getBaseUrl()}$api', formData);
@@ -305,9 +298,6 @@ class MetaClubApiClient {
 
   Future<Either<Failure, bool>> createRescheduleApi({BodyCreateSchedule? bodyCreateSchedule}) async {
     const String api = 'visit/create-schedule';
-    if (kDebugMode) {
-      print(bodyCreateSchedule?.toJson());
-    }
     try {
       final formData = FormData.fromMap(bodyCreateSchedule!.toJson());
       final response = await httpService.postRequest('${getBaseUrl()}$api', formData);
@@ -323,9 +313,6 @@ class MetaClubApiClient {
 
   Future<Either<Failure, bool>> visitUploadImageApi({BodyImageUpload? bodyImageUpload}) async {
     const String api = 'visit/image-upload';
-    if (kDebugMode) {
-      print(bodyImageUpload?.toJson());
-    }
     try {
       final formData = FormData.fromMap(bodyImageUpload!.toJson());
       final response = await httpService.postRequest('${getBaseUrl()}$api', formData);
@@ -341,10 +328,6 @@ class MetaClubApiClient {
 
   Future<Either<Failure, bool>> updateVisitApi({BodyUpdateVisit? bodyUpdateVisit}) async {
     const String api = 'visit/update';
-
-    if (kDebugMode) {
-      print(bodyUpdateVisit?.toJson());
-    }
     try {
       FormData formData = FormData.fromMap(bodyUpdateVisit!.toJson());
       await httpService.postRequest('${getBaseUrl()}$api', formData);
@@ -356,10 +339,6 @@ class MetaClubApiClient {
 
   Future<Either<Failure, bool>> visitCreateNoteApi({BodyVisitNote? bodyVisitNote}) async {
     const String api = 'visit/create-note';
-
-    if (kDebugMode) {
-      print(bodyVisitNote?.toJson());
-    }
     try {
       FormData formData = FormData.fromMap(bodyVisitNote!.toJson());
       await httpService.postRequest('${getBaseUrl()}$api', formData);
@@ -395,10 +374,6 @@ class MetaClubApiClient {
 
   Future<Either<Failure, bool>> createVisitApi({BodyCreateVisit? bodyCreateVisit}) async {
     const String api = 'visit/create';
-
-    if (kDebugMode) {
-      print(bodyCreateVisit?.toJson());
-    }
     try {
       FormData formData = FormData.fromMap(bodyCreateVisit!.toJson());
       await httpService.postRequest('${getBaseUrl()}$api', formData);
@@ -501,7 +476,6 @@ class MetaClubApiClient {
     String api = 'user/profile/update/';
 
     try {
-      debugPrint('body: $data');
 
       FormData formData = FormData.fromMap(data);
 
@@ -519,7 +493,6 @@ class MetaClubApiClient {
     String api = 'user/profile/update/$slag';
 
     try {
-      debugPrint('body: $data');
 
       FormData formData = FormData.fromMap(data);
 
@@ -537,7 +510,6 @@ class MetaClubApiClient {
     String api = 'support-ticket/add';
 
     try {
-      debugPrint('body: $bodyCreateSupport');
 
       FormData formData = FormData.fromMap({
         "subject": bodyCreateSupport?.subject,
@@ -560,7 +532,6 @@ class MetaClubApiClient {
     String api = 'user/profile-update';
 
     try {
-      debugPrint('body: ${{"avatar_id": avatarId}}');
 
       FormData formData = FormData.fromMap({"avatar_id": avatarId});
 
@@ -880,16 +851,13 @@ class MetaClubApiClient {
 
       return response.fold(
         (l) {
-          debugPrint('getNoticeList failure: $l');
           return Left(l);
         },
         (r) {
-          debugPrint('getNoticeList success: ${r.statusCode}');
           return Right(NoticeListModel.fromJson(r.data));
         },
       );
     } on Exception catch (e) {
-      debugPrint('getNoticeList exception: $e');
       return Left(ExceptionFailure(exception: e));
     }
   }

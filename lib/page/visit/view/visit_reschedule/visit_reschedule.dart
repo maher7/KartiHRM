@@ -126,9 +126,6 @@ class VisitReschedule extends StatelessWidget {
               hints: "write_note".tr(),
               maxLine: 5,
               onData: (data) {
-                if (kDebugMode) {
-                  print(data);
-                }
                 bodyCreateSchedule.note = data;
               },
             ),

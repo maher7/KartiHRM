@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,9 +58,6 @@ class CreateLeaveRequest extends StatelessWidget {
                 ),
                 UploadDocContent(
                   onFileUpload: (FileUpload? data) {
-                    if (kDebugMode) {
-                      print(data?.fileId);
-                    }
                     bodyCreateLeave.imageUrl = data?.previewUrl;
                   },
                   initialAvatar:
@@ -134,7 +132,12 @@ class CreateLeaveRequest extends StatelessWidget {
                           clickButton: () {
                             if (formKey.currentState!.validate() && state.status != NetworkStatus.loading) {
                               final user = context.read<AuthenticationBloc>().state.data;
-                              bodyCreateLeave.userId = user?.user?.id;
+                              final uid = user?.user?.id;
+                              if (uid == null) {
+                                Fluttertoast.showToast(msg: 'something_went_wrong'.tr());
+                                return;
+                              }
+                              bodyCreateLeave.userId = uid;
                               bodyCreateLeave.assignLeaveId = leaveTypeId;
                               bodyCreateLeave.substituteId = state.selectedEmployee?.id;
                               bodyCreateLeave.applyDate = starDate;
@@ -142,7 +145,7 @@ class CreateLeaveRequest extends StatelessWidget {
                               bodyCreateLeave.leaveFrom = starDate;
                               bodyCreateLeave.dates = state.dates;
                               context.read<LeaveBloc>().add(SubmitLeaveRequest(
-                                  bodyCreateLeaveModel: bodyCreateLeave, uid: user!.user!.id!, context: context));
+                                  bodyCreateLeaveModel: bodyCreateLeave, uid: uid, context: context));
                             }
                           },
                         ),

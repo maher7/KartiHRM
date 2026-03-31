@@ -55,6 +55,15 @@ class ApplyLeave extends DailyLeaveEvent {
   List<Object?> get props => [userId, context];
 }
 
+class SelectLeaveDate extends DailyLeaveEvent {
+  final DateTime date;
+
+  SelectLeaveDate(this.date);
+
+  @override
+  List<Object> get props => [date];
+}
+
 class SelectEmployee extends DailyLeaveEvent {
   final PhoneBookUser selectEmployee;
 

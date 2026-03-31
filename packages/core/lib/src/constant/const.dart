@@ -80,11 +80,6 @@ const List languages = [
         'https://t2.gstatic.com/licensed-image?q=tbn:ANd9GcQVhwOar0FyOb_mmItcTAQFv1O4k8S_ZUEAI45O7dYC2rXRUWD-nWJwOQWJS2va8krELcDtY0JEVdQabkDkEdo',
   },
   {
-    'name': 'Bangla',
-    'image':
-        'https://cdn.britannica.com/67/6267-004-10A21DF0/Flag-Bangladesh.jpg',
-  },
-  {
     'name': 'Arabic',
     'image':
         'https://cdn.britannica.com/79/5779-004-DC479508/Flag-Saudi-Arabia.jpg',

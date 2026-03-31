@@ -4,7 +4,6 @@ import 'package:core/core.dart';
 import 'package:notification/notification.dart';
 import 'package:notification/src/data/database_entities/notification_db_entity.dart';
 import 'package:notification/src/domain/usecases/add_notification_usecase.dart';
-import 'package:realm/realm.dart';
 import 'notification_list_state.dart';
 
 typedef NotificationListCubitFactory = NotificationListCubit Function();
@@ -14,22 +13,29 @@ class NotificationListCubit extends Cubit<NotificationListState> {
   final NotificationFromServerUseCase notificationFromServerUseCase;
   final AddNotificationUseCase addNotificationUseCase;
 
-  late StreamSubscription<RealmResultsChanges<NotificationDbEntity>> _querySubscription;
-  late final RealmResults<NotificationDbEntity> _notificationQuery;
+  late StreamSubscription<List<NotificationDbEntity>> _querySubscription;
 
   NotificationListCubit(
       {required this.notificationManager,
       required this.notificationFromServerUseCase,
       required this.addNotificationUseCase})
       : super(const NotificationListState()) {
-    _notificationQuery = notificationManager.getNotifications();
-    _querySubscription = _notificationQuery.changes.listen(_onNotificationsCollectionChanged);
+    // Emit initial data
+    _emitCurrentNotifications();
+    // Listen for changes
+    _querySubscription = notificationManager.getNotificationStream().listen(_onNotificationsChanged);
     onLoadNotificationServerData();
+  }
+
+  void _emitCurrentNotifications() {
+    final notifications = notificationManager.getNotifications();
+    emit(state.copyWith(readNotifications: notifications, dateFormat: 'M/dd/yyyy'));
   }
 
   void onLoadNotificationServerData() async {
     emit(state.copyWith(status: NetworkStatus.loading));
-    if (_notificationQuery.isEmpty) {
+    final currentNotifications = notificationManager.getNotifications();
+    if (currentNotifications.isEmpty) {
       final notificationResponse = await notificationFromServerUseCase();
       notificationResponse.fold((l) {
         emit(state.copyWith(status: NetworkStatus.failure));
@@ -53,9 +59,10 @@ class NotificationListCubit extends Cubit<NotificationListState> {
     }
   }
 
-  void _onNotificationsCollectionChanged(RealmResultsChanges<NotificationDbEntity> event) async {
-    const defaultDateFormat = 'M/dd/yyyy';
-    emit(state.copyWith(readNotifications: _notificationQuery.toList(), dateFormat: defaultDateFormat));
+  void _onNotificationsChanged(List<NotificationDbEntity> notifications) {
+    if (!isClosed) {
+      emit(state.copyWith(readNotifications: notifications, dateFormat: 'M/dd/yyyy'));
+    }
   }
 
   void delete(String notificationKey) {

@@ -58,9 +58,6 @@ class UpdateVisit extends StatelessWidget {
                   hints: tr("give_a_title_to_your_visit"),
                   errorMsg: "field_cannot_be_empty".tr(),
                   onData: (data) {
-                    if (kDebugMode) {
-                      print(data);
-                    }
                     bodyUpdateVisit.title = data;
                   },
                 ),
@@ -72,9 +69,6 @@ class UpdateVisit extends StatelessWidget {
                   hints: "write_a_note".tr(),
                   maxLine: 5,
                   onData: (data) {
-                    if (kDebugMode) {
-                      print(data);
-                    }
                     bodyUpdateVisit.description = data;
                   },
                 ),

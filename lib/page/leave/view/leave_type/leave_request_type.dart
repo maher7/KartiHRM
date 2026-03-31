@@ -88,9 +88,6 @@ class LeaveRequestType extends StatelessWidget {
                               groupValue: state.selectedRequestType,
                               onChanged: (AvailableLeaveType? value) {
                                 context.read<LeaveBloc>().add(SelectedRequestType(value!));
-                                if (kDebugMode) {
-                                  print(value.type);
-                                }
                               },
                             ),
                           );

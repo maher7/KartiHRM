@@ -42,7 +42,8 @@ class LoginForm extends StatelessWidget {
                   context: context,
                   isSuccess: true,
                   message: '${state.user?.user?.name}',
-                  body: 'Authentication Successful');
+                  body: 'Authentication Successful',
+                  autoDismiss: true);
             }
           },
           child: Padding(
@@ -255,7 +256,7 @@ class _SelectCompanyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton.icon(
       onPressed: () {
-        NavUtil.replaceScreen(context, const OnboardingPage());
+        NavUtil.pushAndRemoveUntil(context, const OnboardingPage());
       },
       icon: Icon(Icons.arrow_back_rounded, size: 16.r, color: Colors.black45),
       label: Text(

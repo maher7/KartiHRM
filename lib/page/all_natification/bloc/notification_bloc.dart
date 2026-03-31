@@ -54,7 +54,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         NavUtil.navigateScreen(event.context, const AppointmentScreen());
         break;
       default:
-        return debugPrint('default');
+        return;
     }
   }
 

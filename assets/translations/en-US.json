@@ -25,7 +25,7 @@
   "current_month": "Current Month",
   "days": "Days",
   "leave_summary": "Leave Summary",
-  "apply_leave": "Apply Leave",
+  "apply_leave": "Apply",
   "tab_to_apply_for_leave": "Tab to Apply for Leave",
   "total_leaves": "Total Leaves",
   "leaves_used": "Leaves Used",
@@ -639,8 +639,10 @@
   "daily_leave_subtitle": "Request late arrival or early departure",
   "full_day_leave": "Full Day Leave",
   "partial_leave": "Partial Leave",
-  "apply_partial_leave": "Apply Partial Leave",
+  "apply_partial_leave": "Apply",
   "select_time": "Tap to select time",
   "partial": "Partial",
-  "alerts": "Alerts"
+  "alerts": "Alerts",
+  "leave_request_pending": "Leave request submitted and pending approval",
+  "pending_leave_info": "{} day(s) pending approval — not yet deducted from balance"
 }

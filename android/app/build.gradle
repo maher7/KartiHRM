@@ -20,9 +20,15 @@ if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location_track with flutter.sdk in the local.properties file.")
 }
 
-def flutterVersionCode = '3'
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
 
-def flutterVersionName = '1.2'
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
 
 
 def keystoreProperties = new Properties()
@@ -53,15 +59,19 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "online.karti.app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+    }
+
+    // Support 16 KB page sizes (required by Google Play from Nov 2025)
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 
     signingConfigs {

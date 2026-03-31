@@ -1,4 +1,3 @@
-import 'package:realm/realm.dart';
 import '../../data/database_entities/notification_db_entity.dart';
 
 abstract class NotificationManager {
@@ -6,7 +5,9 @@ abstract class NotificationManager {
 
   Future<void> initializeNotification();
 
-  RealmResults<NotificationDbEntity> getNotifications();
+  List<NotificationDbEntity> getNotifications();
+
+  Stream<List<NotificationDbEntity>> getNotificationStream();
 
   void deleteNotification({required String notificationId});
 

@@ -38,7 +38,6 @@ class CountryCodeView extends StatelessWidget {
                       onSelect: (Country country) {
                         BlocProvider.of<CountryCubit>(context).onCountryChanged(country: country);
                         bodyRegistration.phoneCode = '+${state.selectedCountry?.phoneCode ?? '880'}';
-                        debugPrint('Select country: ${bodyRegistration.phoneCode}');
                       },
                     );
                   },

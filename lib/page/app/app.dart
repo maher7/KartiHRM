@@ -10,6 +10,7 @@ import 'package:onesthrm/page/attendance/bloc/offline_attendance_bloc/offline_at
 import 'package:onesthrm/page/belletin/bloc/bulletin_bloc.dart';
 import 'package:onesthrm/routes/src/generate_routes.dart';
 import '../authentication/bloc/authentication_bloc.dart';
+import '../login/view/login_page.dart';
 import '../bottom_navigation/view/bottom_navigation_page.dart';
 import '../internet_connectivity/bloc/internet_bloc.dart';
 import '../language/bloc/language_bloc.dart';
@@ -48,6 +49,7 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   NavigatorState get _navigator => instance<GlobalKey<NavigatorState>>().currentState!;
+  bool _initialNavDone = false;
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +78,11 @@ class _AppViewState extends State<AppView> {
                         switch (state.status) {
                           case AuthenticationStatus.authenticated:
                             SharedUtil.getBoolValue(isDisclosure).then((isDisclosure) async {
-                              // Wait for splash screen to show before navigating
-                              await Future.delayed(const Duration(seconds: 3));
+                              // Only delay on initial app launch (splash screen), not after login
+                              if (!_initialNavDone) {
+                                _initialNavDone = true;
+                                await Future.delayed(const Duration(seconds: 3));
+                              }
                               if (isDisclosure) {
                                 _navigator.pushAndRemoveUntil(BottomNavigationPage.route(), (route) => false);
                               } else {
@@ -95,8 +100,11 @@ class _AppViewState extends State<AppView> {
                               if (company == null) {
                                 _navigator.pushAndRemoveUntil(OnboardingPage.route(), (_) => false);
                               } else {
-                                // _navigator.pushAndRemoveUntil(LoginPage.route(), (route) => false);
-                                _navigator.pushAndRemoveUntil(OnboardingPage.route(), (_) => false);
+                                // Logout: go to login page with the same company pre-selected
+                                _navigator.pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (_) => LoginPage(selectedCompany: company)),
+                                  (_) => false,
+                                );
                               }
                             }
                             break;

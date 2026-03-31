@@ -120,9 +120,6 @@ class AttendanceMethodBloc extends Bloc<AttendanceMethodEvent, AttendanceMethodS
         });
       });
     } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
     }
   }
 }

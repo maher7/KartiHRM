@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../bottom_navigation/view/bottom_navigation_page.dart';
 
 class AppPermissionPage extends StatefulWidget {
@@ -86,17 +87,42 @@ class _AppPermissionPageState extends State<AppPermissionPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final navigator = instance<GlobalKey<NavigatorState>>().currentState!;
-                    navigator.pushAndRemoveUntil(BottomNavigationPage.route(), (route) => false);
+                  onPressed: () async {
+                    // Request location permission immediately after disclosure
+                    LocationPermission permission = await Geolocator.checkPermission();
+                    if (permission == LocationPermission.denied) {
+                      permission = await Geolocator.requestPermission();
+                    }
+                    if (permission == LocationPermission.deniedForever) {
+                      // User permanently denied — open settings
+                      await Geolocator.openAppSettings();
+                    }
+                    // Navigate regardless of result — user made their choice
+                    final navigator = instance<GlobalKey<NavigatorState>>().currentState;
+                    if (navigator != null && navigator.mounted) {
+                      navigator.pushAndRemoveUntil(BottomNavigationPage.route(), (route) => false);
+                    }
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                     elevation: 0,
                   ),
-                  child: Text(tr("next"),
+                  child: Text(tr("agree"),
                       style: TextStyle(color: Branding.colors.primaryLight, fontWeight: FontWeight.bold, fontSize: 16.0)),
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () {
+                    // User declines — still let them use the app
+                    final navigator = instance<GlobalKey<NavigatorState>>().currentState!;
+                    navigator.pushAndRemoveUntil(BottomNavigationPage.route(), (route) => false);
+                  },
+                  child: Text(tr("no"),
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 14.0)),
                 ),
               ),
             ],

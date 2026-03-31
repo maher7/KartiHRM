@@ -32,20 +32,16 @@ void main() async {
     try {
       if (Firebase.apps.isNotEmpty) {
         firebaseReady = true;
-        debugPrint('Firebase already initialized (attempt $i)');
+        // Firebase ready
         break;
       }
       await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
       firebaseReady = true;
-      debugPrint('Firebase initialized from Dart (attempt $i)');
+      // Firebase initialized
       break;
     } catch (e) {
-      debugPrint('Firebase init attempt $i failed: $e');
       await Future.delayed(Duration(milliseconds: 500 * (i + 1)));
     }
-  }
-  if (!firebaseReady) {
-    debugPrint('Firebase init failed after all retries — continuing without Firebase');
   }
   ///initializeDependencyInjection
   await initAppModule();
@@ -87,7 +83,6 @@ void main() async {
       }
     });
   } catch (e) {
-    debugPrint('FCM initial message handling error: $e');
   }
 
   HydratedBloc.storage = await HydratedStorage.build(storageDirectory: await getApplicationDocumentsDirectory());
@@ -117,7 +112,7 @@ Future<void> updateAppWidget({required bool isCheckedIn}) async {
 
 /// Handle notification tap — route to the appropriate screen based on type/slug.
 void _handleNotificationTap(BuildContext context, String? payload, String? type) {
-  debugPrint('Deep link: type=$type, payload=$payload');
+  // debugPrint('Deep link: type=$type, payload=$payload');
 
   // If we have a known slug/type, route using the existing slug router
   if (type != null && type.isNotEmpty) {

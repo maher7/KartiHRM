@@ -28,9 +28,6 @@ class ExpenseAttachmentContent extends StatelessWidget {
         ),
         UploadDocContent(
           onFileUpload: (FileUpload? data) {
-            if (kDebugMode) {
-              print(data?.previewUrl);
-            }
             expenseCreateBody.attachment = data?.fileId;
           },
           initialAvatar:

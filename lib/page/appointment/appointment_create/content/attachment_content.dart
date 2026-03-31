@@ -28,9 +28,6 @@ class AttachmentContent extends StatelessWidget {
         ),
         UploadDocContent(
           onFileUpload: (FileUpload? data) {
-            if (kDebugMode) {
-              print(data?.previewUrl);
-            }
             appointmentBody.previewId = data?.fileId;
           },
           initialAvatar:

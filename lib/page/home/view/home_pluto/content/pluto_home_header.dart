@@ -1,9 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 import 'package:onesthrm/page/home/content/pluto_event_card.dart';
 import 'package:onesthrm/page/home/router/home__menu_router.dart';
+import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:onesthrm/page/menu/content/menu_profile.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:core/core.dart';
@@ -17,17 +19,19 @@ class PlutoHomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Filter today items — only show those with count > 0
-    final todayItems = dashboardModel?.data?.today
-        ?.where((item) {
-          final num = item.number;
-          if (num is int) return num > 0;
-          if (num is String) return (int.tryParse(num) ?? 0) > 0;
-          return false;
-        })
-        .toList() ?? [];
+    return BlocBuilder<LanguageBloc, LanguageState>(
+      builder: (context, _) {
+        // Filter today items — only show those with count > 0
+        final todayItems = dashboardModel?.data?.today
+            ?.where((item) {
+              final num = item.number;
+              if (num is int) return num > 0;
+              if (num is String) return (int.tryParse(num) ?? 0) > 0;
+              return false;
+            })
+            .toList() ?? [];
 
-    return Column(
+        return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Gradient header
@@ -103,6 +107,8 @@ class PlutoHomeHeader extends StatelessWidget {
           ),
         ],
       ],
+      );
+      },
     );
   }
 }

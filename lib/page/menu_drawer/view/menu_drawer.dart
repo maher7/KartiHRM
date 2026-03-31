@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:onesthrm/page/authentication/bloc/authentication_bloc.dart';
+import 'package:onesthrm/page/home/bloc/bloc.dart';
+import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:onesthrm/page/menu/bloc/menu_bloc.dart';
 import 'package:onesthrm/page/menu_drawer/content/menu_settings_content.dart';
 import 'package:onesthrm/page/menu_drawer/content/support_content.dart';
@@ -28,6 +31,8 @@ class MenuDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.read<AuthenticationBloc>().state.data;
+    return BlocBuilder<LanguageBloc, LanguageState>(
+      builder: (context, _) {
     return Drawer(
       width: 280.r,
       backgroundColor: Colors.white,
@@ -107,20 +112,56 @@ class MenuDrawer extends StatelessWidget {
               ),
             ),
           ),
-          // App version footer
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            child: BlocBuilder<MenuBloc, MenuState>(builder: (context, menuState) {
-              return Text(
-                menuState.appVersion != null ? '${menuState.appName ?? ''} v${menuState.appVersion}' : '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 11.r, color: Colors.black26),
-              );
-            }),
+          // Logout + version pinned at bottom
+          Container(
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: Colors.grey.shade200)),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        content: const Text('are_you_sure_you_want_to_logout').tr(),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('no').tr()),
+                          TextButton(
+                              onPressed: () {
+                                BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogoutRequest());
+                                context.read<HomeBloc>().add(OnResetEvent());
+                                Navigator.of(ctx).pop();
+                              },
+                              child: const Text('yes').tr()),
+                        ],
+                      ),
+                    ),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    horizontalTitleGap: 8,
+                    leading: const Icon(Icons.logout_rounded, color: Colors.red, size: 22),
+                    title: Text('logout', style: TextStyle(fontSize: 14.r, color: Colors.red)).tr(),
+                  ),
+                  BlocBuilder<MenuBloc, MenuState>(builder: (context, menuState) {
+                    return Text(
+                      menuState.appVersion != null ? '${menuState.appName ?? ''} v${menuState.appVersion}' : '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11.r, color: Colors.black26),
+                    );
+                  }),
+                ],
+              ),
+            ),
           ),
         ],
       ),
+    );
+    },
     );
   }
 }

@@ -35,6 +35,6 @@ class NavUtil {
   }
 
   static pushAndRemoveUntil(BuildContext context, Widget screen) {
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => screen), ModalRoute.withName("/Home"));
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => screen), (_) => false);
   }
 }

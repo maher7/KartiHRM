@@ -22,9 +22,6 @@ class AttachmentContent extends StatelessWidget {
         const SizedBox(height: 16,),
         UploadDocContent(
           onFileUpload: (FileUpload? data) {
-            if (kDebugMode) {
-              print(data?.previewUrl);
-            }
             meetingBodyModel?.attachmentFile = data?.previewUrl;
           },
           initialAvatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png",

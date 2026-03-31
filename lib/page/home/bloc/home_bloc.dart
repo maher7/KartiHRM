@@ -68,6 +68,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copy(status: NetworkStatus.loading));
     }
     final data = await settingsDataLoadUseCase();
+    if (isClosed) return;
     data.fold((l) {
       if (l.failureType == FailureType.httpStatus) {
         if ((l as GeneralFailure).httpStatusCode == 401) {
@@ -94,12 +95,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   Future subscribeTopic() async {
+    if (isClosed) return;
     final notifications = globalState.get(notificationChannels);
     try {
       if (notifications != null) {
         for (var topic in notifications) {
           await FirebaseMessaging.instance.subscribeToTopic(topic);
-          debugPrint("Firebase topics: $topic");
+          // debugPrint("Firebase topics: $topic");
         }
       }
       // Store FCM token on the server for direct push notifications
@@ -116,7 +118,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               '${baseUrl}user/firebase-token',
               data: {'firebase_token': fcmToken, 'user_id': userId},
             );
-            debugPrint("FCM token stored on server");
+            // debugPrint("FCM token stored on server");
           } catch (e) {
             if (e is dio_pkg.DioException && e.response != null) {
               debugPrint("Failed to store FCM token [${e.response?.statusCode}]: ${e.response?.data}");
@@ -163,6 +165,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
 
     final data = await homeDatLoadUseCase();
+    if (isClosed) return;
     data.fold((l) {
       if (l.failureType == FailureType.httpStatus) {
         if ((l as GeneralFailure).httpStatusCode == 401) {
