@@ -24,10 +24,6 @@ class PlutoDailyLeaveContent extends StatelessWidget {
       builder: (context, _) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(tr("partial_leave"), style: TextStyle(fontSize: 16.r, color: Branding.colors.textPrimary, fontWeight: FontWeight.w500)),
-      ),
       body: RefreshIndicator(
         onRefresh: () async {
           final bloc = context.read<DailyLeaveBloc>();

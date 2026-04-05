@@ -1,6 +1,8 @@
 part of 'bottom_nav_cubit.dart';
 
-enum BottomNavTab { home, leave, menu, attendance, notification }
+/// Tab order matches the IndexedStack in BottomNavContent.
+/// Visual order: Home | Schedule | [FAB=menu] | Leave | Alerts
+enum BottomNavTab { home, schedule, menu, leave, notification }
 
 class BottomNavState extends Equatable {
 const BottomNavState({

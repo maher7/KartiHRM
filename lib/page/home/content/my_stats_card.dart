@@ -64,6 +64,24 @@ class _MyStatsCardState extends State<MyStatsCard> {
     return null;
   }
 
+  /// Compute formatted worked-today from inTime + outTime strings (e.g. "08:00 AM" → "04:43 PM" = "8h 43m")
+  /// Returns null if either time can't be parsed.
+  String? _computeStayTime(String? inTimeStr, String? outTimeStr) {
+    if (inTimeStr == null || outTimeStr == null) return null;
+    final inDt = _parseCheckInTime(inTimeStr);
+    final outDt = _parseCheckInTime(outTimeStr);
+    if (inDt == null || outDt == null) return null;
+    var diffMinutes = (outDt.hour * 60 + outDt.minute) - (inDt.hour * 60 + inDt.minute);
+    // Handle overnight shift (check-out next day)
+    if (diffMinutes < 0) diffMinutes += 24 * 60;
+    if (diffMinutes <= 0) return null;
+    final hours = diffMinutes ~/ 60;
+    final minutes = diffMinutes % 60;
+    if (hours == 0) return '${minutes}m';
+    if (minutes == 0) return '${hours}h';
+    return '${hours}h ${minutes}m';
+  }
+
   String _calcLiveWorkingHours(String? inTimeStr, {String? checkInAt}) {
     final now = DateTime.now();
     DateTime? checkIn;
@@ -126,8 +144,13 @@ class _MyStatsCardState extends State<MyStatsCard> {
           // Currently working — show live ticking HH:MM:SS
           workingHours = _calcLiveWorkingHours(inTime, checkInAt: checkInAt);
         } else if (outTime != null && inTime != null) {
-          // Already checked out — show recorded stay time
-          workingHours = attendance?.stayTime ?? '--:--';
+          // Already checked out — prefer backend stay_time; otherwise compute from in/out times locally
+          final backendStay = attendance?.stayTime;
+          if (backendStay != null && backendStay.isNotEmpty) {
+            workingHours = backendStay;
+          } else {
+            workingHours = _computeStayTime(inTime, outTime) ?? '0h';
+          }
         } else if (inTime != null && inTime.isNotEmpty) {
           // Has inTime but unclear status — still show live calc
           workingHours = _calcLiveWorkingHours(inTime, checkInAt: checkInAt);
@@ -135,7 +158,7 @@ class _MyStatsCardState extends State<MyStatsCard> {
             (attendance?.stayTime ?? '').isNotEmpty) {
           workingHours = attendance!.stayTime!;
         } else {
-          workingHours = '--:--';
+          workingHours = '0h';
         }
 
         // Status
@@ -178,7 +201,7 @@ class _MyStatsCardState extends State<MyStatsCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
+              // Title with today's date chip
               Row(
                 children: [
                   Icon(Icons.insights_rounded,
@@ -190,6 +213,22 @@ class _MyStatsCardState extends State<MyStatsCard> {
                         fontSize: 13.r,
                         fontWeight: FontWeight.w700,
                         color: Colors.black87),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                    decoration: BoxDecoration(
+                      color: Branding.colors.primaryLight.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                    child: Text(
+                      DateFormat('EEE, d MMM', 'en').format(DateTime.now()),
+                      style: TextStyle(
+                        fontSize: 10.r,
+                        fontWeight: FontWeight.w600,
+                        color: Branding.colors.primaryLight,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -282,6 +321,12 @@ class _MyStatsCardState extends State<MyStatsCard> {
                   ],
                 ),
               ),
+
+              // This week summary row
+              if (widget.dashboardModel?.data?.thisWeek != null) ...[
+                SizedBox(height: 10.h),
+                _ThisWeekRow(stats: widget.dashboardModel!.data!.thisWeek!),
+              ],
             ],
           ),
         );
@@ -353,6 +398,64 @@ class _MiniStat extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ThisWeekRow extends StatelessWidget {
+  const _ThisWeekRow({required this.stats});
+  final ThisWeekStats stats;
+
+  String _fmtHours(double? h) {
+    if (h == null) return '0h';
+    return h.truncateToDouble() == h ? '${h.toInt()}h' : '${h.toStringAsFixed(1)}h';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final shifts = stats.shifts ?? 0;
+    final hoursLabel = _fmtHours(stats.totalHours);
+    final shiftsLabel = shifts == 1
+        ? '1 ${'shift_count'.tr()}'
+        : '$shifts ${'shifts_count'.tr()}';
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
+      decoration: BoxDecoration(
+        color: Branding.colors.primaryLight.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.calendar_month_rounded, size: 15.r, color: Branding.colors.primaryLight),
+          SizedBox(width: 8.w),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(fontSize: 12.r, color: Colors.black87),
+                children: [
+                  TextSpan(
+                    text: '${'this_week'.tr()}: ',
+                    style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black54),
+                  ),
+                  TextSpan(
+                    text: '$hoursLabel ${'total'.tr().toLowerCase()}',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  TextSpan(
+                    text: ' · ',
+                    style: TextStyle(color: Colors.grey.shade400),
+                  ),
+                  TextSpan(
+                    text: shiftsLabel,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

@@ -108,7 +108,7 @@ class PlutoProfileContent extends StatelessWidget {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           content: Text('Are_you_sure_,_you_want_to_delete_the_account'.tr()),
                           actions: [
-                            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('No')),
+                            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('no'.tr())),
                             TextButton(
                                 onPressed: () {
                                   BlocProvider.of<ProfileBloc>(context).add(ProfileDeleteRequest());

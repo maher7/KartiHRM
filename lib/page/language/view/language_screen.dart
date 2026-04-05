@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,27 +76,10 @@ class _LanguageScreenState extends State<LanguageScreen> {
                             },
                             child: Row(
                               children: [
-                                ClipOval(
-                                  child: CachedNetworkImage(
-                                    height: 30.r,
-                                    width: 30.r,
-                                    fit: BoxFit.cover,
-                                    imageUrl: "${languages[index]['image']}",
-                                    placeholder: (context, url) => Center(
-                                      child: Image.asset(
-                                          "assets/images/placeholder_image.png"),
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ),
-                                ),
-                                 SizedBox(
-                                  width: 16.w,
-                                ),
                                 Text(
                                   languages[index]['name'] ?? "",
-                                  style:  TextStyle(
-                                      fontSize: 12.r,
+                                  style: TextStyle(
+                                      fontSize: 14.r,
                                       color: Colors.black87,
                                       fontWeight: FontWeight.w500),
                                 ),

@@ -23,6 +23,9 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
       case 1:
         event.context.setLocale(const Locale('ar', 'AR'));
         break;
+      case 2:
+        event.context.setLocale(const Locale('he', 'IL'));
+        break;
     }
     await SharedUtil.setLanguageIntValue(keySelectLanguage, event.selectIndex);
     emit(state.copy(selectedIndex: event.selectIndex));

@@ -32,7 +32,8 @@ class DashboardData extends Equatable {
       this.menus,
       this.config,
       this.breakHistory,
-      this.attendanceData});
+      this.attendanceData,
+      this.thisWeek});
 
   final List<TodayData>? today;
   final List<CurrentMonthData>? currentMonth;
@@ -42,6 +43,7 @@ class DashboardData extends Equatable {
   final AttendanceData? attendanceData;
   final Config? config;
   final BreakHistory? breakHistory;
+  final ThisWeekStats? thisWeek;
 
   factory DashboardData.fromJson(Map<String, dynamic> json) => DashboardData(
         today: List<TodayData>.from(json["today"].map((x) => TodayData.fromJson(x))),
@@ -54,6 +56,7 @@ class DashboardData extends Equatable {
         attendanceData: AttendanceData.fromJson(json['attendance_status']),
         breakHistory: json['break_history_data'] != null ? BreakHistory.fromJson(json['break_history_data']) : null,
         config: Config.fromJson(json['config']),
+        thisWeek: json['this_week'] != null ? ThisWeekStats.fromJson(json['this_week']) : null,
       );
 
   DashboardData copyWith(
@@ -302,11 +305,34 @@ class TodayData {
       };
 }
 
-class UpcomingEvent {
-  UpcomingEvent({this.id, this.title, this.date, this.day, this.time, this.startDate, this.image});
+class ThisWeekStats extends Equatable {
+  final int? shifts;
+  final double? totalHours;
+  final String? weekStart;
+  final String? weekEnd;
 
-  int? id;
+  const ThisWeekStats({this.shifts, this.totalHours, this.weekStart, this.weekEnd});
+
+  factory ThisWeekStats.fromJson(Map<String, dynamic> json) => ThisWeekStats(
+        shifts: json['shifts'] != null ? int.tryParse(json['shifts'].toString()) : null,
+        totalHours: json['total_hours'] != null
+            ? double.tryParse(json['total_hours'].toString())
+            : null,
+        weekStart: json['week_start'],
+        weekEnd: json['week_end'],
+      );
+
+  @override
+  List<Object?> get props => [shifts, totalHours, weekStart, weekEnd];
+}
+
+class UpcomingEvent {
+  UpcomingEvent({this.id, this.type, this.title, this.description, this.date, this.day, this.time, this.startDate, this.image});
+
+  String? id;
+  String? type; // "holiday" | "appointment" | "birthday"
   String? title;
+  String? description;
   String? date;
   String? day;
   String? time;
@@ -314,8 +340,10 @@ class UpcomingEvent {
   String? image;
 
   factory UpcomingEvent.fromJson(Map<String, dynamic> json) => UpcomingEvent(
-      id: json["id"] != null ? int.tryParse(json["id"].toString()) : null,
+      id: json["id"]?.toString(),
+      type: json["type"],
       title: json["title"],
+      description: json["description"],
       date: json["date"],
       day: json["day"],
       time: json["time"],

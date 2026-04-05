@@ -10,6 +10,7 @@ import 'package:onesthrm/page/notice_details/view/notice_details_screen.dart';
 import 'package:onesthrm/page/notice_list/bloc/notice_list_bloc.dart' as nlb;
 import 'package:onesthrm/page/notice_list/content/notice_list_content.dart';
 import 'package:onesthrm/res/nav_utail.dart';
+import 'package:onesthrm/res/widgets/screen_header.dart';
 
 /// Unified screen with two tabs: Notifications and Announcements.
 class UnifiedNotificationScreen extends StatelessWidget {
@@ -23,25 +24,44 @@ class UnifiedNotificationScreen extends StatelessWidget {
       length: 2,
       initialIndex: initialTab,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(tr("notifications"), style: TextStyle(fontSize: 16.r)),
-          bottom: TabBar(
-            indicatorColor: Colors.white,
-            indicatorWeight: 3,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            labelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 13.r),
-            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w400, fontSize: 13.r),
-            tabs: [
-              Tab(text: tr("notifications")),
-              Tab(text: tr("announcements")),
-            ],
-          ),
-        ),
-        body: const TabBarView(
+        backgroundColor: const Color(0xFFF5F6FA),
+        body: Column(
           children: [
-            _NotificationsTab(),
-            _AnnouncementsTab(),
+            ScreenHeader(
+              title: tr("notifications"),
+              showBack: false,
+              bottom: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
+                  indicator: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  labelColor: Branding.colors.primaryDark,
+                  unselectedLabelColor: Colors.white,
+                  labelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.r),
+                  unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.r),
+                  padding: EdgeInsets.all(4.r),
+                  tabs: [
+                    Tab(text: tr("notifications")),
+                    Tab(text: tr("announcements")),
+                  ],
+                ),
+              ),
+            ),
+            const Expanded(
+              child: TabBarView(
+                children: [
+                  _NotificationsTab(),
+                  _AnnouncementsTab(),
+                ],
+              ),
+            ),
           ],
         ),
       ),

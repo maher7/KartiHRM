@@ -35,7 +35,20 @@ class AuthenticationBloc extends HydratedBloc<AuthenticationEvent, Authenticatio
   }
 
   _onAuthenticationUserChanged(AuthenticationUserChanged event,Emitter<AuthenticationState> emit) async {
-    // debugPrint('event.data.toJson()${event.data.toJson()}');
+    // SECURITY: if the incoming user/company differs from what's currently
+    // authenticated, wipe all persisted bloc state before emitting the new
+    // auth state — prevents tenant data leaking across account switches.
+    final newUserId = event.data.user?.id;
+    final newCompanyId = event.data.user?.companyId;
+    final currentUser = state.data?.user;
+    final isTenantSwitch = currentUser != null &&
+        newUserId != null &&
+        (currentUser.id != newUserId || currentUser.companyId != newCompanyId);
+    if (isTenantSwitch) {
+      try {
+        await HydratedBloc.storage.clear();
+      } catch (_) {}
+    }
     globalState.set(authToken,event.data.user?.token);
     globalState.set(keyUserId, event.data.user?.id?.toString());
     if(event.data.user != null){
@@ -46,6 +59,11 @@ class AuthenticationBloc extends HydratedBloc<AuthenticationEvent, Authenticatio
 
   _onAuthenticationLogoutRequest(AuthenticationLogoutRequest event,Emitter<AuthenticationState> emit) async {
     await _authenticationRepository.logout();
+    // SECURITY: wipe all persisted bloc state so tenant data doesn't leak
+    // across user/company switches on the next login.
+    try {
+      await HydratedBloc.storage.clear();
+    } catch (_) {}
     emit(const AuthenticationState.unauthenticated());
   }
 

@@ -25,12 +25,6 @@ class LeaveSummaryContent extends StatelessWidget {
     return BlocBuilder<LanguageBloc, LanguageState>(
       builder: (context, _) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "full_day_leave".tr(),
-          style: TextStyle(fontSize: 16.r),
-        ),
-      ),
       body: RefreshIndicator(
         onRefresh: () async {
           final bloc = context.read<LeaveBloc>();
@@ -43,7 +37,28 @@ class LeaveSummaryContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
+              // Hint banner (matches partial leave design)
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                padding: EdgeInsets.all(12.r),
+                decoration: BoxDecoration(
+                  color: Branding.colors.primaryLight.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Branding.colors.primaryLight.withValues(alpha: 0.15)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded, color: Branding.colors.primaryLight, size: 20.r),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Text(
+                        'full_day_leave_subtitle'.tr(),
+                        style: TextStyle(fontSize: 12.r, color: Colors.black54, height: 1.3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               DeviceUtil.isTablet
                   ? TabAnimatedCircularButton(
                       onComplete: () {

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +11,7 @@ import 'package:onesthrm/page/home/view/home_mars/content_mars/current_month_mar
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:onesthrm/page/profile/view/profile_page.dart';
 import 'package:onesthrm/res/nav_utail.dart';
+import 'package:onesthrm/res/widgets/user_avatar.dart';
 import '../../../content/my_stats_card.dart';
 import 'home_bottom_mars.dart';
 import 'mars_today_summary_list.dart';
@@ -81,22 +81,17 @@ class _HomeMarsContentState extends State<HomeMarsContent> {
                                 child: Image.asset("assets/images/ic_notification.png",height: 40,fit: BoxFit.fitHeight,))),
 
                         Positioned(left: 20, top: 26,
-                          child: ClipOval(
-                            child: InkWell(
-                              onTap: (){
-                                NavUtil.navigateScreen(context, const ProfileScreen());
-                              },
-                              child: Builder(
-                                builder: (context) {
-                                  final avatarUrl = "${user?.user?.avatar}";
-                                  final hasValidUrl = avatarUrl.isNotEmpty && Uri.tryParse(avatarUrl)?.hasScheme == true;
-                                  return hasValidUrl
-                                      ? CachedNetworkImage(height: 45, width: 45, fit: BoxFit.cover, imageUrl: avatarUrl,
-                                          placeholder: (context, url) => Center(child: Image.asset("assets/home_bg/placeholder_image.png")),
-                                          errorWidget: (context, url, error) => const Icon(Icons.error))
-                                      : Image.asset("assets/home_bg/placeholder_image.png");
-                                },
-                              ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(24),
+                            onTap: () {
+                              NavUtil.navigateScreen(context, const ProfileScreen());
+                            },
+                            child: UserAvatar(
+                              imageUrl: user?.user?.avatar,
+                              name: user?.user?.name,
+                              size: 45,
+                              borderWidth: 2,
+                              borderColor: Colors.white,
                             ),
                           ),
                         )

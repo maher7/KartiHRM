@@ -27,7 +27,7 @@ class PlutoLeaveTypeScreen extends StatelessWidget {
         future: dailyLeaveBloc.onLeaveTypeList(leaveListData),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-           return snapshot.data!.fold((l) => const Center(child: Text('No data found')), (r){
+           return snapshot.data!.fold((l) => Center(child: Text('no_data_found'.tr())), (r){
              return Column(
                children: [
                  r!.data!.data!.isNotEmpty ? ListView.builder(shrinkWrap: true, itemCount: r.data!.data!.length,

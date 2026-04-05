@@ -83,6 +83,11 @@ const List languages = [
     'name': 'Arabic',
     'image':
         'https://cdn.britannica.com/79/5779-004-DC479508/Flag-Saudi-Arabia.jpg',
+  },
+  {
+    'name': 'עברית',
+    'image':
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/320px-Flag_of_Israel.svg.png',
   }
 ];
 

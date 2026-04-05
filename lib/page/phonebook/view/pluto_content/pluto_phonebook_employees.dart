@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:core/core.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,9 +42,9 @@ class PlutoPhoneBookEmployees extends StatelessWidget {
                         } else if (mode == LoadStatus.failed) {
                           body = const Text("Load Failed!Click retry!");
                         } else if (mode == LoadStatus.canLoading) {
-                          body = const Text("release to load more");
+                          body = Text('release_to_load_more'.tr());
                         } else {
-                          body = const Text("No more Data");
+                          body = Text('no_more_data'.tr());
                         }
                         return SizedBox(height: 55.0, child: Center(child: body));
                       }),

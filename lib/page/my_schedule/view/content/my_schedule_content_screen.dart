@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:onesthrm/page/my_schedule/my_schedule.dart';
+import 'package:onesthrm/res/widgets/screen_header.dart';
 
 class MyScheduleContentScreen extends StatefulWidget {
   const MyScheduleContentScreen({super.key});
@@ -24,25 +25,41 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
     super.dispose();
   }
 
+  /// Format hours: whole numbers as "8", fractional as "7.5"
+  String _fmtHours(num h) =>
+      h.truncateToDouble() == h ? h.toInt().toString() : h.toStringAsFixed(1);
+
+  /// Parse "HH:mm" or "HH:mm:ss" into minutes since midnight for sorting
+  int _timeToMinutes(String? t) {
+    if (t == null || t.isEmpty) return 1 << 30;
+    try {
+      final parts = t.split(':');
+      return int.parse(parts[0]) * 60 + int.parse(parts[1]);
+    } catch (_) {
+      return 1 << 30;
+    }
+  }
+
   /// Determine shift period icon and label from time string
   ({IconData icon, String label, Color color}) _shiftPeriod(String? from) {
-    if (from == null || from.isEmpty) return (icon: Icons.schedule, label: 'Shift', color: Colors.grey);
+    if (from == null || from.isEmpty) return (icon: Icons.schedule, label: 'shift'.tr(), color: Colors.grey);
     try {
       final parts = from.split(':');
       final hour = int.parse(parts[0]);
-      if (hour >= 5 && hour < 12) return (icon: Icons.wb_sunny_rounded, label: 'Morning', color: const Color(0xFFF59E0B));
-      if (hour >= 12 && hour < 17) return (icon: Icons.wb_cloudy_rounded, label: 'Afternoon', color: const Color(0xFFEF6C00));
-      if (hour >= 17 && hour < 21) return (icon: Icons.nights_stay_rounded, label: 'Evening', color: const Color(0xFF5C6BC0));
-      return (icon: Icons.dark_mode_rounded, label: 'Night', color: const Color(0xFF283593));
+      if (hour >= 5 && hour < 12) return (icon: Icons.wb_sunny_rounded, label: 'morning'.tr(), color: const Color(0xFFF59E0B));
+      if (hour >= 12 && hour < 17) return (icon: Icons.wb_cloudy_rounded, label: 'afternoon'.tr(), color: const Color(0xFFEF6C00));
+      if (hour >= 17 && hour < 21) return (icon: Icons.nights_stay_rounded, label: 'evening'.tr(), color: const Color(0xFF5C6BC0));
+      return (icon: Icons.dark_mode_rounded, label: 'night'.tr(), color: const Color(0xFF283593));
     } catch (_) {
-      return (icon: Icons.schedule, label: 'Shift', color: Colors.grey);
+      return (icon: Icons.schedule, label: 'shift'.tr(), color: Colors.grey);
     }
   }
 
   bool _isCurrentShift(ScheduleShift shift, int dayIndex, DateTime weekStart) {
+    // Skip shifts without a valid day assignment (prevents null day being bucketed as Sunday)
+    if (shift.day == null) return false;
     final now = DateTime.now();
-    final shiftDate = weekStart.add(Duration(days: dayIndex));
-    if (shiftDate.year != now.year || shiftDate.month != now.month || shiftDate.day != now.day) return false;
+    final shiftDate = DateTime(weekStart.year, weekStart.month, weekStart.day + dayIndex);
     if (shift.from == null || shift.to == null) return false;
     try {
       final fromParts = shift.from!.split(':');
@@ -50,7 +67,18 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
       final fromMinutes = int.parse(fromParts[0]) * 60 + int.parse(fromParts[1]);
       final toMinutes = int.parse(toParts[0]) * 60 + int.parse(toParts[1]);
       final nowMinutes = now.hour * 60 + now.minute;
-      return nowMinutes >= fromMinutes && nowMinutes <= toMinutes;
+      final isOvernight = toMinutes <= fromMinutes;
+      // Is "now" on the shift's start date?
+      final onShiftDate = shiftDate.year == now.year && shiftDate.month == now.month && shiftDate.day == now.day;
+      // For overnight shifts, "now" is also valid on the following calendar day (past midnight portion)
+      final nextDate = DateTime(shiftDate.year, shiftDate.month, shiftDate.day + 1);
+      final onNextDate = nextDate.year == now.year && nextDate.month == now.month && nextDate.day == now.day;
+      if (!isOvernight) {
+        return onShiftDate && nowMinutes >= fromMinutes && nowMinutes <= toMinutes;
+      }
+      // Overnight: either in [from..24:00) of shift date, or in [00:00..to] of the next date
+      return (onShiftDate && nowMinutes >= fromMinutes) ||
+          (onNextDate && nowMinutes <= toMinutes);
     } catch (_) {
       return false;
     }
@@ -62,17 +90,16 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
       builder: (context, _) {
         return Scaffold(
           backgroundColor: const Color(0xFFF5F6FA),
-          appBar: AppBar(
-            title: Text('my_schedule'.tr(), style: TextStyle(fontSize: 16.r, fontWeight: FontWeight.w600)),
-            elevation: 0,
-            backgroundColor: Branding.colors.primaryDark,
-            foregroundColor: Colors.white,
-          ),
           body: BlocBuilder<MyScheduleBloc, MyScheduleState>(
             builder: (context, state) {
               return Column(
                 children: [
-                  _buildWeekHeader(context, state),
+                  ScreenHeader(
+                    title: 'my_schedule'.tr(),
+                    subtitle: _scheduleSubtitle(state),
+                    showBack: false,
+                    bottom: _buildWeekNav(context, state),
+                  ),
                   _buildDayTabs(context, state),
                   Expanded(child: _buildBody(context, state)),
                 ],
@@ -84,89 +111,101 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
     );
   }
 
-  Widget _buildWeekHeader(BuildContext context, MyScheduleState state) {
+  String? _scheduleSubtitle(MyScheduleState state) {
     final weekStart = state.weekStart;
     DateTime current;
     try {
       current = DateTime.parse(weekStart ?? '');
     } catch (_) {
       final now = DateTime.now();
-      current = now.subtract(Duration(days: now.weekday % 7));
+      current = DateTime(now.year, now.month, now.day - (now.weekday % 7));
     }
-
-    final prev = current.subtract(const Duration(days: 7));
-    final next = current.add(const Duration(days: 7));
-    final end = current.add(const Duration(days: 6));
-
+    final end = DateTime(current.year, current.month, current.day + 6);
     final dayFmt = DateFormat('d', 'en');
-    final monthEnd = DateFormat('MMM', 'en');
-
-    // If same month, show "Mar 23 - 29, 2026", otherwise "Mar 30 - Apr 5"
+    final monthFmt = DateFormat('MMM', 'en');
     final sameMonth = current.month == end.month;
-    final rangeText = sameMonth
-        ? '${monthEnd.format(current)} ${dayFmt.format(current)} - ${dayFmt.format(end)}, ${current.year}'
-        : '${monthEnd.format(current)} ${dayFmt.format(current)} - ${monthEnd.format(end)} ${dayFmt.format(end)}';
+    return sameMonth
+        ? '${monthFmt.format(current)} ${dayFmt.format(current)} - ${dayFmt.format(end)}, ${current.year}'
+        : '${monthFmt.format(current)} ${dayFmt.format(current)} - ${monthFmt.format(end)} ${dayFmt.format(end)}';
+  }
+
+  Widget _buildWeekNav(BuildContext context, MyScheduleState state) {
+    final weekStart = state.weekStart;
+    DateTime current;
+    try {
+      current = DateTime.parse(weekStart ?? '');
+    } catch (_) {
+      final now = DateTime.now();
+      current = DateTime(now.year, now.month, now.day - (now.weekday % 7));
+    }
+    // DST-safe calendar arithmetic
+    final prev = DateTime(current.year, current.month, current.day - 7);
+    final next = DateTime(current.year, current.month, current.day + 7);
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 4, offset: const Offset(0, 2)),
-        ],
+        color: Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12.r),
       ),
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () {
+          _navArrow(
+            icon: Icons.arrow_back_ios_rounded,
+            onTap: () {
               setState(() => _selectedDayIndex = -1);
               context.read<MyScheduleBloc>().add(MyScheduleWeekChangeEvent(
                   weekStart: DateFormat('yyyy-MM-dd', 'en').format(prev)));
             },
-            icon: Icon(Icons.arrow_back_ios_rounded, size: 18.r, color: Branding.colors.primaryDark),
           ),
           Expanded(
-            child: Column(
-              children: [
-                Text(
-                  rangeText,
-                  style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w700, color: Colors.black87),
-                ),
-                if (state.schedule != null)
-                  Padding(
-                    padding: EdgeInsets.only(top: 3.h),
-                    child: Row(
+            child: Center(
+              child: state.schedule != null
+                  ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _miniStat(Icons.event_note_rounded, '${state.schedule!.totalShifts ?? 0} shifts', Branding.colors.primaryLight),
-                        SizedBox(width: 16.w),
-                        _miniStat(Icons.timer_outlined, '${state.schedule!.totalHours ?? 0}h total', Colors.orange),
+                        _headerStat(Icons.event_note_rounded, '${state.schedule!.totalShifts ?? 0} ${'shifts_count'.tr()}'),
+                        SizedBox(width: 14.w),
+                        _headerStat(Icons.timer_outlined, '${_fmtHours(state.schedule!.totalHours ?? 0)} ${'hours_total'.tr()}'),
                       ],
+                    )
+                  : Text(
+                      'loading_schedule'.tr(),
+                      style: TextStyle(fontSize: 11.sp, color: Colors.white.withValues(alpha: 0.8)),
                     ),
-                  ),
-              ],
             ),
           ),
-          IconButton(
-            onPressed: () {
+          _navArrow(
+            icon: Icons.arrow_forward_ios_rounded,
+            onTap: () {
               setState(() => _selectedDayIndex = -1);
               context.read<MyScheduleBloc>().add(MyScheduleWeekChangeEvent(
                   weekStart: DateFormat('yyyy-MM-dd', 'en').format(next)));
             },
-            icon: Icon(Icons.arrow_forward_ios_rounded, size: 18.r, color: Branding.colors.primaryDark),
           ),
         ],
       ),
     );
   }
 
-  Widget _miniStat(IconData icon, String text, Color color) {
+  Widget _navArrow({required IconData icon, required VoidCallback onTap}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(8.r),
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.all(8.r),
+        child: Icon(icon, size: 16.r, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _headerStat(IconData icon, String text) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 13.r, color: color),
+        Icon(icon, size: 13.r, color: Colors.white.withValues(alpha: 0.9)),
         SizedBox(width: 4.w),
-        Text(text, style: TextStyle(fontSize: 11.sp, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+        Text(text, style: TextStyle(fontSize: 11.sp, color: Colors.white, fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -177,11 +216,14 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
       start = DateTime.parse(state.weekStart ?? '');
     } catch (_) {
       final now = DateTime.now();
-      start = now.subtract(Duration(days: now.weekday % 7));
+      start = DateTime(now.year, now.month, now.day - (now.weekday % 7));
     }
 
     final today = DateTime.now();
-    final dayAbbr = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    final dayAbbr = [
+      'day_abbr_sun'.tr(), 'day_abbr_mon'.tr(), 'day_abbr_tue'.tr(),
+      'day_abbr_wed'.tr(), 'day_abbr_thu'.tr(), 'day_abbr_fri'.tr(), 'day_abbr_sat'.tr(),
+    ];
     final shifts = state.schedule?.shifts ?? [];
 
     return Container(
@@ -189,7 +231,7 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
       padding: EdgeInsets.fromLTRB(12.w, 0, 12.w, 14.h),
       child: Row(
         children: List.generate(7, (i) {
-          final day = start.add(Duration(days: i));
+          final day = DateTime(start.year, start.month, start.day + i);
           final isToday = day.year == today.year && day.month == today.month && day.day == today.day;
           final isSelected = _selectedDayIndex == i;
           final dayShiftCount = shifts.where((s) => s.day == i).length;
@@ -282,7 +324,7 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
               child: CircularProgressIndicator(strokeWidth: 3, color: Branding.colors.primaryLight),
             ),
             SizedBox(height: 16.h),
-            Text('Loading schedule...', style: TextStyle(fontSize: 13.sp, color: Colors.grey[500])),
+            Text('loading_schedule'.tr(), style: TextStyle(fontSize: 13.sp, color: Colors.grey[500])),
           ],
         ),
       );
@@ -297,16 +339,16 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
             children: [
               Icon(Icons.cloud_off_rounded, size: 56.r, color: Colors.grey[300]),
               SizedBox(height: 16.h),
-              Text('Couldn\'t load schedule', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color: Colors.grey[600])),
+              Text('couldnt_load_schedule'.tr(), style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color: Colors.grey[600])),
               SizedBox(height: 6.h),
-              Text(state.errorMessage ?? 'Check your connection and try again',
+              Text(state.errorMessage ?? 'check_your_connection_and_try_again'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13.sp, color: Colors.grey[400])),
               SizedBox(height: 20.h),
               TextButton.icon(
                 onPressed: () => context.read<MyScheduleBloc>().add(MyScheduleLoadEvent(weekStart: state.weekStart)),
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Retry'),
+                label: Text('retry'.tr()),
                 style: TextButton.styleFrom(foregroundColor: Branding.colors.primaryLight),
               ),
             ],
@@ -335,14 +377,14 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
             ),
             SizedBox(height: 16.h),
             Text(
-              _selectedDayIndex == -1 ? 'No shifts this week' : 'Day off',
+              _selectedDayIndex == -1 ? 'no_shifts_this_week'.tr() : 'day_off'.tr(),
               style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w600, color: Colors.grey[600]),
             ),
             SizedBox(height: 6.h),
             Text(
               _selectedDayIndex == -1
-                  ? 'No work schedule assigned for this week'
-                  : 'You have no shifts scheduled for this day',
+                  ? 'no_work_schedule_assigned_for_this_week'.tr()
+                  : 'you_have_no_shifts_scheduled_for_this_day'.tr(),
               style: TextStyle(fontSize: 13.sp, color: Colors.grey[400]),
             ),
           ],
@@ -356,13 +398,18 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
       weekStart = DateTime.parse(state.weekStart ?? '');
     } catch (_) {
       final now = DateTime.now();
-      weekStart = now.subtract(Duration(days: now.weekday % 7));
+      weekStart = DateTime(now.year, now.month, now.day - (now.weekday % 7));
     }
 
-    // Group shifts by day
+    // Group shifts by day (skip shifts without a day assignment)
     final grouped = <int, List<ScheduleShift>>{};
     for (final s in shifts) {
-      grouped.putIfAbsent(s.day ?? 0, () => []).add(s);
+      if (s.day == null) continue;
+      grouped.putIfAbsent(s.day!, () => []).add(s);
+    }
+    // Sort shifts within each day by start time
+    for (final list in grouped.values) {
+      list.sort((a, b) => _timeToMinutes(a.from).compareTo(_timeToMinutes(b.from)));
     }
     final sortedDays = grouped.keys.toList()..sort();
 
@@ -385,9 +432,9 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
   }
 
   Widget _buildDaySection(BuildContext context, DateTime weekStart, int dayIndex, List<ScheduleShift> shifts) {
-    final dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    final dayName = dayIndex < dayNames.length ? dayNames[dayIndex] : '';
-    final dayDate = weekStart.add(Duration(days: dayIndex));
+    const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    final dayName = dayIndex < dayKeys.length ? dayKeys[dayIndex].tr() : '';
+    final dayDate = DateTime(weekStart.year, weekStart.month, weekStart.day + dayIndex);
     final now = DateTime.now();
     final isToday = dayDate.year == now.year && dayDate.month == now.month && dayDate.day == now.day;
     final isPast = dayDate.isBefore(DateTime(now.year, now.month, now.day));
@@ -436,7 +483,7 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
                     borderRadius: BorderRadius.circular(6.r),
                   ),
                   child: Text(
-                    '${shifts.length} shift${shifts.length > 1 ? 's' : ''} · ${dayHours}h',
+                    '${shifts.length} ${shifts.length > 1 ? 'shifts_count'.tr() : 'shift_count'.tr()} · ${_fmtHours(dayHours)} ${'hrs_short'.tr()}',
                     style: TextStyle(fontSize: 10.sp, color: Colors.grey[600], fontWeight: FontWeight.w500),
                   ),
                 ),
@@ -522,7 +569,7 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
                               color: Colors.green,
                               borderRadius: BorderRadius.circular(6.r),
                             ),
-                            child: Text('NOW', style: TextStyle(fontSize: 9.sp, color: Colors.white, fontWeight: FontWeight.w800)),
+                            child: Text('now_label'.tr(), style: TextStyle(fontSize: 9.sp, color: Colors.white, fontWeight: FontWeight.w800)),
                           ),
                         ],
                       ],
@@ -543,28 +590,36 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
             // Hours badge
             if (shift.hours != null)
               Container(
-                margin: EdgeInsets.only(right: 14.w),
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                margin: EdgeInsetsDirectional.only(end: 14.w),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                 decoration: BoxDecoration(
-                  color: (isCurrent ? Colors.green : period.color).withValues(alpha: 0.08),
+                  color: (isCurrent ? Colors.green : period.color).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10.r),
+                  border: Border.all(
+                    color: (isCurrent ? Colors.green : period.color).withValues(alpha: 0.2),
+                    width: 1,
+                  ),
                 ),
-                child: Column(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(
-                      '${shift.hours}',
+                      _fmtHours(shift.hours ?? 0),
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w800,
                         color: isCurrent ? Colors.green : period.color,
                       ),
                     ),
+                    SizedBox(width: 3.w),
                     Text(
-                      'hrs',
+                      'h',
                       style: TextStyle(
-                        fontSize: 9.sp,
+                        fontSize: 11.sp,
                         color: isCurrent ? Colors.green : period.color,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

@@ -186,7 +186,13 @@ class LocationServiceProvider {
       ///add data to local database
       offlineLocationRepository.add(locationModel);
 
-      FirebaseLocationStoreProvider.sendLocationToFirebase(uid, locationModel.toJson());
+      // SECURITY: namespace Firestore path by companyId so tenants can't read each other's locations.
+      final cid = globalState.get(companyId);
+      FirebaseLocationStoreProvider.sendLocationToFirebase(
+        uid,
+        locationModel.toJson(),
+        companyId: cid is int ? cid : (cid != null ? int.tryParse('$cid') : null),
+      );
     });
   }
 
@@ -205,9 +211,28 @@ class LocationServiceProvider {
           isStored.fold((l) {}, (data) async {
             if (data != null) {
               if (data.data['result'] == true) {
-                data.data['data'] == "empty"
-                    ? SharedUtil.setValue(bulletinKey, "")
-                    : SharedUtil.setValue(bulletinKey, data.data['data']);
+                final payload = data.data['data'];
+                String bulletinValue = "";
+                if (payload == null || payload == "empty") {
+                  bulletinValue = "";
+                } else if (payload is String) {
+                  bulletinValue = payload.trim();
+                } else if (payload is Map) {
+                  // Server sometimes returns an object — extract a text field if present,
+                  // otherwise treat as empty (do NOT json-encode — "{}" would show as literal
+                  // text in the bulletin ticker).
+                  if (payload.isEmpty) {
+                    bulletinValue = "";
+                  } else {
+                    final candidate = payload['message'] ??
+                        payload['headline'] ??
+                        payload['text'] ??
+                        payload['title'] ??
+                        payload['bulletin'];
+                    bulletinValue = candidate is String ? candidate.trim() : "";
+                  }
+                }
+                SharedUtil.setValue(bulletinKey, bulletinValue);
               }
             }
             await offlineLocationRepository.deleteAllLocation();

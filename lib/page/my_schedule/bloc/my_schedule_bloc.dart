@@ -19,23 +19,31 @@ class MyScheduleBloc extends Bloc<MyScheduleEvent, MyScheduleState> {
 
   FutureOr<void> _onLoad(
       MyScheduleLoadEvent event, Emitter<MyScheduleState> emit) async {
-    emit(state.copyWith(status: NetworkStatus.loading));
-
     // Default to current week (Sunday start), normalize any date to its Sunday
     String weekStart;
     if (event.weekStart != null) {
       try {
         final d = DateTime.parse(event.weekStart!);
-        final sun = d.subtract(Duration(days: d.weekday % 7));
+        // DST-safe: use calendar arithmetic rather than Duration(days: N)
+        final sun = DateTime(d.year, d.month, d.day - (d.weekday % 7));
         weekStart = DateFormat('yyyy-MM-dd', 'en').format(sun);
       } catch (_) {
         weekStart = event.weekStart!;
       }
     } else {
       final now = DateTime.now();
-      final sunday = now.subtract(Duration(days: now.weekday % 7));
+      final sunday = DateTime(now.year, now.month, now.day - (now.weekday % 7));
       weekStart = DateFormat('yyyy-MM-dd', 'en').format(sunday);
     }
+
+    // When switching to a different week, clear old schedule so stale data
+    // (day-dots/stats) doesn't flash while new data loads.
+    final isDifferentWeek = state.weekStart != null && state.weekStart != weekStart;
+    emit(MyScheduleState(
+      status: NetworkStatus.loading,
+      weekStart: weekStart,
+      schedule: isDifferentWeek ? null : state.schedule,
+    ));
 
     final result = await metaClubApiClient.getMySchedule(weekStart: weekStart);
 

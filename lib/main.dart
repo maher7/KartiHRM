@@ -94,6 +94,7 @@ void main() async {
     supportedLocales: const [
       Locale('en', 'US'),
       Locale('ar', 'AR'),
+      Locale('he', 'IL'),
     ],
     path: 'assets/translations',
     saveLocale: true,

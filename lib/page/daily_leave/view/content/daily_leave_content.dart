@@ -23,35 +23,6 @@ class DailyLeaveContent extends StatelessWidget {
     return BlocBuilder<LanguageBloc, LanguageState>(
       builder: (context, _) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(tr("partial_leave"), style: TextStyle(fontSize: 16.r),),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () {
-                context.read<DailyLeaveBloc>().add(SelectDatePickerDailyLeave(user!.user!.id!, context));
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 16),
-                    const SizedBox(width: 4),
-                    Text('select_month'.tr(), style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
       body: RefreshIndicator(
         onRefresh: () async {
           final bloc = context.read<DailyLeaveBloc>();
@@ -96,34 +67,48 @@ class DailyLeaveContent extends StatelessWidget {
               } catch (_) {
                 displayDate = monthStr;
               }
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 16.w),
-                padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-                decoration: BoxDecoration(
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Material(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.date_range_rounded, color: Branding.colors.primaryLight, size: 18.r),
-                    SizedBox(width: 8.w),
-                    Text(
-                      displayDate,
-                      style: TextStyle(
-                        fontSize: 15.r,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                  elevation: 0,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      context.read<DailyLeaveBloc>().add(SelectDatePickerDailyLeave(user!.user!.id!, context));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.date_range_rounded, color: Branding.colors.primaryLight, size: 18.r),
+                          SizedBox(width: 8.w),
+                          Text(
+                            displayDate,
+                            style: TextStyle(
+                              fontSize: 15.r,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(width: 6.w),
+                          Icon(Icons.arrow_drop_down_rounded, color: Branding.colors.primaryLight, size: 20.r),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               );
             },

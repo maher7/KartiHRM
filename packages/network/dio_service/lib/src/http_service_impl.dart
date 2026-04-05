@@ -107,6 +107,20 @@ class HttpServiceImpl implements HttpService {
     return _manager;
   }
 
+  String _resolveAcceptLanguage() {
+    // Map the app's selected language index to a backend locale code.
+    // 0 = English, 1 = Arabic, 2 = Hebrew (matches LanguageBloc switch cases)
+    final index = globalState.get(keySelectLanguage);
+    switch (index) {
+      case 1:
+        return 'ar';
+      case 2:
+        return 'he';
+      default:
+        return 'en';
+    }
+  }
+
   Options _buildCacheOptions({String? tkn}) {
     return buildCacheOptions(const Duration(days: 3),
         maxStale: const Duration(days: 1),
@@ -116,6 +130,7 @@ class HttpServiceImpl implements HttpService {
             "Content-Type": "application/json;charset=UTF-8",
             'Charset': 'utf-8',
             'Accept' : 'application/json',
+            'Accept-Language': _resolveAcceptLanguage(),
             "Authorization": "Bearer ${tkn ?? globalState.get(authToken)}"
           },
         ));

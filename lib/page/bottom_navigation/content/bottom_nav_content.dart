@@ -7,7 +7,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:onesthrm/page/all_natification/bloc/notification_bloc.dart';
 import 'package:onesthrm/page/home/router/home__menu_router.dart';
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
-import 'package:onesthrm/page/leave/view/leave_page.dart';
+import 'package:onesthrm/page/leave/view/leave_tab_page.dart';
+import 'package:onesthrm/page/my_schedule/view/my_schedule_page.dart';
 import 'package:onesthrm/page/onboarding/bloc/onboarding_bloc.dart';
 import '../../home/view/home_page.dart';
 import '../bloc/bottom_nav_cubit.dart';
@@ -71,19 +72,19 @@ class BottomNavContent extends StatelessWidget {
                       ),
                       Expanded(
                         child: BottomNavItem(
-                          icon: 'assets/home_icon/leave.svg',
-                          label: 'leave'.tr(),
-                          isSelected: selectedTab == BottomNavTab.leave,
-                          tab: BottomNavTab.leave,
+                          icon: 'assets/home_icon/attendance.svg',
+                          label: 'schedule'.tr(),
+                          isSelected: selectedTab == BottomNavTab.schedule,
+                          tab: BottomNavTab.schedule,
                         ),
                       ),
                       const SizedBox(width: 48),
                       Expanded(
                         child: BottomNavItem(
-                          icon: 'assets/home_icon/attendance.svg',
-                          label: 'partial'.tr(),
-                          isSelected: selectedTab == BottomNavTab.attendance,
-                          tab: BottomNavTab.attendance,
+                          icon: 'assets/home_icon/leave.svg',
+                          label: 'leave'.tr(),
+                          isSelected: selectedTab == BottomNavTab.leave,
+                          tab: BottomNavTab.leave,
                         ),
                       ),
                       Expanded(
@@ -130,7 +131,8 @@ class BottomNavContent extends StatelessWidget {
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
             body: IndexedStack(
               index: selectedTab.index,
-              children: [const HomePage(), const LeavePage(), chooseMenu(), chooseDailyLeave(), chooseNotification()],
+              // Order must match BottomNavTab enum: home, schedule, menu, leave, notification
+              children: [const HomePage(), const MySchedulePage(), chooseMenu(), const LeaveTabPage(), chooseNotification()],
             ),
           ),
         );

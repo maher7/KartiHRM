@@ -31,26 +31,28 @@ class LeaveRequestType extends StatelessWidget {
                 iconTheme: IconThemeData(size: DeviceUtil.isTablet ? 40 : 30, color: Colors.white),
               ),
             ),
-            bottomNavigationBar: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.h),
-              decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(0)),
-              child: Padding(
-                padding: EdgeInsets.all(8.0.r),
-                child: CustomHButton(
-                  title: "next".tr(),
-                  padding: 16,
-                  clickButton: () {
-                    if (state.selectedRequestType?.id == null) {
-                      Fluttertoast.showToast(msg: "Please select Leave Request Type");
-                    } else {
-                      NavUtil.navigateScreen(
-                          context,
-                          MultiBlocProvider(providers: [
-                            BlocProvider.value(value: context.read<LeaveBloc>()),
-                            BlocProvider.value(value: context.read<HomeBloc>())
-                          ], child: LeaveCalendar(leaveRequestTypeId: state.selectedRequestType?.id)));
-                    }
-                  },
+            bottomNavigationBar: SafeArea(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(0)),
+                child: Padding(
+                  padding: EdgeInsets.all(8.0.r),
+                  child: CustomHButton(
+                    title: "next".tr(),
+                    padding: 16,
+                    clickButton: () {
+                      if (state.selectedRequestType?.id == null) {
+                        Fluttertoast.showToast(msg: "Please select Leave Request Type");
+                      } else {
+                        NavUtil.navigateScreen(
+                            context,
+                            MultiBlocProvider(providers: [
+                              BlocProvider.value(value: context.read<LeaveBloc>()),
+                              BlocProvider.value(value: context.read<HomeBloc>())
+                            ], child: LeaveCalendar(leaveRequestTypeId: state.selectedRequestType?.id)));
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
