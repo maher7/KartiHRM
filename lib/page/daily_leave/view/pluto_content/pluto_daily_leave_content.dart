@@ -8,7 +8,6 @@ import 'package:onesthrm/page/daily_leave/bloc/daily_leave_bloc.dart';
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:core/core.dart';
 import 'package:onesthrm/page/daily_leave/bloc/daily_leave_event.dart';
-import 'package:onesthrm/page/daily_leave/bloc/daily_leave_state.dart';
 import 'package:onesthrm/page/daily_leave/view/pluto_content/pluto_daily_leave_status_content.dart';
 import 'package:onesthrm/page/daily_leave/view/pluto_daily_create_page.dart';
 import 'package:onesthrm/res/nav_utail.dart';
@@ -62,53 +61,11 @@ class PlutoDailyLeaveContent extends StatelessWidget {
               },
               title: "apply_partial_leave".tr(), color: Branding.colors.primaryLight,
             ),
-            // Leave history header with month picker
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'history'.tr(),
-                    style: TextStyle(fontSize: 15.r, fontWeight: FontWeight.w700, color: Colors.black87),
-                  ),
-                  BlocBuilder<DailyLeaveBloc, DailyLeaveState>(
-                    builder: (context, state) {
-                      final monthStr = state.currentMonth ?? getDateAsString(format: 'yyyy-MM', dateTime: DateTime.now()) ?? '';
-                      String displayDate;
-                      try {
-                        final parts = monthStr.split('-');
-                        final dt = DateTime(int.parse(parts[0]), int.parse(parts[1]));
-                        displayDate = getDateAsString(format: 'MMM yyyy', dateTime: dt) ?? monthStr;
-                      } catch (_) {
-                        displayDate = monthStr;
-                      }
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(20),
-                        onTap: () {
-                          context.read<DailyLeaveBloc>().add(SelectDatePickerDailyLeave(user!.user!.id!, context));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                          decoration: BoxDecoration(
-                            color: Branding.colors.primaryLight.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.calendar_month_rounded, color: Branding.colors.primaryLight, size: 14.r),
-                              SizedBox(width: 4.w),
-                              Text(displayDate, style: TextStyle(color: Branding.colors.primaryLight, fontSize: 12.r, fontWeight: FontWeight.w500)),
-                              SizedBox(width: 2.w),
-                              Icon(Icons.arrow_drop_down_rounded, color: Branding.colors.primaryLight, size: 16.r),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+              child: Text(
+                'history'.tr(),
+                style: TextStyle(fontSize: 15.r, fontWeight: FontWeight.w700, color: Colors.black87),
               ),
             ),
             const PlutoDailyLeaveStatusContent()

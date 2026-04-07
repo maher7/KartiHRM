@@ -12,6 +12,7 @@ import 'package:location_track/location_track.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 import 'package:notification/notification.dart';
 import 'package:offline_attendance/domain/offline_attendance_repository.dart';
+import 'package:onesthrm/page/all_natification/bloc/notification_bloc.dart';
 import 'package:onesthrm/page/home/notification/schedule_notification.dart';
 import 'package:user_repository/user_repository.dart';
 
@@ -219,6 +220,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
 
       // _onOfflineDataSync();
+
+      // Update global badge counts from dashboard response
+      // Update global badge counts from dashboard response.
+      // Uses updateBadgeIfNew so badges don't reappear after the user
+      // has already viewed the tab — only if the count increases.
+      final badges = r?.data?.badges;
+      if (badges != null) {
+        const excludeFromMenu = {'schedule', 'leave', 'leave_full', 'leave_partial', 'approval'};
+        final menuTotal = badges.entries
+            .where((e) => !excludeFromMenu.contains(e.key))
+            .fold<int>(0, (sum, e) => sum + e.value);
+        updateBadgeIfNew('menu', menuBadgeCount, menuTotal);
+        updateBadgeIfNew('schedule', scheduleBadgeCount, badges['schedule'] ?? 0);
+        updateBadgeIfNew('leave', leaveBadgeCount, badges['leave'] ?? 0);
+      }
 
       emit(state.copy(dashboardModel: r, status: NetworkStatus.success, isSwitched: isLocationEnabled));
     });

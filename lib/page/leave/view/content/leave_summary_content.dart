@@ -86,58 +86,17 @@ class LeaveSummaryContent extends StatelessWidget {
               SizedBox(height: 16.h),
               const TotalLeaveCount(),
               SizedBox(height: 8.h),
-              // Leave request header with month picker
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("leave_request".tr(),
-                        style: TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16.r)),
-                    BlocBuilder<LeaveBloc, LeaveState>(
-                      builder: (context, state) {
-                        final monthStr = state.currentMonth ?? getDateAsString(format: 'y-MM', dateTime: DateTime.now()) ?? '';
-                        String displayDate;
-                        try {
-                          final parts = monthStr.split('-');
-                          final dt = DateTime(int.parse(parts[0]), int.parse(parts[1]));
-                          displayDate = getDateAsString(format: 'MMM yyyy', dateTime: dt) ?? monthStr;
-                        } catch (_) {
-                          displayDate = monthStr;
-                        }
-                        return InkWell(
-                          borderRadius: BorderRadius.circular(20),
-                          onTap: () {
-                            context.read<LeaveBloc>().add(SelectDatePicker(user!.user!.id!, context));
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                            decoration: BoxDecoration(
-                              color: Branding.colors.primaryLight.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.calendar_month_rounded, color: Branding.colors.primaryLight, size: 14.r),
-                                SizedBox(width: 4.w),
-                                Text(displayDate, style: TextStyle(color: Branding.colors.primaryLight, fontSize: 12.r, fontWeight: FontWeight.w500)),
-                                SizedBox(width: 2.w),
-                                Icon(Icons.arrow_drop_down_rounded, color: Branding.colors.primaryLight, size: 16.r),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                child: Text("leave_request".tr(),
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16.r)),
               ),
               SizedBox(height: 12.h),
-              LeaveRequestList(userId: user!.user!.id!)
+              LeaveRequestList(userId: user!.user!.id!),
+              SizedBox(height: 100.h),
             ],
           ),
         ),

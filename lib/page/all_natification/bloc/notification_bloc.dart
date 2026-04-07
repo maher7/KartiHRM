@@ -12,6 +12,37 @@ part 'notification_state.dart';
 /// Global unread notification count — listened by bottom nav badge
 final ValueNotifier<int> unreadNotificationCount = ValueNotifier<int>(0);
 
+/// Global badge count for the center Menu FAB (sum of tasks, leaves, visits, etc.)
+final ValueNotifier<int> menuBadgeCount = ValueNotifier<int>(0);
+
+/// Global badge count for the Schedule nav tab (upcoming assigned shifts)
+final ValueNotifier<int> scheduleBadgeCount = ValueNotifier<int>(0);
+
+/// Global badge count for the Leave nav tab (pending leave requests/approvals)
+final ValueNotifier<int> leaveBadgeCount = ValueNotifier<int>(0);
+
+/// Tracks which tabs the user has viewed this session. Once viewed,
+/// the badge won't reappear from API refreshes until the count actually changes.
+final _viewedBadges = <String, int>{};
+
+/// Only update a badge if the count is different from what the user last saw.
+/// Returns true if the badge was updated.
+bool updateBadgeIfNew(String key, ValueNotifier<int> notifier, int newCount) {
+  final lastSeen = _viewedBadges[key];
+  if (lastSeen != null && newCount <= lastSeen) {
+    // User already saw this count (or it decreased) — keep badge at 0
+    return false;
+  }
+  notifier.value = newCount;
+  return true;
+}
+
+/// Mark a badge as viewed — the current count is stored so it won't re-trigger.
+void markBadgeViewed(String key, ValueNotifier<int> notifier) {
+  _viewedBadges[key] = notifier.value;
+  notifier.value = 0;
+}
+
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final MetaClubApiClient _metaClubApiClient;
 

@@ -59,6 +59,12 @@ class LoginBloc extends HydratedBloc<LoginEvent, LoginState> {
           (r) {
         if (r?.user != null) {
           final cid = globalState.get(companyId);
+          // KNOWN ISSUE: this concat format (no separator) can theoretically collide
+          // for adjacent tenant/user pairs (e.g. c5+u42 vs c54+u2 both = "542").
+          // In practice user IDs are globally unique (auto-increment), so no collision
+          // observed. Changing the format would break existing Firestore chat docs
+          // and conversation history. Fix requires a full chat migration — tracked in
+          // the recommendations doc.
           ///create/update user information into fireStore
           _chatService.createAndUpdateUserInfo(r?.user?.toJson(), '$cid${r?.user?.id}');
           emit(state.copyWith(status: FormzSubmissionStatus.success, user: r, loginAction: LoginAction.login));

@@ -24,7 +24,7 @@ class MetaClubApiClient {
 
   String getBaseUrl() {
     final baseUrl = globalState.get(companyUrl);
-    return baseUrl;
+    return baseUrl ?? '';
   }
 
   Future<Either<Failure, LoginData?>> login(
@@ -398,7 +398,11 @@ class MetaClubApiClient {
   Future<Either<Failure, DailyLeaveSummaryModel?>> dailyLeaveSummary(int? userId, String? date) async {
     const String api = 'daily-leave/leave-list';
     try {
-      FormData formData = FormData.fromMap({"user_id": userId, "month": date});
+      final map = <String, dynamic>{"user_id": userId};
+      if (date != null && date.isNotEmpty) {
+        map["month"] = date;
+      }
+      FormData formData = FormData.fromMap(map);
       final response = await httpService.postRequest('${getBaseUrl()}$api', formData);
       return response.fold(
         (l) => Left(l),
@@ -417,12 +421,15 @@ class MetaClubApiClient {
   }) async {
     const String api = 'daily-leave/staff-list-view';
     try {
-      FormData formData = FormData.fromMap({
+      final map = <String, dynamic>{
         "user_id": userId,
-        "month": month,
         "leave_type": leaveType,
         "leave_status": leaveStatus,
-      });
+      };
+      if (month != null && month.isNotEmpty) {
+        map["month"] = month;
+      }
+      FormData formData = FormData.fromMap(map);
       final response = await httpService.postRequest('${getBaseUrl()}$api', formData);
       return response.fold(
         (l) => Left(l),
@@ -1077,7 +1084,10 @@ class MetaClubApiClient {
     const String api = 'user/leave/list/view';
 
     try {
-      final data = {"user_id": userId, "month": date};
+      final data = <String, dynamic>{"user_id": userId};
+      if (date != null && date.isNotEmpty) {
+        data["month"] = date;
+      }
       final response = await httpService.postRequest('${getBaseUrl()}$api', data);
       return response.fold((l) => Left(l), (r) => Right(LeaveRequestModel.fromJson(r.data)));
     } on Exception catch (e) {

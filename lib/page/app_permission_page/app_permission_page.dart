@@ -88,7 +88,15 @@ class _AppPermissionPageState extends State<AppPermissionPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    // Request location permission immediately after disclosure
+                    // Play Policy "Prominent Disclosure" flow:
+                    //   1. Show this screen (already visible, user sees the
+                    //      "even when the app is closed or not in use" copy).
+                    //   2. Request foreground location first — required before
+                    //      we can escalate to background on Android 10+.
+                    //   3. Only if foreground is granted, escalate to background
+                    //      location ("Allow all the time"). On API 30+ this
+                    //      kicks the user to the system settings screen; we
+                    //      do NOT silently request it, to stay compliant.
                     LocationPermission permission = await Geolocator.checkPermission();
                     if (permission == LocationPermission.denied) {
                       permission = await Geolocator.requestPermission();
@@ -96,6 +104,10 @@ class _AppPermissionPageState extends State<AppPermissionPage> {
                     if (permission == LocationPermission.deniedForever) {
                       // User permanently denied — open settings
                       await Geolocator.openAppSettings();
+                    } else if (permission == LocationPermission.whileInUse) {
+                      // Foreground granted — ask for background ("Allow all the time")
+                      // in a SEPARATE system prompt as Play Policy requires.
+                      await Geolocator.requestPermission();
                     }
                     // Navigate regardless of result — user made their choice
                     final navigator = instance<GlobalKey<NavigatorState>>().currentState;

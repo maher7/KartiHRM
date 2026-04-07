@@ -73,6 +73,10 @@ const String isDisclosure = "isDisclosure";
 const String shiftId = "shiftId";
 const String notificationChannels = "notification_channels";
 const String bulletinKey = "notification_channels";
+// Millisecond epoch timestamp of when the current bulletin was stored. Used by
+// BulletinBloc to auto-expire announcements after 24 hours so stale messages
+// don't ride forever on the home-screen ticker.
+const String bulletinTimestampKey = "notification_channels_ts";
 const List languages = [
   {
     'name': 'English',

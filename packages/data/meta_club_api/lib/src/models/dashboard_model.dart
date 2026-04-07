@@ -33,7 +33,8 @@ class DashboardData extends Equatable {
       this.config,
       this.breakHistory,
       this.attendanceData,
-      this.thisWeek});
+      this.thisWeek,
+      this.badges});
 
   final List<TodayData>? today;
   final List<CurrentMonthData>? currentMonth;
@@ -44,6 +45,8 @@ class DashboardData extends Equatable {
   final Config? config;
   final BreakHistory? breakHistory;
   final ThisWeekStats? thisWeek;
+  /// Badge counts keyed by menu slug (e.g. "task": 3, "leave": 1, "schedule": 5).
+  final Map<String, int>? badges;
 
   factory DashboardData.fromJson(Map<String, dynamic> json) => DashboardData(
         today: List<TodayData>.from(json["today"].map((x) => TodayData.fromJson(x))),
@@ -57,6 +60,9 @@ class DashboardData extends Equatable {
         breakHistory: json['break_history_data'] != null ? BreakHistory.fromJson(json['break_history_data']) : null,
         config: Config.fromJson(json['config']),
         thisWeek: json['this_week'] != null ? ThisWeekStats.fromJson(json['this_week']) : null,
+        badges: json['badges'] != null
+            ? (json['badges'] as Map<String, dynamic>).map((k, v) => MapEntry(k, int.tryParse(v.toString()) ?? 0))
+            : null,
       );
 
   DashboardData copyWith(
@@ -86,10 +92,11 @@ class DashboardData extends Equatable {
         "attendance_status": attendanceData?.toJson(),
         "break_history_data": breakHistory?.toJson(),
         "config": config?.toJson(),
+        "badges": badges,
       };
 
   @override
-  List<Object?> get props => [today, currentMonth, upcomingEvents, appointments, attendanceData, config, menus];
+  List<Object?> get props => [today, currentMonth, upcomingEvents, appointments, attendanceData, config, menus, badges];
 }
 
 class Menu {

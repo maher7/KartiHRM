@@ -37,11 +37,14 @@ class MenuList extends StatelessWidget {
 
           animationController?.forward();
 
+          final badges = homeData?.data?.badges;
+          final badgeCount = (menu?.slug != null && badges != null) ? (badges[menu!.slug] ?? 0) : 0;
           return menu != null
               ? MenuContentItem(
             menu: menu,
             animation: animation,
             animationController: animationController!,
+            badgeCount: badgeCount,
             onPressed: () {
               context.read<MenuBloc>().add(RouteSlug(context: context, slugName: menu.slug));
             },

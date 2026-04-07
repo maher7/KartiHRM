@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:core/core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:onesthrm/firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +45,20 @@ void main() async {
       await Future.delayed(Duration(milliseconds: 500 * (i + 1)));
     }
   }
+  // Wire Flutter's error handlers to Crashlytics so uncaught exceptions on
+  // either the framework or platform side are reported. Only active when the
+  // Firebase bootstrap above succeeded — otherwise the errors just fall back
+  // to the default Flutter error widget.
+  if (firebaseReady) {
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
+
   ///initializeDependencyInjection
   await initAppModule();
 

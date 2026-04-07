@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:onesthrm/res/widgets/user_avatar.dart';
 
 import '../../../../authentication/bloc/authentication_bloc.dart';
 import '../../../bloc/home_bloc.dart';
@@ -19,25 +20,30 @@ class HeaderNeptune extends StatelessWidget {
         SizedBox(height: 10.0.h,),
         Row(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: UserAvatar(
+                imageUrl: user?.user?.avatar,
+                name: user?.user?.name,
+                size: 42,
+                borderWidth: 2,
+                borderColor: Colors.white,
+              ),
+            ),
+            SizedBox(width: 10.w),
             Expanded(
               flex: 3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text(settings?.data?.timeWish?.wish ?? homeData?.data?.config?.timeWish?.wish ?? '',
-                        style: TextStyle(fontSize: 20.r, color: Colors.white, fontWeight: FontWeight.bold)),),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text('${user?.user?.name}',
-                      style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.bold, height: 1.5, color: Colors.white),
-                    ),
+                  Text(settings?.data?.timeWish?.wish ?? homeData?.data?.config?.timeWish?.wish ?? '',
+                      style: TextStyle(fontSize: 20.r, color: Colors.white, fontWeight: FontWeight.bold)),
+                  Text('${user?.user?.name}',
+                    style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.bold, height: 1.5, color: Colors.white),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  Padding(padding: const EdgeInsets.only(left: 16.0),
-                    child: Text(settings?.data?.timeWish?.subTitle ?? homeData?.data?.config?.timeWish?.wish ?? '',
-                      style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.w400, height: 1.5, color: Colors.white),
-                    ),
+                  Text(settings?.data?.timeWish?.subTitle ?? homeData?.data?.config?.timeWish?.wish ?? '',
+                    style: TextStyle(fontSize: 14.r, fontWeight: FontWeight.w400, height: 1.5, color: Colors.white),
                   ),
                 ],
               ),

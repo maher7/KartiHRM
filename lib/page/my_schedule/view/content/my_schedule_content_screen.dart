@@ -420,7 +420,7 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
       },
       child: ListView.builder(
         controller: _scrollController,
-        padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
+        padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 100.h),
         itemCount: sortedDays.length,
         itemBuilder: (context, index) {
           final dayIndex = sortedDays[index];

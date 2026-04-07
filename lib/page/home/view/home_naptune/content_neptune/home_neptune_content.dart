@@ -94,7 +94,7 @@ class _HomeNeptuneContentState extends State<HomeNeptuneContent> {
                           BreakCardNeptune(settings: settings, user: user, dashboardModel: homeData),
 
                           ///my stats
-                          MyStatsCard(dashboardModel: homeData),
+                          MyStatsCard(dashboardModel: homeData, settings: settings),
 
                           ///bottom-header
                           HomeBottomNeptune(settings: settings, user: user, dashboardModel: homeData),

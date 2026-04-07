@@ -30,7 +30,7 @@ class PlutoDailyLeaveReject extends StatelessWidget {
                 onTap: () {
                   NavUtil.navigateScreen(context, BlocProvider.value(value: context.read<DailyLeaveBloc>(),
                     child: PlutoLeaveTypeScreen(appBarName: "early_leave".tr(),
-                      leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: dailyLeaveBloc.state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now()),
+                      leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: '',
                           leaveStatus: 'rejected', leaveType: "early_leave"),
                     ),
                   ),
@@ -44,7 +44,7 @@ class PlutoDailyLeaveReject extends StatelessWidget {
               child: PlutoDailyLeaveTile(
                 onTap: () {
                   NavUtil.navigateScreen(context, BlocProvider.value(value: context.read<DailyLeaveBloc>(),
-                        child: PlutoLeaveTypeScreen(appBarName: "late_leave".tr(), leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: dailyLeaveBloc.state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now()),
+                        child: PlutoLeaveTypeScreen(appBarName: "late_leave".tr(), leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: '',
                               leaveStatus: 'rejected', leaveType: "late_arrive"),
                         )),
                   );

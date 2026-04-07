@@ -86,7 +86,7 @@ class LeaveBloc extends Bloc<LeaveEvent, LeaveState> {
   FutureOr<void> _leaveRequest(LeaveRequest event, Emitter<LeaveState> emit) async {
     emit(state.copyWith(status: NetworkStatus.loading));
     final leaveRequestResponse = await loadLeaveRequestDataUseCase(
-        uid: event.userId, cMonth: state.currentMonth ?? DateFormat('y-MM').format(DateTime.now()));
+        uid: event.userId, cMonth: '');
     leaveRequestResponse.fold((l) {
       emit(state.copyWith(status: NetworkStatus.failure));
     }, (r) {

@@ -6,7 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 import 'package:core/core.dart';
 import 'package:onesthrm/page/attendance/bloc/offline_attendance_bloc/offline_attendance_qubit.dart';
+import 'package:onesthrm/page/attendance_report/view/pluto_attendance_report_page.dart';
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
+import 'package:onesthrm/res/nav_utail.dart';
 
 class MyStatsCard extends StatefulWidget {
   final DashboardModel? dashboardModel;
@@ -291,6 +293,8 @@ class _MyStatsCardState extends State<MyStatsCard> {
                         color: deepColorGreen,
                         value: workingHours,
                         label: 'working_hr'.tr(),
+                        progress: _progressFromWorkedString(workingHours),
+                        onTap: () => _openAttendanceReport(context),
                       ),
                     ),
                     VerticalDivider(
@@ -304,6 +308,7 @@ class _MyStatsCardState extends State<MyStatsCard> {
                         value: '$lateCount',
                         label: 'late'.tr(),
                         showCheck: lateCount == 0,
+                        onTap: () => _openAttendanceReport(context),
                       ),
                     ),
                     VerticalDivider(
@@ -316,6 +321,7 @@ class _MyStatsCardState extends State<MyStatsCard> {
                             : const Color(0xFF37474F),
                         value: '$absentCount',
                         label: 'absent'.tr(),
+                        onTap: () => _openAttendanceReport(context),
                       ),
                     ),
                   ],
@@ -332,6 +338,36 @@ class _MyStatsCardState extends State<MyStatsCard> {
         );
       },
     );
+  }
+
+  /// Parses the "working hours" display string (e.g. "8h 30m", "02:15:43")
+  /// and returns a 0.0–1.0 completion value against an 8-hour workday. Used to
+  /// render a progress ring around the working-hours stat so the user can see
+  /// at a glance how close they are to a full day.
+  double? _progressFromWorkedString(String worked) {
+    if (worked.isEmpty || worked == '--:--:--' || worked == '0h') return 0.0;
+    // HH:MM:SS format (live ticker)
+    final liveMatch = RegExp(r'^(\d{1,2}):(\d{2}):(\d{2})$').firstMatch(worked);
+    if (liveMatch != null) {
+      final h = int.tryParse(liveMatch.group(1)!) ?? 0;
+      final m = int.tryParse(liveMatch.group(2)!) ?? 0;
+      return ((h * 60 + m) / (8 * 60)).clamp(0.0, 1.0);
+    }
+    // "8h 30m" / "8h" / "30m"
+    int totalMin = 0;
+    final hMatch = RegExp(r'(\d+)\s*h').firstMatch(worked);
+    final mMatch = RegExp(r'(\d+)\s*m').firstMatch(worked);
+    if (hMatch != null) totalMin += (int.tryParse(hMatch.group(1)!) ?? 0) * 60;
+    if (mMatch != null) totalMin += int.tryParse(mMatch.group(1)!) ?? 0;
+    if (totalMin == 0) return 0.0;
+    return (totalMin / (8 * 60)).clamp(0.0, 1.0);
+  }
+
+  void _openAttendanceReport(BuildContext context) {
+    final settings = widget.settings;
+    if (settings != null) {
+      NavUtil.navigateScreen(context, PlutoAttendanceReportPage(settings: settings));
+    }
   }
 
   int _getMonthStat(List<CurrentMonthData>? data, String slug) {
@@ -353,6 +389,8 @@ class _MiniStat extends StatelessWidget {
   final String value;
   final String label;
   final bool showCheck;
+  final double? progress;
+  final VoidCallback? onTap;
 
   const _MiniStat({
     required this.icon,
@@ -360,15 +398,40 @@ class _MiniStat extends StatelessWidget {
     required this.value,
     required this.label,
     this.showCheck = false,
+    this.progress,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    final iconWidget = progress != null
+        ? SizedBox(
+            width: 22.r,
+            height: 22.r,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 22.r,
+                  height: 22.r,
+                  child: CircularProgressIndicator(
+                    value: progress,
+                    strokeWidth: 2.4,
+                    backgroundColor: color.withValues(alpha: 0.15),
+                    valueColor: AlwaysStoppedAnimation<Color>(color),
+                  ),
+                ),
+                Icon(icon, color: color, size: 12.r),
+              ],
+            ),
+          )
+        : Icon(icon, color: color, size: 18.r);
+
+    final content = Padding(
       padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 4.w),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 18.r),
+          iconWidget,
           SizedBox(height: 4.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -401,6 +464,13 @@ class _MiniStat extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    if (onTap == null) return content;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8.r),
+      child: content,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
@@ -48,6 +49,11 @@ class AuthenticationBloc extends HydratedBloc<AuthenticationEvent, Authenticatio
       try {
         await HydratedBloc.storage.clear();
       } catch (_) {}
+      // SECURITY: also clear user-specific SharedPreferences values on tenant
+      // switch. Keeps a tiny whitelist of device-level prefs (language, onboarding).
+      try {
+        await _clearUserScopedPreferences();
+      } catch (_) {}
     }
     globalState.set(authToken,event.data.user?.token);
     globalState.set(keyUserId, event.data.user?.id?.toString());
@@ -64,7 +70,29 @@ class AuthenticationBloc extends HydratedBloc<AuthenticationEvent, Authenticatio
     try {
       await HydratedBloc.storage.clear();
     } catch (_) {}
+    try {
+      await _clearUserScopedPreferences();
+    } catch (_) {}
     emit(const AuthenticationState.unauthenticated());
+  }
+
+  /// Removes all user-specific SharedPreferences values, preserving only a
+  /// small whitelist of device-level settings (language, onboarding flag)
+  /// that are safe to keep across account switches.
+  Future<void> _clearUserScopedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Whitelist: these keys are device-level (not tied to a specific user/tenant)
+    // and should persist across logout/switch so the user doesn't have to
+    // re-pick their language on each login.
+    const keepKeys = <String>{
+      keySelectLanguage,   // selected UI language (int index)
+      'hasSeenOnboarding', // typical onboarding flag if present
+    };
+    final allKeys = prefs.getKeys();
+    for (final key in allKeys) {
+      if (keepKeys.contains(key)) continue;
+      await prefs.remove(key);
+    }
   }
 
   @override

@@ -58,6 +58,8 @@ class NotificationAppStartedHandlerService {
           final String text = (message.notification?.body ?? message.data?['text'] ?? '').toString();
           if (text.isNotEmpty) {
             SharedUtil.setValue(bulletinKey, text);
+            SharedUtil.setValue(
+                bulletinTimestampKey, DateTime.now().millisecondsSinceEpoch.toString());
           }
         }
 
@@ -85,6 +87,8 @@ class NotificationAppStartedHandlerService {
         final text = message.notification?.body ?? message.data['text'] ?? '';
         if (text.isNotEmpty) {
           SharedUtil.setValue(bulletinKey, text);
+          SharedUtil.setValue(
+              bulletinTimestampKey, DateTime.now().millisecondsSinceEpoch.toString());
         }
       }
 

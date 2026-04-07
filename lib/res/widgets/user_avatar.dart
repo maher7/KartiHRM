@@ -58,6 +58,9 @@ class UserAvatar extends StatelessWidget {
     final hasValidUrl = imageUrl != null &&
         imageUrl!.isNotEmpty &&
         imageUrl != 'null' &&
+        !imageUrl!.contains('default.png') &&
+        !imageUrl!.contains('default-profile') &&
+        !imageUrl!.endsWith('/') &&
         Uri.tryParse(imageUrl!)?.hasScheme == true;
 
     final bgColor = backgroundColor ?? _colorForName(name ?? '');

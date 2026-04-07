@@ -9,7 +9,6 @@ import 'package:onesthrm/page/home/view/home_mars/content_mars/break_card_mars.d
 import 'package:onesthrm/page/home/view/home_mars/content_mars/checkin_out_card_mars.dart';
 import 'package:onesthrm/page/home/view/home_mars/content_mars/current_month_mars.dart';
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
-import 'package:onesthrm/page/profile/view/profile_page.dart';
 import 'package:onesthrm/res/nav_utail.dart';
 import 'package:onesthrm/res/widgets/user_avatar.dart';
 import '../../../content/my_stats_card.dart';
@@ -59,7 +58,7 @@ class _HomeMarsContentState extends State<HomeMarsContent> {
                             ///breakTime
                             BreakCardMars(settings: settings, user: user, dashboardModel: homeData),
                             ///my stats
-                            MyStatsCard(dashboardModel: homeData),
+                            MyStatsCard(dashboardModel: homeData, settings: settings),
                             ///bottom-header
                             HomeBottomMars(settings: settings, user: user, dashboardModel: homeData),
                             /// Current Month
@@ -81,18 +80,12 @@ class _HomeMarsContentState extends State<HomeMarsContent> {
                                 child: Image.asset("assets/images/ic_notification.png",height: 40,fit: BoxFit.fitHeight,))),
 
                         Positioned(left: 20, top: 26,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(24),
-                            onTap: () {
-                              NavUtil.navigateScreen(context, const ProfileScreen());
-                            },
-                            child: UserAvatar(
-                              imageUrl: user?.user?.avatar,
-                              name: user?.user?.name,
-                              size: 45,
-                              borderWidth: 2,
-                              borderColor: Colors.white,
-                            ),
+                          child: UserAvatar(
+                            imageUrl: user?.user?.avatar,
+                            name: user?.user?.name,
+                            size: 45,
+                            borderWidth: 2,
+                            borderColor: Colors.white,
                           ),
                         )
                       ],

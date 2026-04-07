@@ -10,13 +10,15 @@ class MenuContentItem extends StatelessWidget {
   final Menu menu;
   final AnimationController animationController;
   final Animation animation;
+  final int badgeCount;
 
   const MenuContentItem(
       {super.key,
       required this.onPressed,
       required this.menu,
       required this.animationController,
-      required this.animation});
+      required this.animation,
+      this.badgeCount = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +39,32 @@ class MenuContentItem extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Row(
                       children: [
-                        DynamicImageViewer(
-                          image: menu.icon ?? "",
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            DynamicImageViewer(
+                              image: menu.icon ?? "",
+                            ),
+                            if (badgeCount > 0)
+                              Positioned(
+                                top: -4,
+                                right: -6,
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFE53935),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  constraints: BoxConstraints(minWidth: 16.r, minHeight: 16.r),
+                                  child: Center(
+                                    child: Text(
+                                      badgeCount > 99 ? '99+' : '$badgeCount',
+                                      style: TextStyle(color: Colors.white, fontSize: 8.r, fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                         SizedBox(width: 10.0.w),
                         Expanded(

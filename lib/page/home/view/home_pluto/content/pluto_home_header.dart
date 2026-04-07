@@ -73,6 +73,7 @@ class PlutoHomeHeader extends StatelessWidget {
                         Text(
                           '${user?.user?.name}',
                           style: TextStyle(fontSize: 16.r, fontWeight: FontWeight.bold, color: Colors.white),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),

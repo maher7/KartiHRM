@@ -30,7 +30,7 @@ class PlutoDailyLeaveApproved extends StatelessWidget {
                 onTap: () {
                   NavUtil.navigateScreen(context, BlocProvider.value(value: context.read<DailyLeaveBloc>(),
                         child: PlutoLeaveTypeScreen(appBarName: "early_leave",
-                          leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: dailyLeaveBloc.state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now()), leaveStatus: 'approved', leaveType: "early_leave"),)),);
+                          leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: '', leaveStatus: 'approved', leaveType: "early_leave"),)),);
                 },
                 title: 'early_leave'.tr(), value: approved?.earlyLeave.toString() ?? '', color: const Color(0xFF4CAF50),
               ),
@@ -40,7 +40,7 @@ class PlutoDailyLeaveApproved extends StatelessWidget {
               child: PlutoDailyLeaveTile(
                 onTap: () {
                   NavUtil.navigateScreen(context, BlocProvider.value(value: context.read<DailyLeaveBloc>(),
-                        child: PlutoLeaveTypeScreen(appBarName: "late_leave".tr(), leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: dailyLeaveBloc.state.currentMonth ?? DateFormat('y-MM-dd').format(DateTime.now()), leaveStatus: 'approved', leaveType: "late_arrive"),)),
+                        child: PlutoLeaveTypeScreen(appBarName: "late_leave".tr(), leaveListData: LeaveListModel(userId: user!.user!.id!.toString(), month: '', leaveStatus: 'approved', leaveType: "late_arrive"),)),
                   );
                 },
                 title: 'late_leave'.tr(), value: approved?.lateArrive.toString() ?? '', color: const Color(0xFF4CAF50),

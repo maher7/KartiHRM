@@ -233,6 +233,13 @@ class LocationServiceProvider {
                   }
                 }
                 SharedUtil.setValue(bulletinKey, bulletinValue);
+                // Stamp/clear the timestamp so the bulletin auto-expires after 24h.
+                if (bulletinValue.isNotEmpty) {
+                  SharedUtil.setValue(
+                      bulletinTimestampKey, DateTime.now().millisecondsSinceEpoch.toString());
+                } else {
+                  SharedUtil.setValue(bulletinTimestampKey, "");
+                }
               }
             }
             await offlineLocationRepository.deleteAllLocation();

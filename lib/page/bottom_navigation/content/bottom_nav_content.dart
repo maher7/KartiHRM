@@ -71,20 +71,28 @@ class BottomNavContent extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: BottomNavItem(
-                          icon: 'assets/home_icon/attendance.svg',
-                          label: 'schedule'.tr(),
-                          isSelected: selectedTab == BottomNavTab.schedule,
-                          tab: BottomNavTab.schedule,
+                        child: ValueListenableBuilder<int>(
+                          valueListenable: scheduleBadgeCount,
+                          builder: (context, count, _) => BottomNavItem(
+                            icon: 'assets/home_icon/attendance.svg',
+                            label: 'schedule'.tr(),
+                            isSelected: selectedTab == BottomNavTab.schedule,
+                            tab: BottomNavTab.schedule,
+                            badgeCount: selectedTab == BottomNavTab.schedule ? 0 : count,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 48),
                       Expanded(
-                        child: BottomNavItem(
-                          icon: 'assets/home_icon/leave.svg',
-                          label: 'leave'.tr(),
-                          isSelected: selectedTab == BottomNavTab.leave,
-                          tab: BottomNavTab.leave,
+                        child: ValueListenableBuilder<int>(
+                          valueListenable: leaveBadgeCount,
+                          builder: (context, count, _) => BottomNavItem(
+                            icon: 'assets/home_icon/leave.svg',
+                            label: 'leave'.tr(),
+                            isSelected: selectedTab == BottomNavTab.leave,
+                            tab: BottomNavTab.leave,
+                            badgeCount: selectedTab == BottomNavTab.leave ? 0 : count,
+                          ),
                         ),
                       ),
                       Expanded(
@@ -102,32 +110,17 @@ class BottomNavContent extends StatelessWidget {
                     ],
                   )),
             ),
-            floatingActionButton: DeviceUtil.isTablet
-                ? FloatingActionButton.large(
-                    foregroundColor: Colors.white,
-                    backgroundColor: selectedTab == BottomNavTab.menu ? Branding.colors.primaryLight : Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Image.asset(
-                        'assets/images/FavLogo.png',
-                        color: selectedTab == BottomNavTab.menu ? Colors.white : Branding.colors.primaryLight,
-                      ),
-                    ),
-                    onPressed: () {
-                      context.read<BottomNavCubit>().setTab(BottomNavTab.menu);
-                      // myPage.jumpToPage(2);
-                    })
-                : FloatingActionButton(
-                    backgroundColor: selectedTab == BottomNavTab.menu ? Branding.colors.primaryDark : Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Image.asset('assets/home_icon/FavLogo.png',
-                          color: selectedTab == BottomNavTab.menu ? Colors.white : Branding.colors.primaryDark),
-                    ),
-                    onPressed: () {
-                      context.read<BottomNavCubit>().setTab(BottomNavTab.menu);
-                      // myPage.jumpToPage(2);
-                    }),
+            floatingActionButton: ValueListenableBuilder<int>(
+              valueListenable: menuBadgeCount,
+              builder: (context, count, _) => _MenuFab(
+                isSelected: selectedTab == BottomNavTab.menu,
+                isTablet: DeviceUtil.isTablet,
+                badgeCount: count,
+                onPressed: () {
+                  context.read<BottomNavCubit>().setTab(BottomNavTab.menu);
+                },
+              ),
+            ),
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
             body: IndexedStack(
               index: selectedTab.index,
@@ -139,6 +132,105 @@ class BottomNavContent extends StatelessWidget {
       },
     );
     },
+    );
+  }
+}
+
+/// Elevated center FAB with a "Menu" label so users recognise it as a button.
+class _MenuFab extends StatelessWidget {
+  const _MenuFab({
+    required this.isSelected,
+    required this.isTablet,
+    required this.onPressed,
+    this.badgeCount = 0,
+  });
+
+  final bool isSelected;
+  final bool isTablet;
+  final VoidCallback onPressed;
+  final int badgeCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = isSelected ? Branding.colors.primaryDark : Colors.white;
+    final fgColor = isSelected ? Colors.white : Branding.colors.primaryDark;
+    final fabSize = isTablet ? 64.0 : 52.0;
+    final iconPad = isTablet ? 14.0 : 10.0;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: fabSize,
+              height: fabSize,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: bgColor,
+                border: Border.all(
+                  color: Branding.colors.primaryLight.withValues(alpha: 0.3),
+                  width: 2.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Branding.colors.primaryLight.withValues(alpha: 0.25),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: onPressed,
+                  child: Padding(
+                    padding: EdgeInsets.all(iconPad),
+                    child: Image.asset(
+                      isTablet ? 'assets/images/FavLogo.png' : 'assets/home_icon/FavLogo.png',
+                      color: fgColor,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (badgeCount > 0)
+              Positioned(
+                top: -4,
+                right: -4,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE53935),
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                  child: Text(
+                    badgeCount > 99 ? '99+' : '$badgeCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'menu'.tr(),
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+            color: isSelected ? Branding.colors.primaryDark : Colors.grey.shade500,
+          ),
+        ),
+      ],
     );
   }
 }

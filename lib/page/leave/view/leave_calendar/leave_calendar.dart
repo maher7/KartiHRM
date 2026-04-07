@@ -46,7 +46,7 @@ class LeaveCalendar extends StatelessWidget {
                   selectionColor: Colors.green,
                   showNavigationArrow: true,
                   toggleDaySelection: false,
-                  enablePastDates: false,
+                  enablePastDates: true,
                   selectionMode: homeState.settings?.data?.individualDayWiseLeave == true
                       ? DateRangePickerSelectionMode.multiple
                       : DateRangePickerSelectionMode.range,

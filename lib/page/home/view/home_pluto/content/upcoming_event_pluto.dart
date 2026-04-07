@@ -220,6 +220,13 @@ class _EventCard extends StatelessWidget {
           label: 'birthday'.tr(),
           gradient: [const Color(0xFFFF7AA7), const Color(0xFFC2185B)],
         );
+      case 'notice':
+        return (
+          icon: Icons.notifications_active_rounded,
+          color: const Color(0xFF00897B),
+          label: 'notice'.tr(),
+          gradient: [const Color(0xFF4DB6AC), const Color(0xFF00695C)],
+        );
       default:
         return (
           icon: Icons.event_rounded,

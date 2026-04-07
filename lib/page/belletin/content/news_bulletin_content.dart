@@ -16,15 +16,38 @@ class NewsBulletinContent extends StatelessWidget {
         final show = state.headline != null && state.headline!.trim().isNotEmpty && !state.dismissed;
         if (!show) return const SizedBox.shrink();
 
+        final isUrgent = state.type == BulletinType.urgent;
         return Container(
           height: DeviceUtil.isTablet ? 55 : 38,
-          color: Branding.colors.primaryLight,
+          color: isUrgent ? const Color(0xFFD32F2F) : Branding.colors.primaryLight,
           child: Row(
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 10.w),
-                child: Icon(Icons.campaign_rounded, color: Colors.white70, size: 16.r),
+                child: Icon(
+                  isUrgent ? Icons.warning_amber_rounded : Icons.campaign_rounded,
+                  color: Colors.white70,
+                  size: 16.r,
+                ),
               ),
+              if (isUrgent)
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 6.w),
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.r),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'URGENT',
+                    style: TextStyle(
+                      color: const Color(0xFFD32F2F),
+                      fontSize: 10.r,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
               Expanded(
                 child: Marquee(
                   text: state.headline!,

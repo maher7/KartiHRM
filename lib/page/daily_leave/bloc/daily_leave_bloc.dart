@@ -54,10 +54,8 @@ class DailyLeaveBloc extends Bloc<DailyLeaveEvent, DailyLeaveState> {
 
   FutureOr<void> _dailyLeaveSummary(
       DailyLeaveSummary event, Emitter<DailyLeaveState> emit) async {
-    emit(state.copyWith(
-        status: NetworkStatus.loading,
-        currentMonth: state.currentMonth ?? DateFormat('yyyy-MM').format(DateTime.now())));
-    final dailyLeaveSummaryModel = await _metaClubApiClient.dailyLeaveSummary(event.userId, state.currentMonth);
+    emit(state.copyWith(status: NetworkStatus.loading));
+    final dailyLeaveSummaryModel = await _metaClubApiClient.dailyLeaveSummary(event.userId, '');
 
     dailyLeaveSummaryModel.fold((l){emit(state.copyWith(status: NetworkStatus.failure));}, (r){
       emit(state.copyWith(

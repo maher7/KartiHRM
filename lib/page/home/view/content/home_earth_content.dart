@@ -45,7 +45,7 @@ class _HomeEarthContentState extends State<HomeEarthContent> {
                 BreakCard(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),
 
                 ///my stats
-                MyStatsCard(dashboardModel: homeState.dashboardModel),
+                MyStatsCard(dashboardModel: homeState.dashboardModel, settings: homeState.settings),
 
                 ///bottom-header
                 HomeBottom(settings: homeState.settings, user: user, dashboardModel: homeState.dashboardModel),

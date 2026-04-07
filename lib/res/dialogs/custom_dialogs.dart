@@ -300,8 +300,8 @@ class CustomDialogImagePicker extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Container(
         color: Colors.white,
-        height: 215,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(

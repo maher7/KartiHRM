@@ -15,9 +15,10 @@ class PlutoDailyLeaveTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.15), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: color.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -65,10 +66,17 @@ class PlutoDailyLeaveTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 12.r,
-                  color: Colors.black26,
+                Container(
+                  padding: EdgeInsets.all(4.r),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 12.r,
+                    color: color,
+                  ),
                 ),
               ],
             ),
