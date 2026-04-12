@@ -185,10 +185,12 @@ class HttpServiceImpl implements HttpService {
         } else if (e.response!.statusCode == HttpStatus.unprocessableEntity) {
           if (e.response!.data is Map<String, dynamic>) {
             final jsonMap = e.response!.data;
-            if (jsonMap['error'] != null) {
-             return Left(GeneralFailure.httpStatus(e.response!.statusCode ?? 0, 'post', jsonMap['error'][0]));
+            final errors = jsonMap['error'];
+            if (errors is List && errors.isNotEmpty) {
+              return Left(GeneralFailure.httpStatus(e.response!.statusCode ?? 0, 'post', errors[0]?.toString() ?? 'Validation error'));
             }
-            return Left(GeneralFailure.httpStatus(e.response!.statusCode ?? 0, 'post', jsonMap['error'][0]));
+            final message = jsonMap['message']?.toString() ?? 'Validation error';
+            return Left(GeneralFailure.httpStatus(e.response!.statusCode ?? 0, 'post', message));
           }
           return Left(GeneralFailure.httpStatus(e.response!.statusCode ?? 0, 'post', 'Bad request'));
         } else if (e.response!.statusCode == HttpStatus.unauthorized) {

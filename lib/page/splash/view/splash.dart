@@ -49,10 +49,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   Future<void> _startSequence() async {
     await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted) return;
     _circuitController.forward();
     _pulseController.forward();
     _pulseController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
+      if (status == AnimationStatus.completed && mounted) {
         _pulseController.reset();
         _pulseController.forward();
       }
