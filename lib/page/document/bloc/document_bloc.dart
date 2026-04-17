@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:core/core.dart';
 import 'package:domain/domain.dart';
 import 'package:equatable/equatable.dart';
@@ -15,13 +16,21 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
   final LoadDocumentRequestTypes loadDocumentRequestTypes;
   final LoadDocumentRequest loadDocumentRequest;
   final SubmitDocumentRequest submitDocumentRequest;
+  final LoadPendingDocumentRequests loadPendingDocumentRequests;
+  final RespondToDocumentRequest respondToDocumentRequest;
   final TextEditingController controller = TextEditingController();
 
-  DocumentBloc(
-      {required this.loadDocumentRequest, required this.loadDocumentRequestTypes, required this.submitDocumentRequest})
-      : super(const DocumentState(status: NetworkStatus.initial)) {
+  DocumentBloc({
+    required this.loadDocumentRequest,
+    required this.loadDocumentRequestTypes,
+    required this.submitDocumentRequest,
+    required this.loadPendingDocumentRequests,
+    required this.respondToDocumentRequest,
+  }) : super(const DocumentState(status: NetworkStatus.initial)) {
     on<GetDocumentData>(_onDocumentLoad);
     on<GetDocumentTypeData>(_onDocumentTypesLoad);
+    on<GetPendingDocumentRequests>(_onPendingLoad);
+    on<RespondToRequest>(_onRespondToRequest);
     on<OnSelectDocType>(_documentTypeChanged);
     on<OnSelectDate>(_onSelectDate);
     on<OnSelectEmployee>(_onSelectEmployee);
@@ -47,6 +56,32 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       emit(const DocumentState(status: NetworkStatus.failure));
     }, (r) {
       emit(state.copy(status: NetworkStatus.success, documentTypes: r));
+    });
+  }
+
+  void _onPendingLoad(GetPendingDocumentRequests event, Emitter<DocumentState> emit) async {
+    emit(state.copy(pendingStatus: NetworkStatus.loading));
+    final data = await loadPendingDocumentRequests();
+    data.fold((l) {
+      emit(state.copy(pendingStatus: NetworkStatus.failure));
+    }, (r) {
+      emit(state.copy(pendingStatus: NetworkStatus.success, pendingItems: r));
+    });
+  }
+
+  void _onRespondToRequest(RespondToRequest event, Emitter<DocumentState> emit) async {
+    emit(state.copy(respondStatus: NetworkStatus.loading));
+    final data = await respondToDocumentRequest(
+      requestId: event.requestId,
+      file: event.file,
+      description: event.description,
+    );
+    data.fold((l) {
+      emit(state.copy(respondStatus: NetworkStatus.failure));
+    }, (r) {
+      emit(state.copy(respondStatus: NetworkStatus.success));
+      // Refresh pending list after successful response
+      add(GetPendingDocumentRequests());
     });
   }
 

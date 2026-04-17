@@ -13,6 +13,8 @@ export 'src/usecases/break_back_history_usecase.dart';
 export 'src/usecases/break_back_verify_qr_usecase.dart';
 export 'src/usecases/load_document_types_use_case.dart';
 export 'src/usecases/load_documents_request_use_case.dart';
+export 'src/usecases/load_pending_document_requests_use_case.dart';
+export 'src/usecases/respond_to_document_request_use_case.dart';
 export 'src/usecases/load_complain_usecase.dart';
 export 'src/usecases/submit_complain_usecase.dart';
 export 'src/usecases/load_complain_replies_usecase.dart';

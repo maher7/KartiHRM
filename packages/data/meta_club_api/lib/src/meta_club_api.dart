@@ -1412,6 +1412,30 @@ class MetaClubApiClient {
     }
   }
 
+  Future<Either<Failure, DocumentItems>> pendingDocumentRequests() async {
+    const String api = 'user-document-requests/pending';
+    try {
+      final response = await httpService.getRequestWithToken('${getBaseUrl()}$api');
+      return response.fold((l) => Left(l), (r) => Right(DocumentItems.fromJson(r.data)));
+    } on Exception catch (e) {
+      return Left(ExceptionFailure(exception: e));
+    }
+  }
+
+  Future<Either<Failure, bool>> respondToDocumentRequest({required int requestId, required File file, String? description}) async {
+    final String api = 'user-document-requests/$requestId/respond';
+    try {
+      final formData = FormData.fromMap({
+        'response_file': await MultipartFile.fromFile(file.path),
+        if (description != null && description.isNotEmpty) 'response_description': description,
+      });
+      final response = await httpService.postRequest('${getBaseUrl()}$api', formData);
+      return response.fold((l) => Left(l), (r) => const Right(true));
+    } on Exception catch (e) {
+      return Left(ExceptionFailure(exception: e));
+    }
+  }
+
   Future<Either<Failure, ComplainData>> getComplains({String? date, bool complain = true}) async {
     String api = complain ? 'complains?date=$date' : 'verbal-warnings?date=$date';
     try {
@@ -1641,6 +1665,54 @@ class MetaClubApiClient {
       return response.fold(
         (l) => Left(l),
         (r) => Right(MyScheduleResponse.fromJson(r.data)),
+      );
+    } on Exception catch (e) {
+      return Left(ExceptionFailure(exception: e));
+    }
+  }
+
+  /// Get employee's weekly availability (4-state preferences per day).
+  Future<Either<Failure, MyAvailabilityResponse?>> getAvailability({required String weekStart}) async {
+    final String api = 'scheduling/availability?week_start=$weekStart';
+    try {
+      final response = await httpService.getRequestWithToken('${getBaseUrl()}$api');
+      return response.fold(
+        (l) => Left(l),
+        (r) => Right(MyAvailabilityResponse.fromJsonList(weekStart, r.data)),
+      );
+    } on Exception catch (e) {
+      return Left(ExceptionFailure(exception: e));
+    }
+  }
+
+  /// Submit employee's weekly availability.
+  Future<Either<Failure, bool>> saveAvailability({
+    required String weekStart,
+    required int userId,
+    required List<AvailabilityItem> items,
+  }) async {
+    const String api = 'scheduling/availability';
+    try {
+      final body = {
+        'week_start': weekStart,
+        'userId': userId,
+        'items': items.map((i) => i.toSubmitJson()).toList(),
+      };
+      final response = await httpService.postRequest('${getBaseUrl()}$api', body);
+      return response.fold((l) => Left(l), (_) => const Right(true));
+    } on Exception catch (e) {
+      return Left(ExceptionFailure(exception: e));
+    }
+  }
+
+  /// Get the availability submission deadline (cutoff day-of-week + time).
+  Future<Either<Failure, Map<String, dynamic>?>> getAvailabilityDeadline() async {
+    const String api = 'scheduling/availability-deadline';
+    try {
+      final response = await httpService.getRequestWithToken('${getBaseUrl()}$api');
+      return response.fold(
+        (l) => Left(l),
+        (r) => Right(r.data is Map<String, dynamic> ? r.data as Map<String, dynamic> : null),
       );
     } on Exception catch (e) {
       return Left(ExceptionFailure(exception: e));

@@ -4,40 +4,61 @@ class DocumentItem {
   final int? id;
   final String? date;
   final int? userId;
+  final int? targetEmployeeId;
+  final int? initiatedBy;
   final int? docTypeId;
   final String? docTypeName;
+  final String? docKey;
   final String? description;
+  final String? responseDescription;
   final String? requestFile;
   final String? responseFile;
   final String? responseFileExpireDate;
   final String? responseStatus;
+  final DocumentInform? requester;
+  final DocumentInform? targetEmployee;
   final DocumentInform? documentInform;
 
-  DocumentItem(
-      {this.id,
-      this.date,
-      this.userId,
-      this.docTypeId,
-      this.docTypeName,
-      this.description,
-      this.requestFile,
-      this.responseFile,
-      this.responseFileExpireDate,
-      this.responseStatus,
-      this.documentInform});
+  DocumentItem({
+    this.id,
+    this.date,
+    this.userId,
+    this.targetEmployeeId,
+    this.initiatedBy,
+    this.docTypeId,
+    this.docTypeName,
+    this.docKey,
+    this.description,
+    this.responseDescription,
+    this.requestFile,
+    this.responseFile,
+    this.responseFileExpireDate,
+    this.responseStatus,
+    this.requester,
+    this.targetEmployee,
+    this.documentInform,
+  });
+
+  bool get isAdminInitiated => initiatedBy == 2;
 
   factory DocumentItem.fromJson(Map<String, dynamic> json) {
     return DocumentItem(
       id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
       date: json['date'],
       userId: json['user_id'] != null ? int.tryParse(json['user_id'].toString()) : null,
+      targetEmployeeId: json['target_employee_id'] != null ? int.tryParse(json['target_employee_id'].toString()) : null,
+      initiatedBy: json['initiated_by'] != null ? int.tryParse(json['initiated_by'].toString()) : null,
       docTypeId: json['user_document_type_id'] != null ? int.tryParse(json['user_document_type_id'].toString()) : null,
       docTypeName: json['document_type'],
+      docKey: json['doc_key'],
       description: json['request_description'],
+      responseDescription: json['response_description'],
       requestFile: json['request_file'],
       responseFile: json['response_file'],
       responseFileExpireDate: json['response_file_expire_date'],
       responseStatus: json['response_status'],
+      requester: json['requester'] != null ? DocumentInform.fromJson(json['requester']) : null,
+      targetEmployee: json['target_employee'] != null ? DocumentInform.fromJson(json['target_employee']) : null,
       documentInform: json['informed_to'] != null ? DocumentInform.fromJson(json['informed_to']) : null,
     );
   }

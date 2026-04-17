@@ -21,6 +21,24 @@ class GetDocumentTypeData extends DocumentEvent {
   List<Object> get props => [];
 }
 
+class GetPendingDocumentRequests extends DocumentEvent {
+  GetPendingDocumentRequests();
+
+  @override
+  List<Object> get props => [];
+}
+
+class RespondToRequest extends DocumentEvent {
+  final int requestId;
+  final File file;
+  final String? description;
+
+  RespondToRequest({required this.requestId, required this.file, this.description});
+
+  @override
+  List<Object> get props => [requestId, file];
+}
+
 class OnSelectDate extends DocumentEvent {
   final String? date;
 

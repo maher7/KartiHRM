@@ -934,6 +934,24 @@ class HRMCoreBaseServiceImpl implements HRMCoreBaseService {
   }
 
   @override
+  Future<Either<Failure, DocumentItems>> pendingDocumentRequests() async {
+    final isConnected = await connectivityStatusProvider.isConnected;
+    if (!isConnected) {
+      return const Left(GeneralFailure.networkUnavailable());
+    }
+    return metaClubApiClient.pendingDocumentRequests();
+  }
+
+  @override
+  Future<Either<Failure, bool>> respondToDocumentRequest({required int requestId, required File file, String? description}) async {
+    final isConnected = await connectivityStatusProvider.isConnected;
+    if (!isConnected) {
+      return const Left(GeneralFailure.networkUnavailable());
+    }
+    return metaClubApiClient.respondToDocumentRequest(requestId: requestId, file: file, description: description);
+  }
+
+  @override
   Future<Either<Failure, ComplainData>> getComplains({String? date, bool complain = true}) async {
     final isConnected = await connectivityStatusProvider.isConnected;
     if (!isConnected) {

@@ -12,6 +12,8 @@ class UseCaseInjection {
     instance.registerSingleton<LoadDocumentRequest>(LoadDocumentRequest(hrmCoreBaseService: instance()));
     instance.registerSingleton<LoadDocumentRequestTypes>(LoadDocumentRequestTypes(hrmCoreBaseService: instance()));
     instance.registerSingleton<SubmitDocumentRequest>(SubmitDocumentRequest(hrmCoreBaseService: instance()));
+    instance.registerSingleton<LoadPendingDocumentRequests>(LoadPendingDocumentRequests(hrmCoreBaseService: instance()));
+    instance.registerSingleton<RespondToDocumentRequest>(RespondToDocumentRequest(hrmCoreBaseService: instance()));
     instance.registerSingleton<LoadComplainUseCase>(LoadComplainUseCase(hrmCoreBaseService: instance()));
     instance.registerSingleton<SubmitComplainUseCase>(SubmitComplainUseCase(hrmCoreBaseService: instance()));
     instance.registerSingleton<LoadComplainRepliesUseCase>(LoadComplainRepliesUseCase(hrmCoreBaseService: instance()));

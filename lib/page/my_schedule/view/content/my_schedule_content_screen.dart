@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meta_club_api/meta_club_api.dart';
 import 'package:onesthrm/page/language/bloc/language_bloc.dart';
 import 'package:onesthrm/page/my_schedule/my_schedule.dart';
+import 'package:onesthrm/page/my_availability/view/my_availability_page.dart';
 import 'package:onesthrm/res/widgets/screen_header.dart';
 
 class MyScheduleContentScreen extends StatefulWidget {
@@ -98,6 +99,14 @@ class _MyScheduleContentScreenState extends State<MyScheduleContentScreen> {
                     title: 'my_schedule'.tr(),
                     subtitle: _scheduleSubtitle(state),
                     showBack: false,
+                    actions: [
+                      ScreenHeaderAction(
+                        icon: Icons.event_available_rounded,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const MyAvailabilityPage()),
+                        ),
+                      ),
+                    ],
                     bottom: _buildWeekNav(context, state),
                   ),
                   _buildDayTabs(context, state),

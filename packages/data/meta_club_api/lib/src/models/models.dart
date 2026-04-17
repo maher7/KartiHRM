@@ -85,3 +85,4 @@ export 'deduction.dart';
 export 'body_appeal.dart';
 export 'add_expense_body_model.dart';
 export 'my_schedule_model.dart';
+export 'my_availability_model.dart';

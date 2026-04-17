@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:onesthrm/page/all_natification/view/unified_notification_screen.dart';
 import 'package:onesthrm/page/appointment/appoinment_list/view/appointment_screen.dart';
 import 'package:onesthrm/page/my_schedule/view/my_schedule_page.dart';
+import 'package:onesthrm/page/my_availability/view/my_availability_page.dart';
 import 'package:onesthrm/page/attendance_report/view/pluto_attendance_report_page.dart';
 import 'package:onesthrm/page/daily_leave/view/daily_leave_page.dart';
 import 'package:onesthrm/page/daily_leave/view/pluto_daily_leave_page.dart';
@@ -83,6 +84,9 @@ void routeSlug(slugName, context) {
     case 'my_schedule':
     case 'weekly_schedule':
       NavUtil.navigateScreen(context, const MySchedulePage());
+    case 'my_availability':
+    case 'availability':
+      NavUtil.navigateScreen(context, const MyAvailabilityPage());
     default:
       return;
   }

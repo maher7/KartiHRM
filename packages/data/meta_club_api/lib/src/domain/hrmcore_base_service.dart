@@ -215,6 +215,10 @@ abstract class HRMCoreBaseService {
 
   Future<Either<Failure, bool>> submitDocumentRequest({required DocumentBody body});
 
+  Future<Either<Failure, DocumentItems>> pendingDocumentRequests();
+
+  Future<Either<Failure, bool>> respondToDocumentRequest({required int requestId, required File file, String? description});
+
   Future<Either<Failure, bool>> submitTravelPlanRequest({required TravelPlanBody body});
 
   Future<Either<Failure, ComplainData>> getComplains({String? date, bool complain = true});

@@ -31,6 +31,7 @@ import 'package:onesthrm/page/travel/travel_plan_view/travel_page.dart';
 import 'package:onesthrm/page/visit/view/visit_page.dart';
 import 'package:onesthrm/page/writeup/view/complain_page.dart';
 import 'package:onesthrm/page/my_schedule/my_schedule.dart';
+import 'package:onesthrm/page/my_availability/my_availability.dart';
 import 'package:onesthrm/res/nav_utail.dart';
 import 'package:user_repository/user_repository.dart';
 
@@ -163,6 +164,9 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         break;
       case 'my-schedule':
         NavUtil.navigateScreen(event.context, const MySchedulePage());
+        break;
+      case 'my-availability':
+        NavUtil.navigateScreen(event.context, const MyAvailabilityPage());
         break;
       default:
         return;
