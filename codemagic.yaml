@@ -60,13 +60,9 @@ workflows:
         script: |
           export PATH="$HOME/.shorebird/bin:$PATH"
           shorebird --version
-          BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK" 2>/dev/null || echo 0) + 1))
-          shorebird release android \
-            --release-version=1.3.2+$BUILD_NUMBER \
-            --no-confirm \
-            -- \
-            --build-name=1.3.2 \
-            --build-number=$BUILD_NUMBER
+          # Shorebird 1.6+ reads version from pubspec.yaml directly
+          # Bump pubspec.yaml `version:` manually before each release
+          shorebird release android --no-confirm
     artifacts:
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
@@ -127,14 +123,11 @@ workflows:
         script: |
           export PATH="$HOME/.shorebird/bin:$PATH"
           shorebird --version
-          BUILD_NUMBER=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo 0) + 1))
+          # Shorebird 1.6+ reads version from pubspec.yaml directly
+          # Bump pubspec.yaml `version:` manually before each release
           shorebird release ios \
-            --release-version=1.3.2+$BUILD_NUMBER \
             --no-confirm \
-            --export-options-plist=/Users/builder/export_options.plist \
-            -- \
-            --build-name=1.3.2 \
-            --build-number=$BUILD_NUMBER
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
