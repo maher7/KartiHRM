@@ -58,6 +58,8 @@ workflows:
         ignore_failure: true
       - name: Shorebird release (AAB)
         script: |
+          export PATH="$HOME/.shorebird/bin:$PATH"
+          shorebird --version
           BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK" 2>/dev/null || echo 0) + 1))
           shorebird release android \
             --release-version=1.3.2+$BUILD_NUMBER \
@@ -123,6 +125,8 @@ workflows:
         ignore_failure: true
       - name: Shorebird release (IPA)
         script: |
+          export PATH="$HOME/.shorebird/bin:$PATH"
+          shorebird --version
           BUILD_NUMBER=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo 0) + 1))
           shorebird release ios \
             --release-version=1.3.2+$BUILD_NUMBER \
@@ -180,6 +184,8 @@ workflows:
           flutter pub get
       - name: Shorebird patch (Android)
         script: |
+          export PATH="$HOME/.shorebird/bin:$PATH"
+          shorebird --version
           shorebird patch android --no-confirm
     publishing:
       email:
@@ -227,6 +233,8 @@ workflows:
             --warn-only
       - name: Shorebird patch (iOS)
         script: |
+          export PATH="$HOME/.shorebird/bin:$PATH"
+          shorebird --version
           shorebird patch ios --no-confirm
     publishing:
       email:
