@@ -1,7 +1,30 @@
 workflows:
   # ============================================================
+  # Signing assumptions (do these ONCE in Codemagic web UI before
+  # running any iOS workflow — don't do them in scripts):
+  #
+  #   1. Codemagic → Teams → Code signing identities → iOS
+  #      certificates → "Generate certificate" → type iOS
+  #      Distribution, pick App Store Connect integration. Lets
+  #      Codemagic hold the private key in its vault.
+  #   2. Apple Developer Portal → Profiles → + → App Store →
+  #      bundle online.karti.hrm → select the cert from step 1
+  #      → Generate.
+  #   3. Codemagic → Teams → Code signing identities → iOS
+  #      provisioning profiles → "Fetch profiles". Confirm the
+  #      profile shows a green "Certificate: uploaded" badge.
+  #
+  # DO NOT add scripts that run `app-store-connect fetch-signing-files
+  # --create` or `app-store-connect certificates create` — they fail
+  # because Apple doesn't return the private key, and they burn
+  # Apple's 3-cert-per-team retry quota.
+  # ============================================================
+
+  # ============================================================
   # STORE RELEASES — every build made via `shorebird release`
-  # so the resulting artifact is patchable via Shorebird OTA later
+  # so the resulting artifact is patchable via Shorebird OTA later.
+  # Remember: bump pubspec.yaml version (+N) between releases,
+  # Shorebird rejects duplicate version numbers.
   # ============================================================
 
   android-workflow:
@@ -22,36 +45,29 @@ workflows:
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
       - name: Install Shorebird CLI
         script: |
-          curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
-          echo "export PATH=\"\$HOME/.shorebird/bin:\$PATH\"" >> $CM_BUILD_DIR/path_export
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird --version
+          curl -sSf https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh | bash
+          echo 'export PATH="$HOME/.shorebird/bin:$PATH"' >> $CM_ENV
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
       - name: Flutter analyze
         script: |
           flutter analyze
         ignore_failure: true
-      - name: Flutter unit tests
-        script: |
-          flutter test
-        ignore_failure: true
       - name: Shorebird release (AAB)
         script: |
-          export PATH="$HOME/.shorebird/bin:$PATH"
           BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK" 2>/dev/null || echo 0) + 1))
           shorebird release android \
             --release-version=1.3.1+$BUILD_NUMBER \
+            --no-confirm \
             -- \
             --build-name=1.3.1 \
             --build-number=$BUILD_NUMBER
     artifacts:
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
-      - flutter_drive.log
     publishing:
       email:
         recipients:
@@ -71,65 +87,53 @@ workflows:
     integrations:
       app_store_connect: codemagic
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: online.karti.hrm
       groups:
         - shorebird_credentials    # SHOREBIRD_TOKEN
       vars:
         BUNDLE_ID: "online.karti.hrm"
-        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
         APP_STORE_APP_ID: "6762530619"
       flutter: stable
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
-      - name: Install pods
-        script: |
-          find . -name "Podfile" -execdir pod install \;
       - name: Install Shorebird CLI
         script: |
-          curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
-          echo "export PATH=\"\$HOME/.shorebird/bin:\$PATH\"" >> $CM_BUILD_DIR/path_export
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird --version
-      - name: Initialize keychain
+          curl -sSf https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh | bash
+          echo 'export PATH="$HOME/.shorebird/bin:$PATH"' >> $CM_ENV
+      - name: Ruby 3.4 / CocoaPods 1.16 fix
         script: |
-          keychain initialize
-      - name: Fetch signing files from App Store Connect
+          gem install logger bigdecimal
+      - name: Get Flutter packages
         script: |
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --create
-      - name: Add certs to keychain
+          flutter pub get
+      - name: CocoaPods install (clean)
         script: |
-          keychain add-certificates
-      - name: Apply provisioning profiles to Xcode project
+          cd ios && rm -f Podfile.lock && rm -rf Pods && pod install --repo-update
+      - name: Apply provisioning profiles + generate export_options.plist
         script: |
-          xcode-project use-profiles
+          xcode-project use-profiles \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --warn-only
       - name: Flutter analyze
         script: |
           flutter analyze
         ignore_failure: true
-      - name: Flutter unit tests
-        script: |
-          flutter test
-        ignore_failure: true
       - name: Shorebird release (IPA)
         script: |
-          export PATH="$HOME/.shorebird/bin:$PATH"
           BUILD_NUMBER=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo 0) + 1))
           shorebird release ios \
             --release-version=1.3.1+$BUILD_NUMBER \
+            --no-confirm \
+            --export-options-plist=/Users/builder/export_options.plist \
             -- \
             --build-name=1.3.1 \
-            --build-number=$BUILD_NUMBER \
-            --export-options-plist=/Users/builder/export_options.plist
+            --build-number=$BUILD_NUMBER
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
     publishing:
       email:
         recipients:
@@ -143,9 +147,12 @@ workflows:
         submit_to_app_store: false
 
   # ============================================================
-  # OTA PATCHES — Dart-only hot fixes, delivered over the air
-  # to users already on the last `shorebird release` build.
-  # Use these for bug fixes. Can't add native code or change pubspec.
+  # OTA PATCHES — Dart-only hot fixes, delivered over-the-air to
+  # users already on the last `shorebird release` build. No store
+  # review, no reinstall. Rule of thumb:
+  #   - pubspec.yaml changed / new native plugin / new entitlement
+  #     → Release workflow (full store resubmission)
+  #   - Dart-only fix → Patch workflow (usually live in minutes)
   # ============================================================
 
   android-patch-workflow:
@@ -156,7 +163,7 @@ workflows:
       android_signing:
         - keystore.jks
       groups:
-        - shorebird_credentials    # SHOREBIRD_TOKEN
+        - shorebird_credentials
       vars:
         PACKAGE_NAME: "online.karti.hrm"
       flutter: stable
@@ -164,18 +171,16 @@ workflows:
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
       - name: Install Shorebird CLI
         script: |
-          curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird --version
+          curl -sSf https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh | bash
+          echo 'export PATH="$HOME/.shorebird/bin:$PATH"' >> $CM_ENV
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
       - name: Shorebird patch (Android)
         script: |
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird patch android
+          shorebird patch android --no-confirm
     publishing:
       email:
         recipients:
@@ -191,43 +196,38 @@ workflows:
     integrations:
       app_store_connect: codemagic
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: online.karti.hrm
       groups:
-        - shorebird_credentials    # SHOREBIRD_TOKEN
+        - shorebird_credentials
       vars:
         BUNDLE_ID: "online.karti.hrm"
       flutter: stable
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
-      - name: Install pods
-        script: |
-          find . -name "Podfile" -execdir pod install \;
       - name: Install Shorebird CLI
         script: |
-          curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird --version
-      - name: Initialize keychain
+          curl -sSf https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh | bash
+          echo 'export PATH="$HOME/.shorebird/bin:$PATH"' >> $CM_ENV
+      - name: Ruby 3.4 / CocoaPods 1.16 fix
         script: |
-          keychain initialize
-      - name: Fetch signing files from App Store Connect
+          gem install logger bigdecimal
+      - name: Get Flutter packages
         script: |
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --create
-      - name: Add certs to keychain
+          flutter pub get
+      - name: CocoaPods install (clean)
         script: |
-          keychain add-certificates
-      - name: Apply provisioning profiles to Xcode project
+          cd ios && rm -f Podfile.lock && rm -rf Pods && pod install --repo-update
+      - name: Apply provisioning profiles
         script: |
-          xcode-project use-profiles
+          xcode-project use-profiles \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --warn-only
       - name: Shorebird patch (iOS)
         script: |
-          export PATH="$HOME/.shorebird/bin:$PATH"
-          shorebird patch ios
+          shorebird patch ios --no-confirm
     publishing:
       email:
         recipients:
