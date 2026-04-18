@@ -10,21 +10,35 @@ class MySchedulePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomNav = _tryReadBottomNav(context);
+
+    Widget content = const MyScheduleContentScreen();
+    if (bottomNav != null) {
+      content = BlocListener<BottomNavCubit, BottomNavState>(
+        bloc: bottomNav,
+        listenWhen: (prev, curr) =>
+            curr.tab == BottomNavTab.schedule && prev.tab != BottomNavTab.schedule,
+        listener: (context, _) {
+          final bloc = context.read<MyScheduleBloc>();
+          bloc.add(MyScheduleLoadEvent(weekStart: bloc.state.weekStart));
+        },
+        child: content,
+      );
+    }
+
     return BlocProvider(
       create: (_) => MyScheduleBloc(
         metaClubApiClient: MetaClubApiClient(httpService: instance()),
       )..add(const MyScheduleLoadEvent()),
-      child: BlocListener<BottomNavCubit, BottomNavState>(
-        listenWhen: (prev, curr) =>
-            curr.tab == BottomNavTab.schedule && prev.tab != BottomNavTab.schedule,
-        listener: (context, _) {
-          // Refetch whenever the user enters the Schedule tab so data is always fresh
-          // (initial fetch can race with auth/session setup at app startup).
-          final bloc = context.read<MyScheduleBloc>();
-          bloc.add(MyScheduleLoadEvent(weekStart: bloc.state.weekStart));
-        },
-        child: const MyScheduleContentScreen(),
-      ),
+      child: content,
     );
+  }
+
+  static BottomNavCubit? _tryReadBottomNav(BuildContext context) {
+    try {
+      return context.read<BottomNavCubit>();
+    } catch (_) {
+      return null;
+    }
   }
 }

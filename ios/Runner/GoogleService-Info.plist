@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>online.karti.app</string>
+	<string>online.karti.hrm</string>
 	<key>PROJECT_ID</key>
 	<string>karti-hrm-dea83</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1084442997964:ios:a1e662cb77fae71dd03e69</string>
+	<string>1:1084442997964:ios:eb8cac1c5ba69a7ad03e69</string>
 </dict>
 </plist>

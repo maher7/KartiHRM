@@ -1,5 +1,6 @@
 // File generated based on google-services.json and GoogleService-Info.plist
 // Project: karti-hrm-dea83 (support@mahersoftware.com)
+// Bundle ID: online.karti.hrm (iOS + Android unified, 2026-04-18)
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
@@ -25,7 +26,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDyWx5CJbpGgcz5ZVLev3aDgtZmAwPztm4',
-    appId: '1:1084442997964:android:0aea8582db6c3f39d03e69',
+    appId: '1:1084442997964:android:caac5c9a47f19c09d03e69',
     messagingSenderId: '1084442997964',
     projectId: 'karti-hrm-dea83',
     storageBucket: 'karti-hrm-dea83.firebasestorage.app',
@@ -33,17 +34,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD1AXpc64ur2EpqDq8xP3U1zyAbQ70RYVQ',
-    appId: '1:1084442997964:ios:a1e662cb77fae71dd03e69',
+    appId: '1:1084442997964:ios:eb8cac1c5ba69a7ad03e69',
     messagingSenderId: '1084442997964',
     projectId: 'karti-hrm-dea83',
     storageBucket: 'karti-hrm-dea83.firebasestorage.app',
-    iosBundleId: 'online.karti.app',
+    iosBundleId: 'online.karti.hrm',
   );
 
   // TODO: Add web app in Firebase Console and update these values
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDyWx5CJbpGgcz5ZVLev3aDgtZmAwPztm4',
-    appId: '1:1084442997964:android:0aea8582db6c3f39d03e69',
+    appId: '1:1084442997964:android:caac5c9a47f19c09d03e69',
     messagingSenderId: '1084442997964',
     projectId: 'karti-hrm-dea83',
     storageBucket: 'karti-hrm-dea83.firebasestorage.app',

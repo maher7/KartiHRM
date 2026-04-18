@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:core/core.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:meta_club_api/meta_club_api.dart';
@@ -48,11 +49,14 @@ class MyScheduleBloc extends Bloc<MyScheduleEvent, MyScheduleState> {
     final result = await metaClubApiClient.getMySchedule(weekStart: weekStart);
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: NetworkStatus.failure,
-        weekStart: weekStart,
-        errorMessage: 'Failed to load schedule',
-      )),
+      (failure) {
+        debugPrint('MySchedule error: $failure');
+        emit(state.copyWith(
+          status: NetworkStatus.failure,
+          weekStart: weekStart,
+          errorMessage: 'Failed to load schedule',
+        ));
+      },
       (schedule) => emit(state.copyWith(
         status: NetworkStatus.success,
         schedule: schedule,

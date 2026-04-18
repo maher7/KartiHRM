@@ -14,10 +14,10 @@
 | Flutter project | `HRM-app-Maher-saas-hrm-main/`       |
 | Flutter name    | `onesthrm`                           |
 | Current version | `1.3.0+8` (see `pubspec.yaml`)       |
-| Android pkg     | `online.karti.app`                   |
-| iOS bundle ID   | `online.karti.app`                   |
+| Android pkg     | `online.karti.hrm`                   |
+| iOS bundle ID   | `online.karti.hrm`                   |
 | iOS test bundle | `com.hour.onestHrm.RunnerTests`      |
-| iOS dev team    | `F7KM6GHNV5`                         |
+| iOS dev team    | `6N22C6SRVK`                         |
 
 ---
 
@@ -86,21 +86,21 @@ release vs. a Shorebird patch.
 
 | Item              | Value                       |
 |-------------------|-----------------------------|
-| Bundle ID         | `online.karti.app`          |
-| Apple team ID     | `F7KM6GHNV5`                |
+| Bundle ID         | `online.karti.hrm`          |
+| Apple team ID     | `6N22C6SRVK`                |
 | Code sign style   | Automatic (Xcode-managed)   |
 | Code sign identity| `iPhone Developer`          |
 
 ### What's NOT in this repo (and where to find it)
 iOS signing certificates and provisioning profiles live in:
-- The Apple Developer account that owns team `F7KM6GHNV5`
+- The Apple Developer account that owns team `6N22C6SRVK`
 - The Mac keychain on the build machine (after `xcodebuild` or Xcode pulls them
   via Automatic Signing)
 - Optionally: an `ExportOptions.plist` on the build machine
 
 **To recover iOS publishing rights you need:**
-1. Login to the Apple Developer account that owns team `F7KM6GHNV5`
-2. App Store Connect access for the `online.karti.app` listing
+1. Login to the Apple Developer account that owns team `6N22C6SRVK`
+2. App Store Connect access for the `online.karti.hrm` listing
 3. A Mac with Xcode signed in to that Apple ID
 
 There is no "keystore equivalent" file to back up — Apple manages this server-side.
@@ -133,7 +133,7 @@ If you are reading this on a fresh machine after losing everything:
 ## 6. Security warning — read this
 
 Both `KartiHRM.jks` and `key.properties` are committed to this repository. Anyone with
-read access to the repo can sign apps as `online.karti.app` and impersonate you on
+read access to the repo can sign apps as `online.karti.hrm` and impersonate you on
 Play Store. This is convenient for solo development but **dangerous for shared repos**.
 
 ### If you ever need to harden this:

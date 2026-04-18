@@ -12,6 +12,11 @@
 .swiftpm/
 migrate_working_dir/
 
+# Secrets — NEVER commit. Contains App Store Connect API key, Shorebird token, APNs .p8 etc.
+.secrets/
+*.p8
+AuthKey_*.p8
+
 # IntelliJ related
 *.iml
 *.ipr

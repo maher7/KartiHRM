@@ -59,7 +59,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "online.karti.app"
+        applicationId "online.karti.hrm"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
