@@ -32,8 +32,9 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 120
     environment:
-      android_signing:
-        - keystore.jks
+      # Android signing uses android/app/KartiHRM.jks + android/key.properties
+      # committed in the repo — Gradle picks them up directly, no Codemagic
+      # keystore vault required.
       groups:
         - google_credentials       # GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         - shorebird_credentials    # SHOREBIRD_TOKEN
@@ -157,8 +158,9 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
-      android_signing:
-        - keystore.jks
+      # Android signing uses android/app/KartiHRM.jks + android/key.properties
+      # committed in the repo — Gradle picks them up directly, no Codemagic
+      # keystore vault required.
       groups:
         - shorebird_credentials
       vars:
