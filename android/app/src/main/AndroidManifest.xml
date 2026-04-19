@@ -17,9 +17,15 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- SCHEDULE_EXACT_ALARM only needed on Android 12 and below; Play allows it. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"
         android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!-- USE_EXACT_ALARM is restricted by Play to alarm/calendar apps. Karti HRM is
+         neither and has no Dart code requesting exact-mode scheduling. tools:node=
+         "remove" strips it even if a Flutter plugin (e.g. flutter_local_notifications)
+         re-declares it via manifest merging. -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"
+        tools:node="remove" />
 
    <application
         android:label="Karti HRM"
