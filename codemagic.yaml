@@ -108,6 +108,13 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter pub get
+      - name: Install flutterfire_cli
+        script: |
+          # Required by the Xcode "FlutterFire: upload-crashlytics-symbols" run
+          # script phase inside Runner.xcodeproj. Without this the archive step
+          # fails with "flutterfire: command not found".
+          dart pub global activate flutterfire_cli
+          echo 'export PATH="$HOME/.pub-cache/bin:$PATH"' >> $CM_ENV
       - name: CocoaPods install (clean)
         script: |
           cd ios && rm -f Podfile.lock && rm -rf Pods && pod install --repo-update
@@ -122,8 +129,9 @@ workflows:
         ignore_failure: true
       - name: Shorebird release (IPA)
         script: |
-          export PATH="$HOME/.shorebird/bin:$PATH"
+          export PATH="$HOME/.shorebird/bin:$HOME/.pub-cache/bin:$PATH"
           shorebird --version
+          flutterfire --version || true
           # Shorebird 1.6+ reads version from pubspec.yaml directly
           # Bump pubspec.yaml `version:` manually before each release
           shorebird release ios \
@@ -218,6 +226,12 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter pub get
+      - name: Install flutterfire_cli
+        script: |
+          # Required by the Xcode "FlutterFire: upload-crashlytics-symbols" run
+          # script phase inside Runner.xcodeproj.
+          dart pub global activate flutterfire_cli
+          echo 'export PATH="$HOME/.pub-cache/bin:$PATH"' >> $CM_ENV
       - name: CocoaPods install (clean)
         script: |
           cd ios && rm -f Podfile.lock && rm -rf Pods && pod install --repo-update
@@ -228,8 +242,9 @@ workflows:
             --warn-only
       - name: Shorebird patch (iOS)
         script: |
-          export PATH="$HOME/.shorebird/bin:$PATH"
+          export PATH="$HOME/.shorebird/bin:$HOME/.pub-cache/bin:$PATH"
           shorebird --version
+          flutterfire --version || true
           shorebird patch ios --no-confirm
     publishing:
       email:
