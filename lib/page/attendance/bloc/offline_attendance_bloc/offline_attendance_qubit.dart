@@ -148,6 +148,10 @@ class OfflineCubit extends Cubit<OfflineAttendanceState> {
           isCheckedOut = false;
         }
         emit(state.copyWith(isCheckedIn: isCheckedIn, isCheckedOut: isCheckedOut, attendanceBody: localAttendanceData));
+      }).catchError((e) {
+        // Offline sync failure — previously silent. At minimum log so
+        // Crashlytics sees something when the local DB write fails.
+        debugPrint('offline_attendance sync failed: $e');
       });
     } else {
       emit(state.copyWith(isCheckedIn: isCheckedIn, isCheckedOut: isCheckedOut, attendanceBody: localAttendanceData));

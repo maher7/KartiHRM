@@ -73,6 +73,10 @@ class AttendanceMethodBloc extends Bloc<AttendanceMethodEvent, AttendanceMethodS
         ///navigate into selfie attendance feature
         availableCameras().then(
           (value) {
+            if (value.isEmpty) {
+              Fluttertoast.showToast(msg: tr("No camera available on this device"));
+              return null;
+            }
             return Navigator.push(
               event.context,
               MaterialPageRoute(
@@ -94,7 +98,14 @@ class AttendanceMethodBloc extends Bloc<AttendanceMethodEvent, AttendanceMethodS
               ),
             );
           },
-        );
+        ).catchError((e) {
+          // Camera permission denied or hardware unavailable. Without this
+          // handler the future failed silently and the user tapped a
+          // dead button.
+          debugPrint('availableCameras failed: $e');
+          Fluttertoast.showToast(msg: tr("Camera unavailable. Check permissions and try again."));
+          return null;
+        });
         break;
       default:
         return;

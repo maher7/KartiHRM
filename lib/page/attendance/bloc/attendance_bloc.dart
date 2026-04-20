@@ -27,6 +27,10 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
   final SubmitRemarksUseCase _submitRemarksUseCase;
   AttendanceBody body = AttendanceBody();
   StreamSubscription? _locationSubscription;
+  // Fire-and-forget fetch in the constructor raced with auto check-in:
+  // attendance could be submitted with shift_id=null. This Future lets any
+  // handler `await _shiftIdReady` before touching body for submission.
+  late final Future<void> _shiftIdReady;
 
   AttendanceBloc(
       {required this.submitAttendanceUseCase,
@@ -50,7 +54,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     on<OnLocationUpdated>(_onLocationUpdated);
     on<OnRemarkEvent>(_onRemark);
 
-    SharedUtil.getIntValue(shiftId).then((sid) {
+    _shiftIdReady = SharedUtil.getIntValue(shiftId).then((sid) {
       body.shiftId = sid;
     });
 
@@ -114,6 +118,9 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
 
   void _onAttendance(OnAttendance event, Emitter<AttendanceState> emit) async {
     emit(state.copyWith(status: NetworkStatus.loading, actionStatus: ActionStatus.refresh));
+    // Ensure shiftId fetch (kicked off in constructor) has resolved before
+    // we read body for submission.
+    await _shiftIdReady;
     body.mode ??= await SharedUtil.getRemoteModeType() ?? 0;
     body.latitude = '${locationServiceProvider.userLocation.latitude}';
     body.longitude = '${locationServiceProvider.userLocation.longitude}';
@@ -181,6 +188,9 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
   void _onOfflineAttendance(OnOfflineAttendance event, Emitter<AttendanceState> emit) async {
     emit(state.copyWith(status: NetworkStatus.loading, actionStatus: ActionStatus.checkInOut));
 
+    // Same race-condition guard as online attendance — await the shiftId
+    // fetch before we persist body to the offline queue.
+    await _shiftIdReady;
     body.isOffline = true;
     body.mode ??= await SharedUtil.getRemoteModeType() ?? 0;
     body.attendanceId = globalState.get(attendanceId);

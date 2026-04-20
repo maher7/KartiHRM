@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:event_bus_plus/res/event_bus.dart';
 import 'package:dio/dio.dart' as dio_pkg;
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -129,7 +130,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }
       }
-    } catch (_) {
+    } catch (e, stack) {
+      // Firebase topic subscribe / getToken / storage all rolled up here.
+      // Previously swallowed silently — if push broke, nobody knew. Log so
+      // Crashlytics sees it, but don't propagate (push is non-critical path).
+      debugPrint('FCM setup failed: $e');
+      try {
+        FirebaseCrashlytics.instance.recordError(e, stack, reason: 'FCM setup');
+      } catch (_) {
+        // Crashlytics itself not ready — fine, we've already debugPrint'd.
+      }
       return;
     }
   }
