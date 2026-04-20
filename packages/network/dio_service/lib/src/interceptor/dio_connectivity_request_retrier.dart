@@ -13,10 +13,13 @@ class DioConnectivityRequestRetrier {
     StreamSubscription? streamSubscription;
     final responseCompleter = Completer<Response>();
     streamSubscription =
-        connectivity!.onConnectivityChanged.listen((connectivityResult) {
+        connectivity!.onConnectivityChanged.listen((statuses) {
+      // connectivity_plus 3.0+ emits List<ConnectivityResult> — reconnected
+      // means at least one active network other than `none`.
+      final connected = statuses.any((s) => s != ConnectivityResult.none);
+      if (!connected) return;
       streamSubscription!.cancel();
-      if (connectivityResult != ConnectivityResult.none) {
-        responseCompleter.complete(dio?.request(requestOptions.path,
+      responseCompleter.complete(dio?.request(requestOptions.path,
             cancelToken: requestOptions.cancelToken,
             data: requestOptions.data,
             onReceiveProgress: requestOptions.onReceiveProgress,
@@ -26,7 +29,6 @@ class DioConnectivityRequestRetrier {
                 method: requestOptions.method,
                 headers: requestOptions.headers,
                 contentType: requestOptions.contentType)));
-      }
     });
     return responseCompleter.future;
   }

@@ -247,8 +247,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   TimeBreak getFormatTime({required String duration}) {
+    // Defensive: API has been seen returning "N/A", empty strings, and
+    // partial strings like "2:00". Fall back to 0 for any segment that
+    // doesn't parse, instead of crashing the home screen.
     final splits = duration.split(':');
-    return TimeBreak(hour: int.parse(splits[0]), min: int.parse(splits[1]), sec: int.parse(splits[2]));
+    int seg(int i) =>
+        i < splits.length ? (int.tryParse(splits[i]) ?? 0) : 0;
+    return TimeBreak(hour: seg(0), min: seg(1), sec: seg(2));
   }
 
   void _onOfflineDataSync() async {

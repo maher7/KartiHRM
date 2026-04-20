@@ -27,12 +27,16 @@ class LoginForm extends StatelessWidget {
           listenWhen: (oldState, newState) => oldState.loginAction == LoginAction.login,
           listener: (context, state) {
             if (state.status.isFailure) {
+              // Defensive: state.failure can briefly be null when status flips
+              // to failure from an unrelated code path. Fall back to a generic
+              // message instead of crashing the login screen.
+              final failure = state.failure;
               showLoginDialog(
                   context: context,
                   isSuccess: false,
-                  message: state.failure!.isSuccess
+                  message: failure?.isSuccess == true
                       ? 'Authentication Successful'.tr()
-                      : 'Authentication failed\n${state.failure!.meaningfulMessage}');
+                      : 'Authentication failed\n${failure?.meaningfulMessage ?? 'Please try again'}');
             }
             if (state.status.isCanceled) {
               showLoginDialog(context: context, isSuccess: false, message: '${state.user?.user?.name}');

@@ -94,17 +94,16 @@ void routeSlug(slugName, context) {
 
 
 
-void currentMonthRouteSlug(slugName, context,  settings, ) {
-
-
+void currentMonthRouteSlug(slugName, context, settings) {
   switch (slugName) {
     case 'late_in':
-      NavUtil.navigateScreen(context, PlutoAttendanceReportPage(settings: settings!));
     case 'absent':
-      NavUtil.navigateScreen(context, PlutoAttendanceReportPage(settings: settings!));
+      // Both routes need `settings` — bail silently if it's not loaded yet
+      // so tapping a summary card before home data arrives doesn't crash.
+      if (settings == null) return;
+      NavUtil.navigateScreen(context, PlutoAttendanceReportPage(settings: settings));
     case 'leave':
       NavUtil.navigateScreen(context, const LeavePage());
-
     case 'visits':
       NavUtil.navigateScreen(context, const VisitPage());
     default:
